@@ -1,0 +1,76 @@
+# ============================================================
+# Classroom Visualizer / AhBiCamViewer .gitignore
+# Developer: AhBiYout (AhBiYout-all)
+# Repository: https://github.com/AhBiYout-all/ClassroomVisualizer
+# ============================================================
+
+# 1. Build and distribution outputs (Strict exclusion)
+dist/
+build/
+output/
+bin/*.dll
+bin/*.exe
+bin/*.pdb
+bin/*.obj
+*.zip
+*.tar.gz
+*.7z
+*.exe.log
+
+# 2. Local Git Release & Push Automation Scripts (Excluded from remote repo)
+push_github.bat
+git-release.bat
+git_push.bat
+git-push.bat
+
+# 3. Private keys, secrets, credentials & environment files
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+credentials/
+auth/
+id_rsa*
+*.secret
+
+# 4. Logs, caches and temporary runtime files
+*.log
+*.tmp
+*.bak
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+.cache/
+tmp/
+temp/
+scratch/
+tools/inspect_*
+tools/test_*
+tools/apply_*
+tools/list_*
+
+# 5. Operating System artifacts
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# 6. IDE and Editor configurations
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+src/dll/*.dll
