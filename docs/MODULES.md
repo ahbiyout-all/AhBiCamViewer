@@ -92,8 +92,8 @@
   - `pdfAll()`: 캡처된 스냅샷들을 A4 랜드스케이프 규격의 다중 페이지 PDF 문서로 일괄 컴파일.
 
 ### 2.9 NativeSystemAndLicenseModule (`ClassroomVisualizerCore.dll` / `Managed.dll`)
-- **책임**: C#/IL 하이브리드 Win32 stdcall 네이티브 DLL을 통해 수업 중 디스플레이 절전 방지, 다중 모니터 위상 분석, 무지연 오디오 차임, 오프라인 체크섬 검증 및 하드웨어 핑거프린팅 제공.
-- **주요 인터페이스 (10대 Win32 stdcall 네이티브 익스포트)**:
+- **책임**: C#/IL 하이브리드 Win32 stdcall 네이티브 DLL을 통해 수업 중 디스플레이 절전 방지, 다중 모니터 위상 분석, 무지연 하드웨어 오디오 차임, 저장소 여유 공간 안전 진단, 전자칠판 DPI 스케일링 판별, Always-on-Top 및 오프라인 라이선스 검증 제공.
+- **주요 인터페이스 (15대 Win32 stdcall 네이티브 익스포트)**:
   - `CV_GetVersion()`: DLL 바이너리 버전 반환 (`0x01040400` = v1.4.4).
   - `CV_ValidateKeyA(pKey)`: 오프라인 영구 라이선스 키 포맷 및 Mod 97 체크섬 검증.
   - `CV_IsTrialKeyA(pKey)`: `TR30-` 접두사 30일 체험키 판정.
@@ -104,3 +104,8 @@
   - `CV_GetMonitorCount()`: 활성 디스플레이 모니터 및 빔프로젝터 개수 감지.
   - `CV_GetVirtualScreenBounds(*left, *top, *width, *height)`: 다중 모니터 포괄 가상 데스크톱 전체 좌표 획득.
   - `CV_PlayAttentionAlert(alertType)`: Win32 `MessageBeep` 기반 무지연 교실 주목 알림 차임벨 재생.
+  - `CV_PlayCustomTone(frequency, durationMs)`: Win32 `Beep` 기반 브라우저 스로틀링 없는 하드웨어 주파수 비프음 재생.
+  - `CV_GetDiskFreeSpaceMB(pDrivePath, *pFreeMB)`: Win32 `GetDiskFreeSpaceExA` 기반 동영상 녹화 전 드라이브 잔여 공간(MB) 안전 진단.
+  - `CV_GetDisplayDpi(*pDpiX, *pDpiY)`: Win32 GDI 기반 주 모니터 DPI 스케일링(96=100%, 120=125%, 144=150%, 192=200%) 판별.
+  - `CV_SetWindowTopmost(hWnd, topmost)`: Win32 `SetWindowPos` 기반 수업 교재(PDF/PPT) 위 화상기 영상 Always-on-Top 플로팅 제어.
+  - `CV_GetPerformanceTimeMs()`: Win32 QPC(QueryPerformanceCounter) 기반 마이크로초 정밀도 고해상도 단조 증가 타이머.

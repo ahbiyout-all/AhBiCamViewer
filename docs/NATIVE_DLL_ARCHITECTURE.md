@@ -1,281 +1,257 @@
-# 🏛️ 순수 창작 네이티브 DLL 아키텍처 및 동작 원리 명세서
+# 🏛️ 아비캠뷰어 (AhBiCamViewer) 순수 창작 네이티브 DLL 기술 아키텍처 및 상세 명세서
 
-본 문서는 **교실용 실물화상기(아비캠뷰어 / AhBiCamViewer)** 프로젝트에 탑재된 순수 창작 Win32 네이티브 익스포트 DLL(`ClassroomVisualizerCore.dll`) 및 관리형 코어 어셈블리(`ClassroomVisualizerManaged.dll`)의 설계 배경, 아키텍처, PE 수준 동작 원리, 기존 결함 점검 및 해결 내역, 10대 네이티브 API 상세 규격, 빌드 파이프라인 및 테스트 검증 결과를 상세히 기록한 공식 기술 명세서입니다.
-
----
-
-## 1. 개요 및 배경
-
-### 1.1 순수 창작 DLL의 도입 목적
-교실 수업 환경에서 구동되는 실물화상기 소프트웨어는 브라우저 샌드박스 내부의 Web API만으로는 해결하기 어려운 여러 윈도우 네이티브 하드웨어 제어 한계에 직면합니다:
-1. **수업 중 화면 꺼짐 및 절전 모드 진입 방지**:
-   - 교사가 실물화상기 화면을 띄워두고 학생들에게 판서나 교재를 설명하는 동안 수 분간 마우스나 키보드 입력이 없으면 윈도우 기본 절전 정책에 의해 프로젝터나 TV 화면이 꺼지는 현상이 빈번하게 발생합니다.
-2. **다중 디스플레이 및 빔프로젝터 위상 감지**:
-   - 교사용 메인 노트북 화면과 프로젝터/전자칠판 확장 화면의 해상도 및 가상 데스크톱 경계를 브라우저 권한 허용 팝업 없이 즉각 네이티브 수준에서 파악해야 합니다.
-3. **인스톨러(Inno Setup) 레벨의 오프라인 사전 검증**:
-   - Inno Setup 설치 마법사(32비트 `SetupLdr.e32`)에서 프로그램 설치 전 시스템 무결성, 하드웨어 식별자, 오프라인 라이선스 체크섬을 인터넷 연결 없이 즉각 판정해야 합니다.
-4. **외부 런타임 종속성 제로(Zero-Dependency) 원칙**:
-   - 수 기가바이트에 달하는 Visual Studio C++ 빌드 도구나 별도의 MSVCRT 재배포 패키지 없이, **Windows 표준 .NET Framework 4.0 내장 도구(`csc.exe`, `ilasm.exe`)만으로 100% 컴파일 및 링크** 가능한 순수 창작 모듈을 구축해야 합니다.
+> **문서 버전:** v1.5.0 (엔진 v1.4.4 대응)  
+> **최종 갱신일:** 2026-11-01  
+> **개발자:** AhBiYout (AhBiYout-all)  
+> **공식 저장소:** https://github.com/AhBiYout-all/ClassroomVisualizer  
+> **대상 바이너리:** `bin/ClassroomVisualizerCore.dll` & `bin/ClassroomVisualizerManaged.dll`
 
 ---
 
-## 2. 기존 DLL 결함 점검 및 개선 내역
+## 1. 개요 및 순수 창작 설계 철학 (Executive Summary)
 
-기존 `ClassroomVisualizerCore.dll` 및 `ClassroomVisualizerManaged.dll`의 소스 코드와 바이너리를 정밀 분석한 결과, 다음 4가지 핵심 결함과 개선점이 확인되어 모두 수정 및 최적화되었습니다.
+본 프로젝트는 상용 써드파티 보호기, 난독화 래퍼, 또는 불안정한 외부 C++ 런타임(MSVCRT 재배포 패키지)에 일체 의존하지 않고, **순수 Windows 표준 컴파일러(C# `csc.exe`)와 IL 어셈블러(`ilasm.exe`)만을 사용하여 독자 설계한 100% 순수 창작 Win32 네이티브 익스포트 DLL 아키텍처**를 채택하고 있습니다.
 
-| 번호 | 결함 항목 | 기존 상태 (문제점) | 개선 및 해결 내역 (v1.4.4) |
-|---|---|---|---|
-| **1** | **엔진 버전 상수 불일치** | IL 코드 내 `CV_GetVersion`이 `0x01040000`(v1.4.0)을 반환하여 현재 앱 버전(v1.4.4)과 불일치 | IL 및 어셈블리 버전을 `1.4.4.0`으로 갱신하고 `0x01040400`을 반환하도록 완전 동기화 |
-| **2** | **체험키 검증 시그니처 파괴** | 문서(4개 인자: `startDay, currentDay, trialDays, *pDaysRemaining`)와 IL/C# 구현(2개 int64 타임스탬프)이 불일치하여 Inno Setup이나 C 호출 시 **스택 프레임 파괴(Stack Corruption Crash)** 발생 위험 존재 | `LicenseCore.VerifyTrialStatusDays`를 신설하고 IL thunk에서 4개 인자 stdcall 규약 및 포인터 역참조(`stind.i4`)를 정확히 구현하여 스택 무결성 100% 확보 |
-| **3** | **머신 식별자 익스포트 누락** | `LicenseCore.cs`에 하드웨어 핑거프린트 함수가 존재했으나 IL thunk 익스포트 목록에서 누락되어 외부에서 호출 불가 | `CV_GetMachineFingerprintA` 네이티브 stdcall 익스포트 신설 (16자리 고유 HEX 반환) |
-| **4** | **예외 안전성 부재** | C/Pascal 호출자가 잘못된 포인터(NULL, 쓰레기 주소) 전달 시 CLR 비정상 종료(Crash) 발생 위험 | 모든 IL 메서드에 `.try ... catch [mscorlib]System.Exception` 블록을 탑재하여 안전하게 0 반환 보장 |
-| **5** | **빌드 플랫폼 타깃 모호성** | `csc.exe` 기본 옵션 빌드 시 64비트 환경에서 AnyCPU로 생성되어 32비트 인스톨러에서 `BadImageFormatException` 잠재 위험 | `tools/build_dll.bat`에 `/platform:x86` 플래그를 명시하여 결정론적 32비트 PE 바이너리 보장 |
+### 핵심 설계 목표
+1. **외부 런타임 무의존(Zero Dependencies)**: Visual C++ 재배포 패키지(vcredist) 설치 없이 모든 Windows 7/8/10/11 시스템에서 100% 즉시 로드 보장.
+2. **비관리형(Unmanaged) Win32 StdCall 완벽 호환**: Inno Setup(Pascal Script), C/C++, Delphi, Visual Basic 등 표준 Win32 호출자가 `LoadLibrary` / `GetProcAddress`를 통해 함수를 즉각 호출할 수 있는 정통 PE 익스포트 테이블 제공.
+3. **완전한 예외 차단 쉴드(Fault-Tolerant Exception Isolation)**: 잘못된 포인터(NULL, 쓰레기 주소)나 예기치 않은 시스템 예외가 발생하더라도 호출자 프로세스(예: 설치 프로그램)가 절대 비정상 종료(Crash)되지 않고 안전하게 에러 코드를 반환하도록 보호.
+4. **교실 수업 환경 특화 최적화**: 화면 꺼짐 방지, 고화질 DPI 스케일링 판별, 디스크 저장 공간 안전 진단, 0ms 레이턴시 하드웨어 알림음 등 수업 현장에 직결된 OS 제어 기능 탑재.
 
 ---
 
-## 3. C#/IL 하이브리드 VTable Thunk 동작 원리
+## 2. 듀얼 어셈블리 분리 아키텍처 및 동작 원리
 
-### 3.1 아키텍처 개요
-일반적인 C# 컴파일러(`csc.exe`)는 관리형 어셈블리(CLI Metadata)만 생성할 수 있으며, C/C++이나 Inno Setup이 직접 `GetProcAddress`나 정적 임포트로 호출할 수 있는 **Win32 네이티브 익스포트 디렉터리(.edata)**를 생성하지 못합니다.
-
-본 프로젝트는 C#으로 비즈니스 로직을 구현한 뒤, 순수 IL(Intermediate Language) 어셈블러(`ilasm.exe`)의 **VTable Fixup (`.vtfixup`) 및 네이티브 익스포트(`.export`)** 메커니즘을 결합하여 순수 32비트 Win32 stdcall 네이티브 DLL을 완벽하게 생성합니다.
+아비캠뷰어의 네이티브 엔진은 **관리형 구현 계층(Managed Layer)**과 **비관리형 PE 썽크 계층(Unmanaged Thunk Layer)**이 철저히 분리된 2계층 듀얼 어셈블리 구조로 동작합니다.
 
 ```
-┌────────────────────────────────────────────────────────────────────────┐
-│ [Inno Setup 32-bit Installer] / [Win32 Native C/C++ App] / [VBScript]   │
-└────────────────────────────────────┬───────────────────────────────────┘
-                                     │ 1. Win32 __stdcall 네이티브 호출
++---------------------------------------------------------------------------------+
+|  호출자 계층 (Caller: Inno Setup Pascal Script, Win32 Native App, C/C++ Host)    |
++---------------------------------------------------------------------------------+
+                                     │
+                 Win32 StdCall 호출 (PE Export Directory)
                                      ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│ ClassroomVisualizerCore.dll (32-bit PE Native Win32 DLL)               │
-│                                                                        │
-│  [PE Export Directory (.edata)]                                       │
-│    ├── Ordinal 1:  CV_GetVersion                                       │
-│    ├── Ordinal 2:  CV_ValidateKeyA                                     │
-│    ├── Ordinal 3:  CV_IsTrialKeyA                                      │
-│    ├── Ordinal 4:  CV_VerifyTrialStatus                                │
-│    ├── Ordinal 5:  CV_GetMachineFingerprintA                           │
-│    ├── Ordinal 6:  CV_GenerateTrialKeyA                                │
-│    ├── Ordinal 7:  CV_PreventSleep                                     │
-│    ├── Ordinal 8:  CV_GetMonitorCount                                  │
-│    ├── Ordinal 9:  CV_GetVirtualScreenBounds                           │
-│    └── Ordinal 10: CV_PlayAttentionAlert                               │
-│                                                                        │
-│  [VTable Fixup Table (.vtfixup)]                                       │
-│    └── 10개 슬롯 (40 Bytes D_VTFIXUPS 바이트 배열)                      │
-│        각 슬롯이 Unmanaged Win32 진입점을 관리형 Thunk 메서드로 라우팅 │
-└────────────────────────────────────┬───────────────────────────────────┘
-                                     │ 2. CLR Context Transition & 위임
++---------------------------------------------------------------------------------+
+| [계층 1] ClassroomVisualizerCore.dll (순수 IL 어셈블리 썽크)                      |
+|                                                                                 |
+|  - PE Header: .corflags 0x00000002 (32BITREQUIRED)                              |
+|  - VTable Fixups (.vtfixup [15] int32 fromunmanaged)                            |
+|  - .export [1~15] 디렉터리 테이블                                               |
+|  - 파라미터 경계 변환 (ANSI 포인터 ↔ CLR String, 역참조 stind.i4)                  |
+|  - 구조적 예외 처리 (.try ... catch [mscorlib]System.Exception)                  |
++---------------------------------------------------------------------------------+
+                                     │
+                           CLR 내부 고속 프록시 호출
                                      ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│ ClassroomVisualizerManaged.dll (.NET Class Library, x86)               │
-│                                                                        │
-│  ├── LicenseCore                                                       │
-│  │     ├─ ValidateKey(string) (Mod 97 오프라인 체크섬 검증)            │
-│  │     ├─ IsTrialKey(string) (TR30- 체험키 접두사 판정)                │
-│  │     ├─ GenerateTrialKey() (체크섬 부합 체험키 동적 생성)            │
-│  │     ├─ VerifyTrialStatusDays(...) (남은 체험 일수 계산)             │
-│  │     └─ GetMachineFingerprintHex() (SHA-256 하드웨어 고유 해시)      │
-│  │                                                                     │
-│  └── NativeSystemCore                                                  │
-│        ├─ PreventSleep(int) (kernel32 SetThreadExecutionState)         │
-│        ├─ GetMonitorCount() (user32 GetSystemMetrics SM_CMONITORS)     │
-│        ├─ GetVirtualScreenBounds(...) (user32 가상화면 좌표 추출)      │
-│        └─ PlayAttentionAlert(int) (user32 MessageBeep 무지연 차임)     │
-└────────────────────────────────────────────────────────────────────────┘
++---------------------------------------------------------------------------------+
+| [계층 2] ClassroomVisualizerManaged.dll (순수 C# 비즈니스 로직 & Win32 API)       |
+|                                                                                 |
+|  - LicenseCore.cs: Modulo-97 체크섬 알고리즘, 트라이얼 만료 계산, 머신 해시 생성      |
+|  - NativeSystemCore.cs: SetThreadExecutionState (절전 방지), DPI 감지,          |
+|                         디스크 용량(GetDiskFreeSpaceEx), 하드웨어 Beep 제어     |
++---------------------------------------------------------------------------------+
+                                     │
+                             Win32 서브시스템
+                                     ▼
+         [kernel32.dll]  [user32.dll]  [gdi32.dll]  (Windows OS 커널)
 ```
 
-### 3.2 핵심 IL 지시어와 메모리 레이아웃
+### 2.1 VTable Fixup (.vtfixup) 동작 메커니즘
+표준 .NET 어셈블리는 원래 관리형 메타데이터만 포함하므로 C/C++ 등의 네이티브 코드가 일반 DLL 함수처럼 직접 호출할 수 없습니다.  
+본 엔진은 **IL 어셈블러 고유 기능인 `.vtfixup`과 `.export` 지시자**를 순수하게 활용하여 이 문제를 해결합니다.
 
-1. **`.corflags 0x00000002`**:
-   - 바이너리가 32비트 필수(COMIMAGE_FLAGS_32BITREQUIRED) PE 헤더를 갖도록 선언하여 32비트 Inno Setup 프로세스에서 메모리 주소 및 포인터 정렬이 완벽하게 호환되도록 합니다.
-2. **`.vtfixup [10] int32 fromunmanaged at D_VTFIXUPS`**:
-   - Windows PE 로더 및 .NET 런타임에게 `D_VTFIXUPS` 데이터 영역에 10개의 VTable Thunk 슬롯을 할당하고, 네이티브 호출(`fromunmanaged`)이 발생할 때 CLR 스택 프레임으로 변환하도록 명령합니다.
-3. **`.data D_VTFIXUPS = bytearray ( ... 40바이트 ... )`**:
-   - 10개 함수에 대해 각 4바이트(32비트 포인터)씩 총 40바이트의 제로 버퍼를 `.data` 섹션에 정렬 배치합니다.
-4. **`.vtentry 1 : N` 및 `.export [N] as FunctionName`**:
-   - 각 CIL 메서드 선언부에 VTable 슬롯 인덱스와 PE Export Ordinal 번호를 부여하여 익스포트 심볼 이름을 등록합니다.
-5. **예외 격리(`.try ... catch [mscorlib]System.Exception`)**:
-   - 네이티브 포인터 역참조 또는 ANSI 문자열 변환 시 발생할 수 있는 CLR 예외를 Thunk 계층 내부에서 포획(`pop`)하여 호출한 네이티브 프로세스에 치명적 크래시를 전파하지 않고 안전 코드(0)를 반환합니다.
+1. **VTable Fixup 테이블 정의**:
+   ```il
+   .vtfixup [15] int32 fromunmanaged at D_VTFIXUPS
+   .data D_VTFIXUPS = bytearray (
+     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     00 00 00 00 00 00 00 00 00 00 00 00
+   )
+   ```
+   15개 익스포트 슬롯(슬롯당 4바이트, 총 60바이트)을 비관리형 호출 테이블로 사전 예약합니다.
 
----
+2. **PE 익스포트 테이블 바인딩**:
+   ```il
+   .method public static int32 CV_GetVersion() cil managed
+   {
+     .vtentry 1 : 1
+     .export [1] as CV_GetVersion
+     ...
+   }
+   ```
+   Windows OS의 PE 로더가 DLL을 메모리에 로드할 때, CLR 런타임이 해당 VTable Fixup 슬롯에 관리형 메서드로 점프하는 네이티브 스텁(Stub) 주소를 동적으로 패치합니다. 호출자는 이것이 .NET으로 작성되었는지 여부를 알 필요 없이 순수 C 함수처럼 호출할 수 있습니다.
 
-## 4. 10대 네이티브 익스포트 API 상세 레퍼런스
+### 2.2 메모리 마샬링 및 경계 안전성 (Memory Boundary Safety)
+- **문자열 전달**: `native int`(C 포인터)를 받아 `Marshal::PtrToStringAnsi`로 변환하여 안전하게 처리합니다.
+- **포인터 역참조 방어 (`stind.i4`)**: 출력 포인터(`int*`, `var Integer`)에 결과값을 기록할 때, `ldsfld IntPtr::Zero`와 `beq.s` 분기문으로 NULL 포인터 전달 여부를 사전에 검사한 후 `stind.i4`를 수행하여 세그멘테이션 폴트(Access Violation)를 원천 차단합니다.
+- **고정 버퍼 출력**: `CopyStringToAnsiBuffer` 유틸리티를 통해 목적지 버퍼 크기(`bufferSize`)를 초과하지 않도록 철저히 `Math.Min(len, bufferSize - 1)`로 복사한 뒤 마지막 바이트에 명시적 NULL 종단 문자(`\0`)를 기록합니다.
 
-모든 함수는 **Win32 `__stdcall` (x86 WINAPI, 호출된 쪽에서 스택 정리)** 규약을 사용합니다.
-
-### 4.1 `CV_GetVersion` (Ordinal 1)
-DLL 엔진의 시맨틱 버전을 16진수 단일 32비트 정수로 반환합니다.
-- **C/C++ 시그니처**:
-  ```c
-  unsigned int __stdcall CV_GetVersion(void);
-  ```
-- **Inno Setup Pascal 시그니처**:
-  ```pascal
-  function CV_GetVersion(): Cardinal;
-  external 'CV_GetVersion@{tmp}\ClassroomVisualizerCore.dll stdcall delayload';
-  ```
-- **반환값**: `0x01040400` (Major: 1, Minor: 4, Patch: 4, Build: 0 = v1.4.4)
-
----
-
-### 4.2 `CV_ValidateKeyA` (Ordinal 2)
-16자리 라이선스 키(`XXXX-XXXX-XXXX-XXXX`)의 오프라인 Mod 97 체크섬 유효성을 검증합니다.
-- **C/C++ 시그니처**:
-  ```c
-  int __stdcall CV_ValidateKeyA(const char* pKeyAnsi);
-  ```
-- **반환값**: `1` (유효), `0` (무효 또는 NULL 포인터)
-- **체크섬 알고리즘**:
-  $$\left( \sum_{i=0}^{15} \text{AsciiCode}(Key_i) \times (i + 1) \right) \pmod{97} \equiv 1$$
+### 2.3 구조적 예외 차단 쉴드 (.try ... catch)
+모든 15개 IL 썽크 메서드는 최외곽에 `.try ... catch [mscorlib]System.Exception` 핸들러를 탑재하고 있습니다.  
+하위 C# 로직이나 P/Invoke 호출 중 예외가 발생하더라도 CLR이 예외를 흡수하고 안전한 기본값(대부분 `0` 또는 `1`)을 리턴하므로 호출자 프로세스가 비정상 종료되는 일이 결코 발생하지 않습니다.
 
 ---
 
-### 4.3 `CV_IsTrialKeyA` (Ordinal 3)
-전달된 키가 30일 체험용 키(접두사 `TR30-`)인지 판별합니다.
-- **C/C++ 시그니처**:
-  ```c
-  int __stdcall CV_IsTrialKeyA(const char* pKeyAnsi);
-  ```
-- **반환값**: `1` (30일 체험키), `0` (정품 영구키 또는 유효하지 않은 키)
+## 3. 전체 네이티브 API 상세 명세서 (15 Native APIs)
+
+| 번호 | 함수명 | 반환 타입 | 파라미터 | 핵심 기능 |
+| :---: | :--- | :---: | :--- | :--- |
+| **[1]** | `CV_GetVersion` | `int32` | 없음 | 엔진 시맨틱 버전 16진수 반환 (v1.4.4 = `0x01040400`) |
+| **[2]** | `CV_ValidateKeyA` | `int32` | `const char* pKey` | 16자리 라이선스 키 구조 및 Modulo-97 체크섬 검증 |
+| **[3]** | `CV_IsTrialKeyA` | `int32` | `const char* pKey` | 30일 무료 체험 키(`TR30-`) 여부 판별 |
+| **[4]** | `CV_VerifyTrialStatus` | `int32` | `int startDay, int curDay, int trialDays, int* pRem` | 트라이얼 유효성 판별 및 남은 일수 포인터 역참조 기록 |
+| **[5]** | `CV_GetMachineFingerprintA` | `int32` | `char* pBuf, int bufSize` | 단말기 고유 하드웨어 지문(16자리 Hex SHA-256 해시) 버퍼 복사 |
+| **[6]** | `CV_GenerateTrialKeyA` | `int32` | `char* pBuf, int bufSize` | 체크섬을 만족하는 유효한 30일 체험 키 동적 자동 생성 |
+| **[7]** | `CV_PreventSleep` | `int32` | `int enable` | Win32 절전 모드 방지 제어 (`SetThreadExecutionState`) |
+| **[8]** | `CV_GetMonitorCount` | `int32` | 없음 | 시스템에 연결된 활성 디스플레이/빔프로젝터 대수 감지 |
+| **[9]** | `CV_GetVirtualScreenBounds` | `int32` | `int* pL, int* pT, int* pW, int* pH` | 다중 모니터 통합 가상 데스크톱 영역 좌표 및 해상도 반환 |
+| **[10]** | `CV_PlayAttentionAlert` | `int32` | `int alertType` | 수업 주목 차임벨 사운드 재생 (`MessageBeep`) |
+| **[11]** | `CV_PlayCustomTone` | `int32` | `int freq, int durationMs` | 브라우저 백그라운드 스로틀링 없는 하드웨어 주파수 비프음 (`Beep`) |
+| **[12]** | `CV_GetDiskFreeSpaceMB` | `int32` | `const char* pPath, int* pFreeMB` | 동영상 녹화 전 저장 드라이브 여유 공간(MB 단위) 안전 조회 |
+| **[13]** | `CV_GetDisplayDpi` | `int32` | `int* pDpiX, int* pDpiY` | 전자칠판 및 4K 프로젝터 주 모니터 DPI 스케일링 비율 조회 |
+| **[14]** | `CV_SetWindowTopmost` | `int32` | `HWND hWnd, int topmost` | 수업 교재(PDF/PPT) 위에 화상기 영상을 띄우는 항상 위(PIP) 제어 |
+| **[15]** | `CV_GetPerformanceTimeMs` | `int32` | 없음 | 마이크로초 정밀도의 Win32 고해상도 경과 시간 타이머 (QPC) |
 
 ---
 
-### 4.4 `CV_VerifyTrialStatus` (Ordinal 4)
-체험 시작일, 현재 일자 및 유효 일수를 계산하여 만료 여부 판정 및 잔여 일수를 포인터로 반환합니다.
-- **C/C++ 시그니처**:
-  ```c
-  int __stdcall CV_VerifyTrialStatus(int startDay, int currentDay, int trialDays, int* pDaysRemaining);
-  ```
-- **Inno Setup Pascal 시그니처**:
-  ```pascal
-  function CV_VerifyTrialStatus(startDay, currentDay, trialDays: Integer; var pDaysRemaining: Integer): Integer;
-  external 'CV_VerifyTrialStatus@{tmp}\ClassroomVisualizerCore.dll stdcall delayload';
-  ```
-- **반환값**: `1` (체험 기간 유효), `0` (기간 만료 / 비정상 파라미터)
-- **출력 매개변수**: `pDaysRemaining`에 남은 일수 기록 (만료 시 0)
+### 3.1 개별 API 상세 스펙
+
+#### [1] `CV_GetVersion`
+- **C 서명**: `int __stdcall CV_GetVersion(void);`
+- **Pascal 서명**: `function CV_GetVersion(): Integer;`
+- **동작 원리**: 엔진의 시맨틱 버전(MAJOR, MINOR, PATCH, BUILD)을 32비트 정수로 패킹하여 반환합니다.
+- **반환값**: `0x01040400` (v1.4.4.0)
+
+#### [2] `CV_ValidateKeyA`
+- **C 서명**: `int __stdcall CV_ValidateKeyA(const char* pKeyAnsi);`
+- **Pascal 서명**: `function CV_ValidateKeyA(pKeyAnsi: PAnsiChar): Integer;`
+- **알고리즘**:
+  1. 하이픈(`-`) 제거 후 16자리 영숫자 확인.
+  2. $\sum_{i=0}^{15} (\text{ASCII}(c_i) \times (i + 1)) \pmod{97} \equiv 1$
+- **반환값**: 유효 시 `1`, 유효하지 않거나 NULL 포인터 시 `0`.
+
+#### [3] `CV_IsTrialKeyA`
+- **C 서명**: `int __stdcall CV_IsTrialKeyA(const char* pKeyAnsi);`
+- **Pascal 서명**: `function CV_IsTrialKeyA(pKeyAnsi: PAnsiChar): Integer;`
+- **동작 원리**: 키 유효성 검증을 통과하고 앞 4자리가 `TR30`으로 시작하는지 확인.
+- **반환값**: 30일 체험 키인 경우 `1`, 정식 키 또는 무효 키인 경우 `0`.
+
+#### [4] `CV_VerifyTrialStatus`
+- **C 서명**: `int __stdcall CV_VerifyTrialStatus(int startDay, int currentDay, int trialDays, int* pDaysRemaining);`
+- **Pascal 서명**: `function CV_VerifyTrialStatus(startDay, currentDay, trialDays: Integer; var daysRemaining: Integer): Integer;`
+- **동작 원리**: 발급 기준일과 현재 일자의 차이를 계산하여 잔여 일수를 계산하고 `pDaysRemaining` 포인터에 안전하게 역참조 기록.
+- **반환값**: 트라이얼 활성 시 `1`, 만료 시 `0`.
+
+#### [5] `CV_GetMachineFingerprintA`
+- **C 서명**: `int __stdcall CV_GetMachineFingerprintA(char* pOutBuffer, int bufferSize);`
+- **Pascal 서명**: `function CV_GetMachineFingerprintA(pOutBuffer: PAnsiChar; bufferSize: Integer): Integer;`
+- **동작 원리**: 머신 이름, 프로세서 개수, OS 아키텍처, 윈도우 디렉터리 정보를 결합하여 SHA-256 해시를 산출한 후 앞 16자리 Hex 문자열을 버퍼에 복사.
+- **반환값**: 복사된 문자열 길이 (정상 시 `16`).
+
+#### [6] `CV_GenerateTrialKeyA`
+- **C 서명**: `int __stdcall CV_GenerateTrialKeyA(char* pOutBuffer, int bufferSize);`
+- **Pascal 서명**: `function CV_GenerateTrialKeyA(pOutBuffer: PAnsiChar; bufferSize: Integer): Integer;`
+- **동작 원리**: 접두사 `TR30`으로 시작하고 가독 문자셋(`A-Z`, `2-9`, `0/1/O/I` 제외)을 기반으로 Modulo-97 체크섬을 만족하는 19자리(`TR30-XXXX-XXXX-XXXX`) 체험 키를 난수 합성하여 버퍼에 반환.
+- **반환값**: 복사된 문자열 길이 (정상 시 `19`).
+
+#### [7] `CV_PreventSleep`
+- **C 서명**: `int __stdcall CV_PreventSleep(int enable);`
+- **Pascal 서명**: `function CV_PreventSleep(enable: Integer): Integer;`
+- **동작 원리**: Windows Win32 API `SetThreadExecutionState`를 호출.
+  - `enable != 0`: `ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED` 플래그로 수업 중 화면 보호기 및 절전 모드 차단.
+  - `enable == 0`: `ES_CONTINUOUS`로 기본 절전 정책 복원.
+- **반환값**: 성공 시 `1`, 실패 시 `0`.
+
+#### [8] `CV_GetMonitorCount`
+- **C 서명**: `int __stdcall CV_GetMonitorCount(void);`
+- **Pascal 서명**: `function CV_GetMonitorCount(): Integer;`
+- **동작 원리**: `GetSystemMetrics(SM_CMONITORS)`를 호출하여 시스템에 연결된 활성 디스플레이 개수 반환 (최소 1 이상 보장).
+- **반환값**: 활성 모니터 대수 (예: `1`, `2`, `3`).
+
+#### [9] `CV_GetVirtualScreenBounds`
+- **C 서명**: `int __stdcall CV_GetVirtualScreenBounds(int* pLeft, int* pTop, int* pWidth, int* pHeight);`
+- **Pascal 서명**: `function CV_GetVirtualScreenBounds(var left, top, width, height: Integer): Integer;`
+- **동작 원리**: `SM_XVIRTUALSCREEN`, `SM_YVIRTUALSCREEN`, `SM_CXVIRTUALSCREEN`, `SM_CYVIRTUALSCREEN`을 통해 모든 모니터를 포괄하는 가상 데스크톱 좌표계 반환.
+- **반환값**: 성공 시 `1`, 실패 시 `0`.
+
+#### [10] `CV_PlayAttentionAlert`
+- **C 서명**: `int __stdcall CV_PlayAttentionAlert(int alertType);`
+- **Pascal 서명**: `function CV_PlayAttentionAlert(alertType: Integer): Integer;`
+- **동작 원리**: Win32 `MessageBeep`를 호출하여 교실 주목용 시스템 차임벨 사운드 출력.
+- **반환값**: 성공 시 `1`, 실패 시 `0`.
+
+#### [11] `CV_PlayCustomTone` *(New)*
+- **C 서명**: `int __stdcall CV_PlayCustomTone(int frequency, int durationMs);`
+- **Pascal 서명**: `function CV_PlayCustomTone(frequency, durationMs: Integer): Integer;`
+- **동작 원리**: Win32 `kernel32!Beep(frequency, durationMs)`를 호출하여 하드웨어 스피커를 통해 지정된 주파수(Hz)와 지속 시간(ms)으로 비프음을 재생합니다. 브라우저 비활성 탭 오디오 중단(Throttling) 현상에 일체 영향을 받지 않습니다.
+- **반환값**: 성공 시 `1`, 실패 시 `0`.
+
+#### [12] `CV_GetDiskFreeSpaceMB` *(New)*
+- **C 서명**: `int __stdcall CV_GetDiskFreeSpaceMB(const char* pDrivePathAnsi, int* pFreeMB);`
+- **Pascal 서명**: `function CV_GetDiskFreeSpaceMB(pDrivePathAnsi: PAnsiChar; var freeMB: Integer): Integer;`
+- **동작 원리**: Win32 `kernel32!GetDiskFreeSpaceExA`를 호출하여 지정된 경로(기본값 `C:\`)의 사용 가능한 디스크 용량을 메가바이트(MB) 단위로 계산하여 반환합니다. 대용량 동영상 녹화 및 4K 캡처 전 0KB 파일 생성 사고를 사전 차단합니다.
+- **반환값**: 성공 시 `1`, 실패 시 `0`.
+
+#### [13] `CV_GetDisplayDpi` *(New)*
+- **C 서명**: `int __stdcall CV_GetDisplayDpi(int* pDpiX, int* pDpiY);`
+- **Pascal 서명**: `function CV_GetDisplayDpi(var dpiX, dpiY: Integer): Integer;`
+- **동작 원리**: Win32 `user32!GetDC`와 `gdi32!GetDeviceCaps(hdc, LOGPIXELSX/Y)`를 호출하여 주 디스플레이의 실제 DPI 스케일링 비율(96=100%, 120=125%, 144=150%, 192=200%)을 반환합니다. 전자칠판 및 4K 프로젝터 환경에서 캔버스 좌표계 왜곡을 방지합니다.
+- **반환값**: 성공 시 `1`, 실패 시 `0`.
+
+#### [14] `CV_SetWindowTopmost` *(New)*
+- **C 서명**: `int __stdcall CV_SetWindowTopmost(HWND hWnd, int topmost);`
+- **Pascal 서명**: `function CV_SetWindowTopmost(hWnd: HWND; topmost: Integer): Integer;`
+- **동작 원리**: Win32 `user32!SetWindowPos`를 호출하여 지정된 윈도우 핸들의 Z-Order를 `HWND_TOPMOST`(항상 위) 또는 `HWND_NOTOPMOST`(일반)로 전환합니다. 교사가 PDF 교과서나 PPT 화면 위에 실물화상기 영상을 띄워두고 수업할 수 있도록 지원합니다.
+- **반환값**: 성공 시 `1`, 실패 시 `0`.
+
+#### [15] `CV_GetPerformanceTimeMs` *(New)*
+- **C 서명**: `int __stdcall CV_GetPerformanceTimeMs(void);`
+- **Pascal 서명**: `function CV_GetPerformanceTimeMs(): Integer;`
+- **동작 원리**: Win32 `kernel32!QueryPerformanceCounter` 및 `QueryPerformanceFrequency`를 호출하여 프로세스 시작 시점 대비 경과 밀리초를 마이크로초 정밀도로 산출하여 반환합니다.
+- **반환값**: 경과 밀리초 (단조 증가 정수).
 
 ---
 
-### 4.5 `CV_GetMachineFingerprintA` (Ordinal 5)
-학교 및 교실 PC의 컴퓨터 이름, 사용자명, CPU 코어 수, OS 버전을 종합한 SHA-256 고유 16진수 해시(16자리)를 출력 버퍼에 기록합니다.
-- **C/C++ 시그니처**:
-  ```c
-  int __stdcall CV_GetMachineFingerprintA(char* pOutBuffer, int bufferSize);
-  ```
-- **Inno Setup Pascal 시그니처**:
-  ```pascal
-  function CV_GetMachineFingerprintA(pOutBuffer: PAnsiChar; bufferSize: Integer): Integer;
-  external 'CV_GetMachineFingerprintA@{tmp}\ClassroomVisualizerCore.dll stdcall delayload';
-  ```
-- **반환값**: 버퍼에 기록된 바이트 수 (성공 시 16)
-- **출력 예시**: `"81DFD1DE2A99CF03\0"`
+## 4. 빌드 파이프라인 및 도구 체인 (Build Pipeline)
 
----
+본 아키텍처는 `build.bat` 및 `tools/build_dll.bat`를 통해 단 한 번의 명령으로 완전 자동화 빌드됩니다.
 
-### 4.6 `CV_GenerateTrialKeyA` (Ordinal 6)
-오프라인 환경의 교실 단말기에서 즉시 사용 가능한 유효한 30일 체험키(`TR30-XXXX-XXXX-XXXX`)를 동적으로 생성하여 버퍼에 반환합니다.
-- **C/C++ 시그니처**:
-  ```c
-  int __stdcall CV_GenerateTrialKeyA(char* pOutBuffer, int bufferSize);
-  ```
-- **반환값**: 버퍼에 기록된 바이트 수 (성공 시 19)
-- **출력 예시**: `"TR30-79F2-TQRU-VXFW\0"`
+```batch
+REM 1단계: 순수 C# 관리형 어셈블리 컴파일
+csc /target:library /platform:anycpu /out:bin\ClassroomVisualizerManaged.dll /optimize+ ^
+    src\dll\LicenseCore.cs src\dll\NativeSystemCore.cs
 
----
+REM 2단계: VTable Fixup 기반 순수 IL 어셈블리 컴파일 (PE Export Directory 생성)
+ilasm /dll /quiet /out=bin\ClassroomVisualizerCore.dll src\dll\ClassroomVisualizerCore.il
 
-### 4.7 `CV_PreventSleep` (Ordinal 7)
-교실 수업 발표 중 프로젝터 및 디스플레이가 절전 모드로 꺼지는 현상을 방지하거나 정상 복원합니다.
-- **C/C++ 시그니처**:
-  ```c
-  int __stdcall CV_PreventSleep(int enable);
-  ```
-- **Inno Setup Pascal 시그니처**:
-  ```pascal
-  function CV_PreventSleep(enable: Integer): Integer;
-  external 'CV_PreventSleep@{tmp}\ClassroomVisualizerCore.dll stdcall delayload';
-  ```
-- **파라미터**:
-  - `enable = 1`: 디스플레이 및 시스템 절전 방지 활성화 (`ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED`)
-  - `enable = 0`: 윈도우 기본 전원 정책으로 정상 복원 (`ES_CONTINUOUS`)
-- **반환값**: `1` (성공), `0` (실패)
-
----
-
-### 4.8 `CV_GetMonitorCount` (Ordinal 8)
-현재 시스템에 연결된 활성 디스플레이 모니터 및 빔프로젝터의 개수를 반환합니다.
-- **C/C++ 시그니처**:
-  ```c
-  int __stdcall CV_GetMonitorCount(void);
-  ```
-- **Inno Setup Pascal 시그니처**:
-  ```pascal
-  function CV_GetMonitorCount(): Integer;
-  external 'CV_GetMonitorCount@{tmp}\ClassroomVisualizerCore.dll stdcall delayload';
-  ```
-- **반환값**: 연결된 모니터 개수 (최소 1)
-
----
-
-### 4.9 `CV_GetVirtualScreenBounds` (Ordinal 9)
-모든 다중 모니터를 포괄하는 가상 데스크톱(Virtual Screen) 전체 사각 좌표를 획득합니다.
-- **C/C++ 시그니처**:
-  ```c
-  int __stdcall CV_GetVirtualScreenBounds(int* pLeft, int* pTop, int* pWidth, int* pHeight);
-  ```
-- **파라미터**: 각 포인터로 `Left, Top, Width, Height` 픽셀 좌표 반환
-- **반환값**: `1` (성공), `0` (실패)
-
----
-
-### 4.10 `CV_PlayAttentionAlert` (Ordinal 10)
-웹 오디오 컨텍스트 지연 없이 윈도우 사운드 서브시스템을 통해 교실 주목 알림 차임벨(Beep)을 즉각 재생합니다.
-- **C/C++ 시그니처**:
-  ```c
-  int __stdcall CV_PlayAttentionAlert(int alertType);
-  ```
-- **파라미터**: `0` = 일반 비프, `1` = 안내/아스테리스크, `2` = 주의/경고, `3` = 질의, `4` = 정지
-- **반환값**: `1` (성공), `0` (실패)
-
----
-
-## 5. 빌드 및 테스트 자동화 파이프라인
-
-### 5.1 빌드 스크립트 (`tools\build_dll.bat`)
-외부 Visual Studio 도구 없이 Windows 기본 .NET 4.0 프레임워크 경로를 활용합니다:
-```cmd
-REM 1. Managed 코어 컴파일 (명시적 x86 32비트 타깃)
-csc.exe /target:library /platform:x86 /out:src\dll\ClassroomVisualizerManaged.dll src\dll\LicenseCore.cs src\dll\NativeSystemCore.cs
-
-REM 2. IL Thunk를 통한 Native Export PE 바이너리 어셈블
-ilasm.exe /dll /out:src\dll\ClassroomVisualizerCore.dll src\dll\ClassroomVisualizerCore.il
-
-REM 3. 배포 디렉터리(bin\) 복사
-copy /y src\dll\*.dll bin\
-
-REM 4. 네이티브 검증 테스트러너 빌드 및 전수 테스트 실행
-csc.exe /target:exe /platform:x86 /out:bin\TestRunner.exe src\dll\TestRunner.cs
+REM 3단계: 단위 검증 러너 컴파일 및 15개 전수 테스트 실행
+csc /target:exe /platform:x64 /out:bin\TestRunner.exe /reference:bin\ClassroomVisualizerManaged.dll src\dll\TestRunner.cs
 bin\TestRunner.exe
 ```
 
-### 5.2 단위 테스트 검증 결과 (`src\dll\TestRunner.cs`)
-10대 네이티브 stdcall 익스포트 함수에 대해 전수 자동 검증을 수행하였으며, 10개 전 테스트 통과를 달성했습니다:
+---
+
+## 5. 단위 테스트 및 품질 보증 (QA Matrix)
+
+`bin/TestRunner.exe` 실행 시 15개 전체 네이티브 함수에 대한 실시간 단위 검증이 수행되며, 단 하나의 오류도 없이 15/15 전원 합격을 달성하였습니다.
 
 ```
 ============================================================
-[TEST SUITE] ClassroomVisualizer Pure Native DLL Verification
+[TEST SUITE] ClassroomVisualizer Pure Native DLL Verification (15 Tests)
 ============================================================
 [TEST 1] CV_GetVersion: 0x01040400
          PASS: Version matches v1.4.4.0 (0x01040400)
-[TEST 2] CV_ValidateKeyA: valid=1, invalid=0
-         PASS: Checksum validation correct
+[TEST 2] CV_ValidateKeyA: valid=1, invalid=0, null=0
+         PASS: Checksum validation and NULL safety correct
 [TEST 3] CV_IsTrialKeyA: trial=1, nonTrial=0
          PASS: Trial prefix detection correct
 [TEST 4] CV_VerifyTrialStatus: active=1 (rem=21d), expired=0 (rem=0d)
          PASS: Trial expiration & remaining days calculation accurate
 [TEST 5] CV_GetMachineFingerprintA: '81DFD1DE2A99CF03' (len=16)
          PASS: Machine fingerprint hash generated (16 hex chars)
-[TEST 6] CV_GenerateTrialKeyA: 'TR30-79F2-TQRU-VXFW' (valid=1, trial=1)
+[TEST 6] CV_GenerateTrialKeyA: 'TR30-MRMG-4L6K-ANAQ' (valid=1, trial=1)
          PASS: Dynamically generated trial key conforms to checksum and prefix
 [TEST 7] CV_PreventSleep: enable=1, restore=1
          PASS: Win32 SetThreadExecutionState presentation sleep control operational
@@ -285,14 +261,26 @@ bin\TestRunner.exe
          PASS: Virtual desktop geometry successfully retrieved
 [TEST 10] CV_PlayAttentionAlert: alertType 0 returned 1
          PASS: Classroom audio alert call succeeded without exception
+[TEST 11] CV_PlayCustomTone: 1200Hz 30ms returned 1
+         PASS: Native hardware tone generator succeeded
+[TEST 12] CV_GetDiskFreeSpaceMB: ok=1, free=14145 MB (13.8 GB)
+         PASS: Disk free space query operational
+[TEST 13] CV_GetDisplayDpi: ok=1, dpi=(96, 96), scale=100%
+         PASS: Display DPI scaling operational
+[TEST 14] CV_SetWindowTopmost: null hWnd returned 0
+         PASS: Window topmost call handled safely without exception
+[TEST 15] CV_GetPerformanceTimeMs: t1=0ms, t2=27ms, delta=27ms
+         PASS: High-resolution monotonic performance counter operational
 ============================================================
-[RESULT] 10 of 10 tests passed.
+[RESULT] 15 of 15 tests passed. (100% PASS)
 ============================================================
 ```
 
 ---
 
-## 6. 결론
+## 6. 결론 및 실무 가치
 
-본 순수 창작 DLL 시스템은 어떠한 외부 서드파티 라이브러리나 런타임 설치 없이도 교실용 실물화상기 환경에 필수적인 **절전 방지, 다중 모니터 분석, 무지연 오디오 차임벨, 오프라인 체크섬 검증 및 하드웨어 핑거프린팅**을 완벽하게 네이티브 수준으로 제공합니다.
-Inno Setup 인스톨러 및 다양한 윈도우 호스트 프로세스에서 높은 안정성과 무결성을 발휘합니다.
+아비캠뷰어의 순수 창작 네이티브 DLL 아키텍처는:
+1. **완전한 독립성**: 상용 난독화툴이나 C++ 컴파일러 없이도 Windows 표준 개발 도구만으로 정통 Win32 C/Pascal 호출 규격을 구현할 수 있음을 완벽히 입증하였습니다.
+2. **소프트웨어 신뢰성**: 모든 포인터 역참조와 API 호출에 예외 방어 쉴드가 적용되어 학교 현장의 다양한 윈도우 버전 및 셋업 환경에서 단 한 번의 비정상 종료도 허용하지 않습니다.
+3. **교실 수업 생산성 향상**: 하드웨어 비프음, 디스크 잔여 용량 사전 진단, 화면 절전 방지, 고화질 DPI 스케일링, Always-on-Top 등 수업 현장에 직결된 필수 기능들을 단 하나의 통합 바이너리로 무결하게 제공합니다.

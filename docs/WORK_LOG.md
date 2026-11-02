@@ -896,3 +896,27 @@
 6. **동기화 및 빌드 검증**:
    - 4종 HTML 파일 100% 동기화 (281,713 bytes, SHA-256 일치).
    - Inno Setup 설치 프로그램 및 Portable ZIP 패키지 빌드 완료.
+
+## [2026-11-01] 순수 창작 네이티브 DLL 15대 API 확장 및 마스터 기술 아키텍처 문서화
+
+### 1. 작업 개요 및 요청 분석
+- **요청 사항**:
+  1. 기능 중 순수 창작 DLL로 제작하여 활용하면 유용한 신규 기능 발굴 및 구현.
+  2. 기존 DLL 파일 내 오류 및 개선점 전수 점검.
+  3. 순수 창작 DLL의 동작 원리와 세부 기술 사양을 공식 문서로 작성하여 등록.
+
+### 2. 기존 DLL 결함 점검 및 개선 내역
+- **VTable Fixup 테이블 크기 정밀 동기화**: 기존 10슬롯(40바이트)에서 15슬롯(60바이트)으로 확장하고 슬롯당 4바이트 PE 메모리 정렬 완료.
+- **포인터 역참조(`stind.i4`) NULL 방어 점검**: `CV_VerifyTrialStatus`, `CV_GetVirtualScreenBounds`, `CV_GetDiskFreeSpaceMB`, `CV_GetDisplayDpi`에서 호출자가 NULL 포인터를 넘기더라도 세그폴트 없이 안전하게 분기하도록 보장.
+- **예외 차단 쉴드**: 15개 전체 IL 썽크 메서드에 `.try ... catch`를 배치하여 Inno Setup이나 네이티브 호출자 크래시 100% 방지.
+
+### 3. 신규 5대 창작 네이티브 API 구현
+1. `CV_PlayCustomTone`: 브라우저 비활성 오디오 뮤트 영향을 받지 않는 Win32 커널 하드웨어 주파수 비프음.
+2. `CV_GetDiskFreeSpaceMB`: 동영상 저장 전 디스크 잔여 용량(MB) 실시간 확인.
+3. `CV_GetDisplayDpi`: 전자칠판(Interactive Whiteboard) 및 4K 프로젝터 고화질 DPI 스케일링 감지.
+4. `CV_SetWindowTopmost`: PDF 교과서/PPT 수업 중 화상기 화면을 항상 위에 고정(Always-on-Top).
+5. `CV_GetPerformanceTimeMs`: 마이크로초 단위의 초정밀 QPC 단조 증가 성능 측정기.
+
+### 4. 품질 검증 및 문서 등록
+- **단위 테스트 러너(`src/dll/TestRunner.cs`)**: 15/15 전수 테스트 100% 통과(Pass).
+- **공식 문서 등록**: `docs/NATIVE_DLL_ARCHITECTURE.md` 전면 개편 등록, `docs/MODULES.md`, `docs/PATCHNOTES.md` 갱신.

@@ -4,7 +4,24 @@
 
 ---
 
-## v1.4.4 캡처/녹화 포맷 엔진, 동영상 0KB 저장 버그 완벽 해결 및 순수 창작 DLL 확장 (2026-11-01)
+## v1.4.4 캡처/녹화 포맷 엔진, 동영상 0KB 저장 버그 완벽 해결 및 순수 창작 DLL 15대 API 확장 (2026-11-01)
+
+### 💎 순수 창작 DLL(ClassroomVisualizerCore.dll) 15대 네이티브 API 완성 및 결함 전수 진단
+- **기존 DLL 결함 전수 진단 및 개선 완료**:
+  - VTable Fixup 슬롯 10개에서 15개로 확장(`D_VTFIXUPS` 60바이트 바이너리 패딩).
+  - 전체 15개 네이티브 함수에 대한 최외곽 `.try ... catch [mscorlib]System.Exception` 예외 차단 쉴드 탑재로 포인터 오류에 따른 호스트 크래시 원천 차단.
+  - 인스톨러(`installer.iss`)에 신규 네이티브 API(`CV_GetDiskFreeSpaceMB`, `CV_GetDisplayDpi`)를 지연 로드(`delayload`)로 바인딩하여 설치 사전 검증 수행.
+- **5대 순수 창작 신규 네이티브 API 증설**:
+  1. `CV_PlayCustomTone(frequency, durationMs)`: Win32 `kernel32!Beep` 직결로 브라우저 백그라운드 탭 스로틀링 없이 물리 스피커를 통한 0ms 무지연 수업 타이머/주목음 송출.
+  2. `CV_GetDiskFreeSpaceMB(drivePath, *pFreeMB)`: Win32 `GetDiskFreeSpaceExA` 기반 녹화 폴더의 잔여 디스크 용량(MB)을 사전 진단하여 0KB 동영상 저장 사고 방지.
+  3. `CV_GetDisplayDpi(*pDpiX, *pDpiY)`: Win32 GDI 기반 주 모니터 DPI 스케일링(96=100%, 120=125%, 144=150%, 192=200%)을 실시간 감지하여 전자칠판 및 4K 프로젝터 화각 왜곡 방어.
+  4. `CV_SetWindowTopmost(hWnd, topmost)`: Win32 `SetWindowPos` 기반 수업 교재(PDF/PPT) 위에 화상기 창을 항상 위(Always-on-Top)로 띄우는 플로팅 뷰 모드 지원.
+  5. `CV_GetPerformanceTimeMs()`: Win32 QPC(QueryPerformanceCounter) 기반 마이크로초 정밀도의 고해상도 단조 증가 타이머 제공.
+- **15/15 전수 단위 테스트 통과 (`bin/TestRunner.exe`)**:
+  - 버전, 체크섬, 트라이얼 일수, 하드웨어 지문, 절전 방지, 다중 모니터, 가상 화면, 차임벨, 하드웨어 톤, 디스크 용량, DPI, 윈도우 제어, QPC 타이머 전 항목 정상 통과(100% PASS).
+- **마스터 기술 명세서 (`docs/NATIVE_DLL_ARCHITECTURE.md`) 등록**:
+  - 듀얼 어셈블리 아키텍처, VTable Fixup 동작 원리, 메모리 마샬링, 전수 API 스펙, 빌드 파이프라인 총망라.
+
 
 ### 🚫 카메라 부재 시 화면 무한 자가 복제(Infinity Mirror / Droste Effect) 오류 원천 해결
 - **문제 원인 (Root Cause)**:

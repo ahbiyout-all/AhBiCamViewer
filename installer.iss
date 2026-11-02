@@ -91,7 +91,7 @@ Filename: "netsh.exe"; Parameters: "advfirewall firewall delete rule name=""{#My
 Filename: "netsh.exe"; Parameters: "advfirewall firewall delete rule name=""{#MyAppName} v{#MyAppVersion}"""; Flags: runhidden; RunOnceId: "DelFwVer"
 
 [Code]
-// Pure native DLL import from ClassroomVisualizerCore.dll
+// Pure native DLL import from ClassroomVisualizerCore.dll (v1.4.4 - 15 Native APIs)
 function CV_GetVersion(): Integer;
   external 'CV_GetVersion@{tmp}\ClassroomVisualizerCore.dll stdcall delayload';
 
@@ -101,6 +101,12 @@ function CV_GetMonitorCount(): Integer;
 function CV_PreventSleep(enable: Integer): Integer;
   external 'CV_PreventSleep@{tmp}\ClassroomVisualizerCore.dll stdcall delayload';
 
+function CV_GetDiskFreeSpaceMB(drivePath: PAnsiChar; var freeMB: Integer): Integer;
+  external 'CV_GetDiskFreeSpaceMB@{tmp}\ClassroomVisualizerCore.dll stdcall delayload';
+
+function CV_GetDisplayDpi(var dpiX, dpiY: Integer): Integer;
+  external 'CV_GetDisplayDpi@{tmp}\ClassroomVisualizerCore.dll stdcall delayload';
+
 // Detect existing installation, verify DLL integrity and prompt user (supports silent install)
 function InitializeSetup(): Boolean;
 var
@@ -108,6 +114,8 @@ var
   PromptMsg: String;
   DllVer: Integer;
   MonCount: Integer;
+  FreeMB: Integer;
+  DpiX, DpiY: Integer;
 begin
   Result := True;
 
@@ -117,7 +125,11 @@ begin
     ExtractTemporaryFile('ClassroomVisualizerCore.dll');
     DllVer := CV_GetVersion();
     MonCount := CV_GetMonitorCount();
-    Log(Format('Native Core DLL verified successfully. Engine Version: 0x%8.8x, Active Displays: %d', [DllVer, MonCount]));
+    FreeMB := 0;
+    CV_GetDiskFreeSpaceMB('C:\', FreeMB);
+    DpiX := 96; DpiY := 96;
+    CV_GetDisplayDpi(DpiX, DpiY);
+    Log(Format('Native Core DLL verified successfully. Engine: 0x%8.8x, Displays: %d, Free Disk: %d MB, Primary DPI: %dx%d', [DllVer, MonCount, FreeMB, DpiX, DpiY]));
   except
     Log('Warning: Native Core DLL pre-check bypassed or runtime initialization skipped.');
   end;
