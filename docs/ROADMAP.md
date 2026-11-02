@@ -201,3 +201,57 @@
 - **Validation Procedure**: YAML 린트 및 릴리즈 단계 파싱 검증.
 - **Status**: `VERIFIED`
 - **Remaining Blockers**: 없음
+
+---
+
+### TASK-015: 캡처/녹화 포맷 엔진 리팩토링 및 동영상 0KB 비정상 저장 결함 해결
+- **Identifier**: TASK-015
+- **Description**: 수업 녹화 완료 시 미디어 스트림 청크 수집 및 파일 저장 파이프라인에서 컨테이너 헤더 완결을 보장하여 0KB 비정상 파일 생성을 차단.
+- **Priority**: P0
+- **Dependencies**: TASK-014
+- **Status**: VERIFIED
+
+---
+
+### TASK-016: 가상 카메라 자동 연결 배제 및 화면 무한 복제(Droste Effect) 방어
+- **Identifier**: TASK-016
+- **Description**: DirectShow 가상 캡처 필터(screen-recorder-device, OBS Virtual Camera 등)를 자동 식별하여 자동 시작에서 영구 배제함으로써 카메라 미연결 시 화면 무한 자가 복제 루프 원천 차단.
+- **Priority**: P0
+- **Dependencies**: TASK-001
+- **Status**: VERIFIED
+
+---
+
+### TASK-017: 순수 창작 Win32 Native DLL 15대 API 확장, VTable Fixup 및 예외 쉴드
+- **Identifier**: TASK-017
+- **Description**: 하드웨어 비프 톤, 디스크 용량 진단, 디스플레이 DPI 감지, 항상 위 창 고정, QPC 마이크로초 타이머 등 5대 신규 API를 증설하고 15개 전체 unmanaged export thunk에 IL 예외 쉴드 탑재 (테스트 15/15 PASS).
+- **Priority**: P1
+- **Dependencies**: None
+- **Status**: VERIFIED
+
+---
+
+### TASK-018: Inno Setup 6 멀티파일 인스톨러 방화벽 규칙 사전 자동 등록 및 무인 설치
+- **Identifier**: TASK-018
+- **Description**: 언팩형 다중 파일 배포, 구버전 감지 시 덮어쓰기 안내, 무인 설치 스위치 지원, 설치 시 윈도우 방화벽 규칙 사전 조용 등록 및 삭제 시 완전 제거.
+- **Priority**: P1
+- **Dependencies**: TASK-005
+- **Status**: VERIFIED
+
+---
+
+### TASK-019: GitHub Releases 기반 실시간 자동 업데이트 알림 팝업 시스템
+- **Identifier**: TASK-019
+- **Description**: 앱 시작 시 GitHub Releases 최신 태그를 비동기 조회하여 신규 릴리스 발견 시 버전 정보와 원클릭 다운로드 경로를 제공하는 사용자 대화상자 자동 실행.
+- **Priority**: P2
+- **Dependencies**: None
+- **Status**: VERIFIED
+
+---
+
+### TASK-020: 구글 블로거 공식 포스팅 원고(서식 텍스트 / HTML 편집 모드) 체계화
+- **Identifier**: TASK-020
+- **Description**: 구글 블로그(ahbiyoutvibe.blogspot.com) 규격에 맞추어 [작성 모드(서식 있는 텍스트)] 및 [HTML 편집 모드] 원고를 작성하고, 제목-본문-업데이트-앱그림-다운로드-버전-요구사항-채널안내-전체업데이트-추천태그(20개 이하, 200자 이내) 순서 준수.
+- **Priority**: P2
+- **Dependencies**: None
+- **Status**: VERIFIED

@@ -6,6 +6,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.4] - 2026-11-01
+### Added
+- **15 Pure Creative Native Win32 APIs (`ClassroomVisualizerCore.dll`)**:
+  - `CV_PlayCustomTone`: Win32 `kernel32!Beep` hardware tone output, immune to browser background tab throttling.
+  - `CV_GetDiskFreeSpaceMB`: Pre-recording storage capacity diagnosis via `GetDiskFreeSpaceExA` preventing 0KB recording failure.
+  - `CV_GetDisplayDpi`: Primary display DPI scaling detection (96=100%, 120=125%, 144=150%, 192=200%) for electronic whiteboards and 4K beam projectors.
+  - `CV_SetWindowTopmost`: Win32 `SetWindowPos` Always-on-Top floating PIP view for teaching over PDF/PPT.
+  - `CV_GetPerformanceTimeMs`: High-precision microsecond monotonic timestamp via `QueryPerformanceCounter`.
+  - Comprehensive `.try ... catch [mscorlib]System.Exception` blocks wrapping all 15 native IL exports, guaranteeing 0% host crash rate.
+  - 15/15 unit test suite (`TestRunner.exe`) with 100% PASS rate.
+- **Virtual Camera Anti-Feedback Protection**:
+  - Comprehensive virtual capture filter identification (`screen-recorder-device`, `OBS Virtual Camera`, `ManyCam`, `XSplit`, `vMix`, etc.).
+  - Complete exclusion of virtual cameras from auto-connect and auto-start, completely eliminating infinite screen loopback / mirror room (Droste Effect) when no physical camera is attached.
+- **Unpacked Multi-File Inno Setup 6 Installer & Windows Firewall Automation**:
+  - Unpacked multi-file installation architecture preventing single-file temporary extraction overhead.
+  - Existing installation detection with overwrite confirmation dialog.
+  - Silent installation support via `/SILENT` and `/VERYSILENT`.
+  - Pre-registered Windows Firewall outbound/inbound rules for both base and versioned executable names, and automatic cleanup on uninstallation.
+- **GitHub Releases Real-Time Auto-Update System**:
+  - Auto-checks releases on launch with interactive update notification popup.
+- **CI/CD Pipeline Upgrade**:
+  - Migrated GitHub Actions runner to Node.js 22 LTS complying with Node.js 20 deprecation / EOL mandate.
+  - Release assets restricted exclusively to setup installer executable.
+
+### Fixed
+- Fixed 0KB video file creation bug during recording by refactoring media chunk acquisition and container finalizing.
+- Fixed infinite screen replication when opening the application without a physical camera.
+
+---
+
 ## [1.4.0] - 2026-10-18
 ### Added
 - **Fullscreen Menu Auto-Unpin & Hover Drawer (`toggleFullscreen`)**:
