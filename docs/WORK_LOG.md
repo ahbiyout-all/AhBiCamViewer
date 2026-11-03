@@ -947,3 +947,12 @@
 - docs/ARCHITECTURE.md: 15대 Win32 API 및 가상 카메라 루프백 차단 메커니즘, 머메이드 다이어그램 갱신.
 - docs/SECURITY.md: 방화벽 사전 등록의 투명성, 15개 Native API 예외 쉴드, 가상 카메라 루프 공격 표면 차단 검증.
 - docs/ROADMAP.md: TASK-015부터 TASK-020까지의 신규 태스크 명세 등록 및 VERIFIED 상태 전이.
+
+
+## [2026-11-03] GitHub 공식 운영/배포 가이드(GITHUB.md) 신규 제정 및 CI/CD 워크플로 정비
+
+### 1. 작업 개요
+- **GitHub 운영 가이드 문서화**: docs/GITHUB.md를 생성하여 제작자 정보(AhBiYout, AhBiYout-all, CISNet, 블로그), 엄격한 .gitignore 규칙, 실시간 업데이트 팝업 시스템 아키텍처, Node 22 LTS CI/CD 워크플로, 인스톨러 방화벽 등록 사양 및 릴리즈 절차를 종합 문서화.
+- **CI/CD 워크플로(.github/workflows/build-and-release.yml) 정밀화**: 네이티브 컴파일 단계의 소스 파일 지정(LicenseCore.cs, NativeSystemCore.cs) 및 x86 플랫폼 타겟팅을 로컬 빌드 스크립트(uild_dll.bat)와 100% 일치시켜 클라우드 빌드 무결성 확보.
+- **자동 패치노트 기록 및 버전관리 원칙 강화**: docs/PATCHNOTES.md 상단에 코드 수정 특이점 발생 시 자동 기록 및 버전 상향 원칙을 명시하여 향후 개발 과정의 일관성 보장.
+- **전체 기술 문서 교차 링크 갱신**: README.md, docs/README.md, installer.iss에 docs/GITHUB.md 반영.

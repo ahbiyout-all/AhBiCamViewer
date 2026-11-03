@@ -57,7 +57,7 @@ jobs:
           New-Item -ItemType Directory -Path "bin" -Force | Out-Null
           
           Write-Host "[1/3] Compiling Managed Core: bin/ClassroomVisualizerManaged.dll..."
-          csc /target:library /platform:anycpu /out:bin\ClassroomVisualizerManaged.dll /optimize+ src\dll\ClassroomVisualizerManaged.cs src\dll\NativeSystemCore.cs
+          csc /target:library /platform:x86 /out:bin\ClassroomVisualizerManaged.dll /optimize+ src\dll\LicenseCore.cs src\dll\NativeSystemCore.cs
           if ($LASTEXITCODE -ne 0) { throw "Managed DLL compilation failed" }
 
           Write-Host "[2/3] Assembling Native Export DLL: bin/ClassroomVisualizerCore.dll..."
@@ -65,7 +65,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "ILASM assembly failed" }
 
           Write-Host "[3/3] Compiling & Running TestRunner.exe..."
-          csc /target:exe /platform:x64 /out:bin\TestRunner.exe /reference:bin\ClassroomVisualizerManaged.dll src\dll\TestRunner.cs
+          csc /target:exe /platform:x86 /out:bin\TestRunner.exe src\dll\TestRunner.cs
           if ($LASTEXITCODE -ne 0) { throw "TestRunner compilation failed" }
 
           & "bin\TestRunner.exe"

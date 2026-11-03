@@ -75,6 +75,7 @@
 │   ├── NativeSystemCore.cs      # Win32 네이티브 시스템 코어 (톤, 디스크, DPI, Topmost, QPC)
 │   └── TestRunner.cs            # 네이티브 DLL 15대 API 전수 검증 테스트 수트
 ├── docs/                        # 종합 기술 문서 및 릴리즈 자료
+│   ├── GITHUB.md                # GitHub 저장소 규정, 보안 정책 및 CI/CD 릴리즈 가이드
 │   ├── NATIVE_DLL_ARCHITECTURE.md # 순수 창작 DLL 아키텍처 및 15대 API 명세서
 │   ├── ARCHITECTURE.md          # 시스템 아키텍처 및 데이터 흐름도
 │   ├── ROADMAP.md               # 우선순위 기반 작업 로드맵

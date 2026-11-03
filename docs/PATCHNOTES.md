@@ -2,6 +2,14 @@
 
 본 프로젝트는 **Semantic Versioning 2.0.0 (MAJOR.MINOR.PATCH)** 규칙을 엄격히 준수하여 버전을 관리합니다.
 
+> [!IMPORTANT]
+> **코드 수정 특이점 발생 시 자동 기록 및 버전 관리 원칙 (Automated Versioning & Patchnotes Policy)**
+> 본 프로젝트는 코드 수정 과정에서 다음과 같은 '특이점'이 발생할 때마다 즉시 본 패치노트와 기술 문서에 변경 사항을 상세히 기록하고 버전을 상향 관리합니다:
+> 1. **신규 핵심 기능 추가 및 API 증설**: 순수 창작 DLL 신규 Win32 API 증설, 맞춤 펜 촉 디자인, 신규 수업 지원 도구 탑재 등.
+> 2. **치명적 결함 및 버그 해결**: 동영상 0KB 비정상 저장 결함, 가상 카메라 무한 복제(Droste Effect) 루프 방어 등.
+> 3. **아키텍처 및 보안/배포 정책 변경**: Inno Setup 멀티파일 인스톨러 방화벽 사전 등록, GitHub Actions Node.js 22 LTS 전환, 권한 팝업 차단 격리 프로필 적용 등.
+> 4. **버전 동기화 (Single Source of Truth)**: `version.json`을 기준으로 4대 HTML 배포 파일, `installer.iss`, 네이티브 DLL, 전체 기술 문서를 즉시 100% 동기화합니다.
+
 ---
 
 ## v1.4.4 캡처/녹화 포맷 엔진, 동영상 0KB 저장 버그 완벽 해결 및 순수 창작 DLL 15대 API 확장 (2026-11-01)
