@@ -1,13 +1,13 @@
 # 📷 아비캠뷰어 (AhBiCamViewer)
 
-[![Release](https://img.shields.io/badge/release-v1.4.4-blue.svg)](https://github.com/AhBiYout-all/ClassroomVisualizer/releases)
+[![Release](https://img.shields.io/badge/release-v1.4.5-blue.svg)](https://github.com/AhBiYout-all/ClassroomVisualizer/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](docs/LICENSE.en.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Web%20%7C%20Desktop-orange.svg)](docs/ARCHITECTURE.md)
 [![Build](https://img.shields.io/badge/build-Inno%20Setup%206%20%7C%20Node%2022%20LTS-brightgreen.svg)](docs/BUILD.md)
 [![Native Core](https://img.shields.io/badge/native%20APIs-15%20Exports%20(100%25%20Pass)-purple.svg)](docs/NATIVE_DLL_ARCHITECTURE.md)
 
 > **공용 및 교실 환경을 위한 강력한 무설치 웹 & 데스크톱 실물화상기 소프트웨어**  
-> 현재 버전: **v1.4.4** | 개발자: **AhBiYout** | 깃허브: **AhBiYout-all** | 소속: **CISNet**
+> 현재 버전: **v1.4.5** | 개발자: **AhBiYout** | 깃허브: **AhBiYout-all** | 소속: **CISNet**
 
 ---
 
@@ -18,10 +18,10 @@
    - **4K UHD**(`3840×2160`), **8MP 문서 전용 4:3**(`3264×2448`), **QHD 2K**(`2560×1440`), **FHD**(`1920×1080`) 지원
    - 실시간 해상도 티어 컬러 뱃지 (초고화질 🟢, 고화질 🔵, FHD 🔹, HD 🟡)
    - 고해상도 무손실급 캡처(0.96) 및 A4 PDF 내보내기 최적화 스케일링
-2. **🛡️ 가상 카메라 화면 무한 복제(Droste Effect) 원천 차단 (New in v1.4.4)**
+2. **🛡️ 가상 카메라 화면 무한 복제(Droste Effect) 원천 차단 (New in v1.4.5)**
    - DirectShow 가상 캡처 필터(`screen-recorder-device`, `OBS Virtual Camera` 등) 지능형 식별 및 자동 연결 배제
    - 물리 카메라가 없을 때도 화면이 무한히 빨려 들어가는 거울 방 현상 없이 깔끔한 대기 플레이스홀더 화면 유지
-3. **⚡ 15대 Win32 순수 창작 Native DLL 탑재 (`ClassroomVisualizerCore.dll`) (New in v1.4.4)**
+3. **⚡ 15대 Win32 순수 창작 Native DLL 탑재 (`ClassroomVisualizerCore.dll`) (New in v1.4.5)**
    - **하드웨어 톤 송출 (`CV_PlayCustomTone`)**: `kernel32!Beep` 직접 구동으로 브라우저 탭 스로틀링 없이 즉각적인 수업 타이머/주목음 송출
    - **잔여 디스크 용량 진단 (`CV_GetDiskFreeSpaceMB`)**: 녹화 저장소 용량 사전 검증으로 0KB 동영상 저장 사고 방지
    - **주 모니터 DPI 자동 감지 (`CV_GetDisplayDpi`)**: 전자칠판 및 4K 프로젝터 연결 시 100%~200% 디스플레이 배율 실시간 대응
@@ -60,7 +60,7 @@
 ├── 교실용_실물화상기.html       # 독립 단일 파일 애플리케이션 (100% 동기화)
 ├── 아비캠뷰어_(AhBiCamViewer).html
 ├── (AhBiYout)_공용_실물화상기_보기.html
-├── version.json                 # 시맨틱 버전 및 공식 릴리즈 메타데이터 (v1.4.4)
+├── version.json                 # 시맨틱 버전 및 공식 릴리즈 메타데이터 (v1.4.5)
 ├── build.bat                    # 윈도우 원클릭 자동 빌드 파이프라인 (DLL+테스트+인스톨러)
 ├── installer.iss                # Inno Setup 6 멀티파일 인스톨러 스크립트
 ├── .github/workflows/           # CI/CD 자동화 파이프라인
@@ -85,7 +85,7 @@
 │   ├── INSTALL.md               # 설치 및 무인 설치 옵션 가이드
 │   ├── WORK_LOG.md              # 작업 수행 및 검증 기록
 │   ├── CHANGELOG.md             # 시맨틱 변경 내역
-│   ├── PATCHNOTES.md            # 배포 패치노트 (v1.0.0 ~ v1.4.4)
+│   ├── PATCHNOTES.md            # 배포 패치노트 (v1.0.0 ~ v1.4.5)
 │   ├── BLOG_POST.md             # 공식 구글 블로거 포스팅 원고 (서식 텍스트 / HTML 모드)
 │   ├── LICENSE.ko.md            # 한국어 라이선스
 │   └── LICENSE.en.md            # 영문 라이선스
@@ -110,7 +110,7 @@
 1. `ClassroomVisualizerManaged.dll` 컴파일 (C# 5.0)
 2. `ClassroomVisualizerCore.dll` 순수 네이티브 DLL 어셈블 (ilasm)
 3. `TestRunner.exe` 실행을 통한 15/15 네이티브 API 단위 테스트 전수 검증
-4. Inno Setup 6을 통한 멀티파일 인스톨러(`아비캠뷰어 (AhBiCamViewer)_Setup_v1.4.4.exe`) 및 포터블 패키지(`dist/`) 자동 생성
+4. Inno Setup 6을 통한 멀티파일 인스톨러(`아비캠뷰어 (AhBiCamViewer)_Setup_v1.4.5.exe`) 및 포터블 패키지(`dist/`) 자동 생성
 
 ---
 

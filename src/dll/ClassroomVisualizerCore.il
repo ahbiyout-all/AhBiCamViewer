@@ -24,14 +24,14 @@
        extends [mscorlib]System.Object
 {
   // -------------------------------------------------------------
-  // [1] CV_GetVersion: Returns engine version as 0x01040400 (v1.4.4)
+  // [1] CV_GetVersion: Returns engine version as 0x01040500 (v1.4.5)
   // -------------------------------------------------------------
   .method public static int32 CV_GetVersion() cil managed
   {
     .vtentry 1 : 1
     .export [1] as CV_GetVersion
     .maxstack 1
-    ldc.i4 0x01040400
+    ldc.i4 0x01040500
     ret
   }
 

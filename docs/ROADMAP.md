@@ -255,3 +255,12 @@
 - **Priority**: P2
 - **Dependencies**: None
 - **Status**: VERIFIED
+
+---
+
+### TASK-021: 형광펜/펜 붓펜 촉 속도·필압 반응형 가변 너비 및 프리뷰 고도화
+- **Identifier**: TASK-021
+- **Description**: 형광펜 모드에서 붓펜 촉 선택 시 선 두께가 둥근 촉과 같게 고정되던 결함을 해결하고, 이동 속도와 필압에 실시간 반응하는 4단계 베지어 연속 보간 렌더링, 전용 붓펜 프리뷰 캔버스 및 타원 회전 커서 탑재.
+- **Priority**: P1
+- **Dependencies**: TASK-002
+- **Status**: VERIFIED

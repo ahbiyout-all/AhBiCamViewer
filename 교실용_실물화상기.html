@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>아비캠뷰어 (AhBiCamViewer) v1.4.4</title>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>아비캠뷰어 (AhBiCamViewer) v1.4.5</title>
 <link rel="icon" type="image/png" href="assets/icon.png">
 <style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}body{background:#101114;color:#f5f5f5;font-family:system-ui,sans-serif}.app{height:100vh;display:flex;flex-direction:column}
@@ -349,7 +349,7 @@ body.recording-clean #zoomIndicator{
 
 </style></head><body><div class="app">
 <header>
-  <h1>📷 아비캠뷰어 (AhBiCamViewer) <span class="version-badge" id="appVerBadge">v1.4.4</span><span class="pro-tier-badge pro-tier-pro" id="tierBadge" title="모든 Pro 기능이 제약 없이 무료로 개방되어 있습니다">PRO (전체 기능 개방)</span></h1>
+  <h1>📷 아비캠뷰어 (AhBiCamViewer) <span class="version-badge" id="appVerBadge">v1.4.5</span><span class="pro-tier-badge pro-tier-pro" id="tierBadge" title="모든 Pro 기능이 제약 없이 무료로 개방되어 있습니다">PRO (전체 기능 개방)</span></h1>
   <div class="header-right">
     <button id="aboutBtn" style="padding:4px 9px;font-size:12px">ℹ️ 정보</button>
     <span id="status" class="status">카메라 연결 필요</span>
@@ -2580,6 +2580,58 @@ function drawCalligraphySegment(targetCtx, x1, y1, x2, y2, width, col){
   targetCtx.restore();
 }
 
+// 붓펜 전용 유기적 두께 변화 프리뷰 렌더러
+function drawBrushPreview(pctx, pts, sz, col, isMarker){
+  pctx.save();
+  pctx.strokeStyle = col;
+  pctx.fillStyle = col;
+  pctx.lineCap = 'round';
+  pctx.lineJoin = 'round';
+  if(isMarker) pctx.globalAlpha = 0.45;
+
+  const curves = [
+    { p0: pts[0], p1: pts[1], p2: { x: (pts[1].x + pts[2].x)/2, y: (pts[1].y + pts[2].y)/2 } },
+    { p0: { x: (pts[1].x + pts[2].x)/2, y: (pts[1].y + pts[2].y)/2 }, p1: pts[2], p2: { x: (pts[2].x + pts[3].x)/2, y: (pts[2].y + pts[3].y)/2 } },
+    { p0: { x: (pts[2].x + pts[3].x)/2, y: (pts[2].y + pts[3].y)/2 }, p1: pts[3], p2: pts[4] }
+  ];
+
+  function getBrushRatio(t){
+    if(t < 0.25) return 0.35 + (t / 0.25) * 0.9;
+    if(t < 0.55){
+      const u = (t - 0.25) / 0.30;
+      return 1.25 + Math.sin(u * Math.PI) * 0.45;
+    }
+    if(t < 0.80){
+      const u = (t - 0.55) / 0.25;
+      return 1.25 - u * 0.65;
+    }
+    const u = (t - 0.80) / 0.20;
+    return 0.60 - u * 0.40;
+  }
+
+  let prevPt = pts[0];
+  curves.forEach((c, cIdx) => {
+    const steps = 14;
+    for(let i=1; i<=steps; i++){
+      const s = i / steps;
+      const t = (cIdx + s) / 3;
+      const it = 1 - s;
+      const curPt = {
+        x: it * it * c.p0.x + 2 * it * s * c.p1.x + s * s * c.p2.x,
+        y: it * it * c.p0.y + 2 * it * s * c.p1.y + s * s * c.p2.y
+      };
+      const curW = Math.max(1.5, sz * getBrushRatio(t));
+      pctx.lineWidth = curW;
+      pctx.beginPath();
+      pctx.moveTo(prevPt.x, prevPt.y);
+      pctx.lineTo(curPt.x, curPt.y);
+      pctx.stroke();
+      prevPt = curPt;
+    }
+  });
+  pctx.restore();
+}
+
 function renderPenTipPreview(){
   const canvas = document.getElementById('penTipPreviewCanvas');
   const badge = document.getElementById('penTipNameBadge');
@@ -2620,6 +2672,8 @@ function renderPenTipPreview(){
         drawCalligraphySegment(pctx, x1, y1, x2, y2, sz, col);
       }
     }
+  } else if(penTip === 'brush'){
+    drawBrushPreview(pctx, pts, sz, col, false);
   } else {
     pctx.save();
     pctx.strokeStyle = col;
@@ -2697,6 +2751,8 @@ function renderMarkerTipPreview(){
         pctx.restore();
       }
     }
+  } else if(markerTip === 'brush'){
+    drawBrushPreview(pctx, pts, sz, col, true);
   } else {
     pctx.strokeStyle = col;
     pctx.fillStyle = col;
@@ -2850,6 +2906,19 @@ draw.addEventListener('pointerdown', e => {
     ctx.globalAlpha = tool === 'marker' ? 0.35 : 1;
     ctx.fillStyle = activeDrawColor;
     ctx.fillRect(p.x - effW/2, p.y - effW/2, effW, effW);
+  } else if((tool === 'pen' || tool === 'marker') && activeTip === 'brush'){
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.globalCompositeOperation = 'source-over';
+    const activeDrawColor = (tool === 'marker' && markerColorInput) ? markerColorInput.value : color.value;
+    ctx.fillStyle = activeDrawColor;
+    const baseW = tool === 'marker' ? +size.value * 4 : getEffectiveLineWidth(e.pressure);
+    const dotW = Math.max(2, baseW * 0.55);
+    ctx.globalAlpha = tool === 'marker' ? 0.35 : 1;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, dotW / 2, 0, Math.PI * 2);
+    ctx.fill();
+    strokePoints[0].brushWidth = dotW;
   } else {
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -2924,6 +2993,13 @@ draw.addEventListener('pointermove', e => {
           penCursor.style.border = 'none';
           penCursor.style.background = col;
           penCursor.style.transform = 'translate(-50%, -50%) rotate(45deg)';
+        } else if(activeTip === 'brush'){
+          penCursor.style.width = Math.max(5, effW * 0.7) + 'px';
+          penCursor.style.height = Math.max(8, effW * 1.35) + 'px';
+          penCursor.style.borderRadius = '50% 50% 60% 60% / 40% 40% 70% 70%';
+          penCursor.style.border = `1.5px solid ${col}`;
+          penCursor.style.background = 'transparent';
+          penCursor.style.transform = 'translate(-50%, -50%) rotate(-25deg)';
         } else {
           penCursor.style.width = Math.max(5, effW) + 'px';
           penCursor.style.height = Math.max(5, effW) + 'px';
@@ -3005,22 +3081,55 @@ draw.addEventListener('pointermove', e => {
       ctx.globalCompositeOperation = 'source-over';
       const activeDrawColor = (tool === 'marker' && markerColorInput) ? markerColorInput.value : color.value;
       ctx.strokeStyle = activeDrawColor;
-      let effW = getEffectiveLineWidth(p1.pressure);
-      if((tool === 'pen' || tool === 'marker') && activeTipM === 'brush'){
-        const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
-        const dt = Math.max(1, (p2.time || Date.now()) - (p1.time || Date.now()));
-        const speed = dist / dt;
-        const factor = Math.max(0.4, Math.min(1.4, 1.25 - speed * 0.15));
-        effW = Math.max(2, effW * factor);
-      }
-      ctx.lineWidth = tool === 'marker' ? +size.value * 4 : effW;
       ctx.globalAlpha = tool === 'marker' ? 0.35 : 1;
+
+      if((tool === 'pen' || tool === 'marker') && activeTipM === 'brush'){
+        // 붓펜: 이동 속도와 필압에 실시간 반응하는 동적 붓 터치 알고리즘
+        const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+        const dt = Math.max(8, (p2.time || Date.now()) - (p1.time || Date.now()));
+        const speed = dist / dt; // px/ms
+        
+        // 속도 인자: 빠를수록 가늘어짐 (0.35배 ~ 1.65배)
+        let speedFactor = 1.35 - speed * 0.22;
+        speedFactor = Math.max(0.35, Math.min(1.65, speedFactor));
+
+        // 필압 인자 (스타일러스 펜 지원 시)
+        if(p1.pressure !== undefined && p1.pressure > 0 && p1.pressure !== 0.5){
+          speedFactor *= Math.max(0.4, Math.min(1.7, 0.4 + p1.pressure * 1.2));
+        }
+
+        const baseW = tool === 'marker' ? +size.value * 4 : getEffectiveLineWidth(p1.pressure);
+        const targetW = Math.max(tool === 'marker' ? 3 : 1.5, baseW * speedFactor);
+        const prevW = p1.brushWidth || targetW;
+        p2.brushWidth = targetW;
+
+        // 곡선을 4개 미세 구간으로 나누어 폭(lineWidth)을 연속 보간(Tapering) 렌더링
+        const steps = 4;
+        let lastPt = mid1;
+        for(let s = 1; s <= steps; s++){
+          const t = s / steps;
+          const it = 1 - t;
+          const curX = it * it * mid1.x + 2 * it * t * p1.x + t * t * mid2.x;
+          const curY = it * it * mid1.y + 2 * it * t * p1.y + t * t * mid2.y;
+          const curPt = { x: curX, y: curY };
+          const segW = prevW + (targetW - prevW) * t;
+
+          ctx.lineWidth = segW;
+          ctx.beginPath();
+          ctx.moveTo(lastPt.x, lastPt.y);
+          ctx.lineTo(curPt.x, curPt.y);
+          ctx.stroke();
+          lastPt = curPt;
+        }
+      } else {
+        const effW = tool === 'marker' ? +size.value * 4 : getEffectiveLineWidth(p1.pressure);
+        ctx.lineWidth = effW;
+        ctx.beginPath();
+        ctx.moveTo(mid1.x, mid1.y);
+        ctx.quadraticCurveTo(p1.x, p1.y, mid2.x, mid2.y);
+        ctx.stroke();
+      }
     }
-    ctx.beginPath();
-    ctx.moveTo(mid1.x, mid1.y);
-    ctx.quadraticCurveTo(p1.x, p1.y, mid2.x, mid2.y);
-    ctx.stroke();
-    ctx.restore();
   }
 });
 
@@ -3050,6 +3159,21 @@ draw.addEventListener('pointerup', e => {
         ctx.save();
         ctx.globalAlpha = tool === 'marker' ? 0.35 : 1;
         drawCalligraphySegment(ctx, strokePoints[0].x, strokePoints[0].y, strokePoints[1].x, strokePoints[1].y, effW, calliCol);
+        ctx.restore();
+      } else if((tool === 'pen' || tool === 'marker') && activeTipU === 'brush'){
+        const baseW = tool === 'marker' ? +size.value * 4 : getEffectiveLineWidth(strokePoints[1].pressure);
+        const effW = Math.max(tool === 'marker' ? 3 : 1.5, baseW * 0.7);
+        const brushCol = (tool === 'marker' && markerColorInput) ? markerColorInput.value : color.value;
+        ctx.save();
+        ctx.globalAlpha = tool === 'marker' ? 0.35 : 1;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = brushCol;
+        ctx.lineWidth = effW;
+        ctx.beginPath();
+        ctx.moveTo(strokePoints[0].x, strokePoints[0].y);
+        ctx.lineTo(strokePoints[1].x, strokePoints[1].y);
+        ctx.stroke();
         ctx.restore();
       } else {
         ctx.save();
@@ -5174,7 +5298,7 @@ updateResolutionDots(getLastCamera());
   };
 
   // ===== 7. GITHUB RELEASES AUTO UPDATE SYSTEM & ABOUT MODAL =====
-  const APP_VERSION = "1.4.4";
+  const APP_VERSION = "1.4.5";
   const GITHUB_REPO = "AhBiYout-all/ClassroomVisualizer";
   const GITHUB_USER = "AhBiYout";
   const GITHUB_URL = "https://github.com/AhBiYout-all";

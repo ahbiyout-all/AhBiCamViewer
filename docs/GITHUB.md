@@ -66,7 +66,7 @@ sequenceDiagram
     
     App->>App: 앱 시작 시 checkUpdateSilently() 비동기 호출
     App->>GH: GET /repos/AhBiYout-all/ClassroomVisualizer/releases/latest
-    GH-->>App: 최신 릴리스 정보 응답 (tag_name: v1.4.4, html_url)
+    GH-->>App: 최신 릴리스 정보 응답 (tag_name: v1.4.5, html_url)
     alt 신규 버전 감지 (remoteVersion > localVersion)
         App->>User: 업데이트 알림 팝업 모달창 자동 표시
         Note over User,App: 현재 버전, 최신 버전, 업데이트 내용 표시<br/>[업데이트 다운로드] 버튼 및 GitHub 저장소 경로 제공
@@ -118,7 +118,7 @@ GitHub Actions 워크플로는 최신 규격을 엄격히 준수하여 자동화
 3. **무인 설치 (Silent Install) 지원**:
    - 학교 전산실, 멀티미디어실 다수 PC 동시 배포를 위한 `/SILENT` 및 `/VERYSILENT` 스위치 지원.
 4. **Windows 방화벽 사전 조용 등록 (Firewall Automation)**:
-   - 설치 단계(`[Run]`)에서 기본 앱 이름(`아비캠뷰어 (AhBiCamViewer)`)과 버전 표기 이름(`아비캠뷰어 (AhBiCamViewer) v1.4.4`)으로 방화벽 규칙을 **사전에 조용히 등록**하여 브라우저 네트워크 경고창을 원천 예방.
+   - 설치 단계(`[Run]`)에서 기본 앱 이름(`아비캠뷰어 (AhBiCamViewer)`)과 버전 표기 이름(`아비캠뷰어 (AhBiCamViewer) v1.4.5`)으로 방화벽 규칙을 **사전에 조용히 등록**하여 브라우저 네트워크 경고창을 원천 예방.
    - 프로그램 제거 단계(`[UninstallRun]`)에서 등록된 모든 방화벽 규칙을 깨끗하게 자동 삭제.
 
 ---
@@ -141,8 +141,8 @@ push_github.bat
 
 :: 또는 직접 git 태그 푸시
 git add .
-git commit -m "feat: release v1.4.4"
-git tag -a v1.4.4 -m "Release v1.4.4"
+git commit -m "feat: release v1.4.5"
+git tag -a v1.4.5 -m "Release v1.4.5"
 git push origin main --tags
 ```
 

@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.5] - 2026-11-04
+### Added
+- **Speed & Pressure Sensitive Brush Tip Engine (`drawBrushPreview`)**:
+  - Implemented dynamic organic brush pen width algorithm responding to stroke speed (0.35x to 1.65x) and stylus pressure.
+  - Added continuous 4-step quadratic bezier tapering interpolation eliminating stepped or jagged stroke widths.
+  - Implemented signature brush stroke preview renderer (`drawBrushPreview`) in both Pen and Highlighter flyout menus.
+  - Added custom tilted oval cursor (`-25deg`) for brush tip mode providing intuitive ergonomic visual feedback.
+
+### Fixed
+- Fixed highlighter (`marker`) brush tip rendering identical to round tip by removing hardcoded static width override (`+size.value * 4`) and integrating the dynamic brush width pipeline.
+- Fixed brush tip preview canvases falling back to generic round line preview.
+
+---
+
 ## [1.4.4] - 2026-11-01
 ### Added
 - **15 Pure Creative Native Win32 APIs (`ClassroomVisualizerCore.dll`)**:

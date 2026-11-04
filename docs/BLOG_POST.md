@@ -1,4 +1,4 @@
-# 📢 구글 블로거(Blogger) 공식 포스팅 가이드 (v1.4.4)
+# 📢 구글 블로거(Blogger) 공식 포스팅 가이드 (v1.4.5)
 
 본 문서는 구글 블로그([ahbiyoutvibe.blogspot.com](https://ahbiyoutvibe.blogspot.com/))에 발행할 수 있도록 규격화된 공식 포스팅 원고입니다.  
 사용자의 편집 환경에 맞추어 **[작성 모드 (서식 있는 텍스트)]**와 **[HTML 편집 모드]**의 두 가지 포맷을 모두 제공합니다.
@@ -9,7 +9,7 @@
 > *구글 블로거 글쓰기 화면 좌측 상단의 연필 아이콘 `[작성 모드]`에서 그대로 복사하여 붙여넣을 수 있는 서식입니다.*
 
 ## 1. 제목
-**[무료] 교실 및 사무실용 최고의 실물화상기 소프트웨어 - 아비캠뷰어(AhBiCamViewer) v1.4.4 대규모 업데이트 배포**
+**[무료] 교실 및 사무실용 최고의 실물화상기 소프트웨어 - 아비캠뷰어(AhBiCamViewer) v1.4.5 대규모 업데이트 배포**
 
 ---
 
@@ -19,11 +19,15 @@
 
 선생님과 발표자가 오직 수업과 전달에만 집중할 수 있도록 깔끔한 UI, 지능형 툴바 자동 수축(아코디언 모드), 고성능 실시간 판서(베지어 부드러운 필기, 형광펜, 도형, 텍스트), 수업 집중 보조 도구(타이머, 스톱워치, 확대경, 스포트라이트, 가림막)를 모두 갖추고 있습니다.
 
-특히 이번 **v1.4.4**에서는 기존의 아쉬웠던 점들을 대폭 보완하여, 고성능 **15대 Win32 순수 창작 네이티브 DLL 탑재**, **동영상 0KB 비정상 저장 결함 원천 해결**, **가상 카메라 화면 무한 복제(Droste Effect) 완전 차단**, 그리고 **Windows 방화벽 사전 자동 등록 인스톨러**까지 지원하여 완벽한 안정성을 자랑합니다.
+특히 이번 **v1.4.5**에서는 기존의 아쉬웠던 점들을 대폭 보완하여, 고성능 **15대 Win32 순수 창작 네이티브 DLL 탑재**, **동영상 0KB 비정상 저장 결함 원천 해결**, **가상 카메라 화면 무한 복제(Droste Effect) 완전 차단**, 그리고 **Windows 방화벽 사전 자동 등록 인스톨러**까지 지원하여 완벽한 안정성을 자랑합니다.
 
 ---
 
-## 3. 업데이트 (v1.4.4 핵심 개선 내역)
+## 3. 업데이트 (v1.4.5 핵심 개선 내역)
+- **🖌️ 형광펜 붓펜 촉(Brush Tip) 속도/필압 반응형 테이퍼링 및 프리뷰 고도화**:
+  - 형광펜 붓펜 촉 선택 시 선 두께가 둥근 촉과 같게 고정되던 결함을 원천 해결.
+  - 마우스/스타일러스 이동 속도(0.35배~1.65배)와 필압에 실시간 반응하는 4단계 베지어 연속 보간 렌더링 적용.
+  - 펜 및 형광펜 하위메뉴 내 전용 붓펜 프리뷰 캔버스(`drawBrushPreview`) 및 -25도 타원 회전 커서 탑재.
 - **⚡ 순수 창작 Native DLL 15대 API 완성 (`ClassroomVisualizerCore.dll`)**:
   - `CV_PlayCustomTone`: 윈도우 하드웨어 스피커를 통한 0ms 무지연 수업 타이머/주목음 송출 (브라우저 백그라운드 탭 스로틀링 완전 면역).
   - `CV_GetDiskFreeSpaceMB`: 실시간 잔여 저장공간 진단으로 용량 부족에 따른 녹화 실패 방지.
@@ -57,15 +61,15 @@
 ## 5. 다운로드
 아래 공식 GitHub Releases 링크에서 최신 설치 파일 및 포터블 버전을 무료로 다운로드하실 수 있습니다:
 
-- 🚀 **윈도우 정식 설치 프로그램**: [AhBiCamViewer_Setup_v1.4.4.exe 다운로드](https://github.com/AhBiYout-all/ClassroomVisualizer/releases/download/v1.4.4/%EC%95%84%EB%B9%84%EC%BA%A0%EB%B7%B0%EC%96%B4.(AhBiCamViewer)_Setup_v1.4.4.exe)
-- 🧰 **무설치 포터블 패키지**: [AhBiCamViewer_Portable_v1.4.4.zip 다운로드](https://github.com/AhBiYout-all/ClassroomVisualizer/releases/download/v1.4.4/AhBiCamViewer_Portable_v1.4.4.zip)
+- 🚀 **윈도우 정식 설치 프로그램**: [AhBiCamViewer_Setup_v1.4.5.exe 다운로드](https://github.com/AhBiYout-all/ClassroomVisualizer/releases/download/v1.4.5/%EC%95%84%EB%B9%84%EC%BA%A0%EB%B7%B0%EC%96%B4.(AhBiCamViewer)_Setup_v1.4.5.exe)
+- 🧰 **무설치 포터블 패키지**: [AhBiCamViewer_Portable_v1.4.5.zip 다운로드](https://github.com/AhBiYout-all/ClassroomVisualizer/releases/download/v1.4.5/AhBiCamViewer_Portable_v1.4.5.zip)
 - 🌐 **GitHub 릴리스 전체 목록**: [GitHub Releases](https://github.com/AhBiYout-all/ClassroomVisualizer/releases)
 
 ---
 
 ## 6. 버전정보
 - **소프트웨어 명칭**: 아비캠뷰어 (AhBiCamViewer) / 교실용 실물화상기
-- **배포 버전**: v1.4.4
+- **배포 버전**: v1.4.5
 - **버전 관리 규격**: Semantic Versioning 2.0.0
 - **배포일**: 2026-11-01
 - **라이선스**: MIT License (학교, 관공서, 기업, 개인 누구나 100% 무료 자유 사용 가능)
@@ -91,6 +95,9 @@
 ## 9. 전체 업데이트 (기능 개선 히스토리)
 *패치노트 기준 역대 모든 기능 개선 내역입니다.*
 
+- **v1.4.5 (2026-11-04)**:
+  - 형광펜 붓펜 촉(Brush Tip) 속도/필압 반응형 가변 너비 알고리즘 및 4단계 베지어 연속 보간 렌더링 구현 (둥근 촉과 동일하던 결함 원천 해결).
+  - 펜 및 형광펜 하위메뉴 내 전용 붓펜 프리뷰 캔버스(`drawBrushPreview`) 및 -25도 타원 회전 커서 탑재.
 - **v1.4.4 (2026-11-01)**:
   - 순수 창작 Win32 네이티브 DLL 15종 API 완성 (하드웨어 톤, 디스크 용량 진단, DPI 감지, 항상 위 고정, QPC 정밀 타이머).
   - 가상 카메라 자동 연결 차단으로 화면 무한 복제(Droste Effect) 결함 원천 해결.
@@ -151,8 +158,8 @@
 
   <!-- 1. 제목 -->
   <header style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: #ffffff; padding: 36px 28px; border-radius: 16px; margin-bottom: 28px; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.3);">
-    <span style="display: inline-block; background: #3b82f6; color: #ffffff; padding: 4px 12px; border-radius: 9999px; font-size: 13px; font-weight: 700; margin-bottom: 12px; letter-spacing: 0.5px;">OFFICIAL RELEASE v1.4.4</span>
-    <h1 style="font-size: 26px; font-weight: 800; margin: 0 0 10px 0; line-height: 1.35; color: #ffffff;">[무료] 교실 및 사무실용 최고의 실물화상기 소프트웨어 - 아비캠뷰어 (AhBiCamViewer) v1.4.4 대규모 업데이트 배포</h1>
+    <span style="display: inline-block; background: #3b82f6; color: #ffffff; padding: 4px 12px; border-radius: 9999px; font-size: 13px; font-weight: 700; margin-bottom: 12px; letter-spacing: 0.5px;">OFFICIAL RELEASE v1.4.5</span>
+    <h1 style="font-size: 26px; font-weight: 800; margin: 0 0 10px 0; line-height: 1.35; color: #ffffff;">[무료] 교실 및 사무실용 최고의 실물화상기 소프트웨어 - 아비캠뷰어 (AhBiCamViewer) v1.4.5 대규모 업데이트 배포</h1>
     <p style="font-size: 15px; margin: 0; opacity: 0.92;">복잡한 드라이버 없이 4K UHD까지 지원하는 차세대 무료 실물화상기 &amp; 판서 도구</p>
   </header>
 
@@ -165,8 +172,12 @@
 
   <!-- 3. 업데이트 -->
   <section style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 14px; padding: 26px; margin-bottom: 24px;">
-    <h2 style="font-size: 20px; font-weight: 700; color: #0f172a; margin-top: 0; margin-bottom: 16px; border-left: 4px solid #0284c7; padding-left: 10px;">v1.4.4 핵심 업데이트 내역</h2>
+    <h2 style="font-size: 20px; font-weight: 700; color: #0f172a; margin-top: 0; margin-bottom: 16px; border-left: 4px solid #0284c7; padding-left: 10px;">v1.4.5 핵심 업데이트 내역</h2>
     <div style="display: grid; gap: 14px;">
+      <div style="background: #ffffff; padding: 14px 18px; border-radius: 10px; border-left: 4px solid #3b82f6;">
+        <strong style="color: #1d4ed8; font-size: 15px;">🖌️ 형광펜 붓펜 촉(Brush Tip) 속도/필압 반응형 테이퍼링 및 프리뷰 고도화</strong>
+        <p style="font-size: 14px; margin: 6px 0 0 0; color: #475569;">형광펜 붓펜 촉 선택 시 선 두께가 둥근 촉과 동일하게 고정되던 결함을 원천 해결하고, 이동 속도(0.35배~1.65배)와 필압에 실시간 반응하는 4단계 베지어 연속 보간 및 전용 붓펜 프리뷰 캔버스 탑재.</p>
+      </div>
       <div style="background: #ffffff; padding: 14px 18px; border-radius: 10px; border-left: 4px solid #10b981;">
         <strong style="color: #065f46; font-size: 15px;">⚡ 순수 창작 Win32 Native DLL 15대 API 완성</strong>
         <p style="font-size: 14px; margin: 6px 0 0 0; color: #475569;">하드웨어 비프 톤 송출(수업 타이머 스로틀링 면역), 디스크 잔여 용량 사전 진단, 주 모니터 DPI 자동 감지, 항상 위(Always-on-Top) 고정, QPC 마이크로초 타이머 탑재 및 예외 쉴드로 호스트 크래시 0% 달성.</p>
@@ -191,7 +202,7 @@
     <h2 style="font-size: 20px; font-weight: 700; color: #1e3a8a; margin-top: 0; margin-bottom: 16px; border-left: 4px solid #2563eb; padding-left: 10px; text-align: left;">앱 화면 및 레이아웃</h2>
     <div style="background: #0f172a; border-radius: 12px; padding: 30px 20px; color: #94a3b8; margin: 15px 0;">
       <div style="font-size: 48px; margin-bottom: 10px;">📷</div>
-      <h3 style="color: #ffffff; font-size: 18px; margin: 0 0 8px 0;">아비캠뷰어 (AhBiCamViewer) v1.4.4</h3>
+      <h3 style="color: #ffffff; font-size: 18px; margin: 0 0 8px 0;">아비캠뷰어 (AhBiCamViewer) v1.4.5</h3>
       <p style="font-size: 13px; margin: 0; color: #94a3b8;">풀스크린 뷰포트 &bull; 15대 네이티브 Win32 가속 &bull; 스마트 판서 도구 &bull; 4K UHD</p>
     </div>
     <p style="font-size: 13px; color: #64748b; margin-top: 8px;">(블로그 관리자 화면에서 assets/icon.png 또는 실제 수업 캡처 스크린샷 이미지를 추가 삽입하실 수 있습니다)</p>
@@ -202,10 +213,10 @@
     <h2 style="font-size: 20px; font-weight: 800; color: #1e40af; margin-top: 0; margin-bottom: 12px;">무료 다운로드 (Official GitHub Releases)</h2>
     <p style="font-size: 14px; color: #1e3a8a; margin-bottom: 20px;">학교, 관공서, 학원, 기업, 가정 등 어디서나 조건 없이 100% 무료로 이용하실 수 있습니다.</p>
     <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-      <a href="https://github.com/AhBiYout-all/ClassroomVisualizer/releases/download/v1.4.4/%EC%95%84%EB%B9%84%EC%BA%A0%EB%B7%B0%EC%96%B4.(AhBiCamViewer)_Setup_v1.4.4.exe" style="display: inline-block; background: #2563eb; color: #ffffff; font-weight: 700; font-size: 15px; padding: 12px 24px; border-radius: 8px; text-decoration: none; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.4);">
+      <a href="https://github.com/AhBiYout-all/ClassroomVisualizer/releases/download/v1.4.5/%EC%95%84%EB%B9%84%EC%BA%A0%EB%B7%B0%EC%96%B4.(AhBiCamViewer)_Setup_v1.4.5.exe" style="display: inline-block; background: #2563eb; color: #ffffff; font-weight: 700; font-size: 15px; padding: 12px 24px; border-radius: 8px; text-decoration: none; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.4);">
         📥 정식 인스톨러 (.exe) 다운로드
       </a>
-      <a href="https://github.com/AhBiYout-all/ClassroomVisualizer/releases/download/v1.4.4/AhBiCamViewer_Portable_v1.4.4.zip" style="display: inline-block; background: #059669; color: #ffffff; font-weight: 700; font-size: 15px; padding: 12px 24px; border-radius: 8px; text-decoration: none; box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.4);">
+      <a href="https://github.com/AhBiYout-all/ClassroomVisualizer/releases/download/v1.4.5/AhBiCamViewer_Portable_v1.4.5.zip" style="display: inline-block; background: #059669; color: #ffffff; font-weight: 700; font-size: 15px; padding: 12px 24px; border-radius: 8px; text-decoration: none; box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.4);">
         🧰 무설치 포터블 (.zip) 다운로드
       </a>
     </div>
@@ -217,7 +228,7 @@
       <h3 style="font-size: 17px; font-weight: 700; color: #1e293b; margin-top: 0; margin-bottom: 12px; border-left: 3px solid #2563eb; padding-left: 8px;">버전 정보</h3>
       <table style="width: 100%; font-size: 14px; border-collapse: collapse;">
         <tr><td style="padding: 6px 0; color: #64748b;">프로그램</td><td style="padding: 6px 0; font-weight: 600;">아비캠뷰어 (AhBiCamViewer)</td></tr>
-        <tr><td style="padding: 6px 0; color: #64748b;">배포 버전</td><td style="padding: 6px 0; font-weight: 600; color: #2563eb;">v1.4.4</td></tr>
+        <tr><td style="padding: 6px 0; color: #64748b;">배포 버전</td><td style="padding: 6px 0; font-weight: 600; color: #2563eb;">v1.4.5</td></tr>
         <tr><td style="padding: 6px 0; color: #64748b;">릴리스 날짜</td><td style="padding: 6px 0; font-weight: 600;">2026-11-01</td></tr>
         <tr><td style="padding: 6px 0; color: #64748b;">라이선스</td><td style="padding: 6px 0; font-weight: 600; color: #059669;">MIT License (완전 무료)</td></tr>
       </table>
@@ -248,6 +259,8 @@
   <section style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; margin-bottom: 24px;">
     <h2 style="font-size: 20px; font-weight: 700; color: #1e3a8a; margin-top: 0; margin-bottom: 14px; border-left: 4px solid #2563eb; padding-left: 10px;">전체 업데이트 히스토리 (기능 개선)</h2>
     <div style="font-size: 14px; line-height: 1.7; color: #334155;">
+      <p style="margin-bottom: 10px;"><strong>v1.4.5 (2026-11-04)</strong><br>&bull; 형광펜 붓펜 촉(Brush Tip) 속도/필압 반응형 가변 너비 알고리즘 및 4단계 베지어 연속 보간 렌더링 구현 (둥근 촉과 동일하던 결함 원천 해결)<br>&bull; 펜 및 형광펜 하위메뉴 내 전용 붓펜 프리뷰 캔버스(drawBrushPreview) 및 -25도 타원 회전 커서 탑재</p>
+
       <p style="margin-bottom: 10px;"><strong>v1.4.4 (2026-11-01)</strong><br>&bull; 순수 창작 Win32 DLL 15종 API 완성 (하드웨어 톤, 디스크 용량 진단, DPI 감지, 항상 위 고정, QPC 타이머)<br>&bull; 가상 카메라 자동 연결 차단으로 화면 무한 복제 결함 원천 해결<br>&bull; 비정상 0KB 동영상 저장 문제 완전 해결 및 미디어 인코더 최적화<br>&bull; Inno Setup 멀티파일 인스톨러, 방화벽 자동 등록, 무인 설치 스위치 지원<br>&bull; GitHub Releases 기반 실시간 자동 업데이트 알림 팝업 시스템 구축</p>
       
       <p style="margin-bottom: 10px;"><strong>v1.4.3 (2026-10-26)</strong><br>&bull; 수업 도구 풀다운 메뉴 및 영상/렌즈 조절 팝업 화면 밖 이탈 방지 스마트 고정 좌표 클램핑 탑재<br>&bull; 하단 툴바 오버플로우 방지 및 스마트 뷰포트 반응형 레이아웃 최적화</p>
