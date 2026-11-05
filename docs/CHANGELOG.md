@@ -6,6 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.7] - 2026-11-05
+### Added
+- **Movable Geometric Shape Cards & Multi-Layer Compositing Engine**:
+  - Implemented movable interactive shape cards for all 7 geometric shape tools (Line, Rectangle, Circle, Triangle, Arrow, Double Arrow, Star).
+  - Smooth Pointer Capture drag-and-drop movement across the canvas with comfortable bounding-box padding.
+  - Hover interaction with guide boundary, one-click Delete (`✕`), and Canvas Bake (`📌`) to permanently fuse shapes into the drawing layer.
+  - Independent preservation of shape styles (solid/dashed/dotted stroke, none/trans25/trans50/solid fill, line width, color).
+  - High-precision 4-layer vector compositing pipeline (`renderShapeAnnotationsToCanvas`):
+    - Full-resolution vector compositing during still image captures (JPG/PNG/WebP).
+    - Real-time frame compositing in MP4/WebM video recording.
+    - Multi-page bundled PDF export vector preservation.
+    - Real-time magnified vector rendering under the interactive Magnifier tool.
+  - Unified shape cleanup in `clearDraw` confirmation flow.
+  - Updated Pure Creative Native DLL (`ClassroomVisualizerCore.dll`) version constant to `0x01040700 (v1.4.7)` with 15/15 unit test verification.
+
+---
+
 ## [1.4.6] - 2026-11-05
 ### Added
 - **Movable & Editable Text Annotation Cards System**:

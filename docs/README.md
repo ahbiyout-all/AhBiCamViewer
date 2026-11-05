@@ -1,28 +1,28 @@
 # 📷 아비캠뷰어 (AhBiCamViewer)
 
-[![Release](https://img.shields.io/badge/release-v1.4.6-blue.svg)](https://github.com/AhBiYout-all/ClassroomVisualizer/releases)
+[![Release](https://img.shields.io/badge/release-v1.4.7-blue.svg)](https://github.com/AhBiYout-all/ClassroomVisualizer/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.en.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Web%20%7C%20Desktop-orange.svg)](ARCHITECTURE.md)
 [![Build](https://img.shields.io/badge/build-Inno%20Setup%206%20%7C%20Node%2022%20LTS-brightgreen.svg)](BUILD.md)
 [![Native Core](https://img.shields.io/badge/native%20APIs-15%20Exports%20(100%25%20Pass)-purple.svg)](NATIVE_DLL_ARCHITECTURE.md)
 
 > **공용 및 교실 환경을 위한 강력한 무설치 웹 & 데스크톱 실물화상기 소프트웨어**  
-> 현재 버전: **v1.4.6** | 개발자: **AhBiYout** | 깃허브: **AhBiYout-all** | 소속: **CISNet**
+> 현재 버전: **v1.4.7** | 개발자: **AhBiYout** | 깃허브: **AhBiYout-all** | 소속: **CISNet**
 
 ---
 
-## 📌 주요 특징 (v1.4.6)
+## 📌 주요 특징 (v1.4.7)
 
-1. **📝 자유 이동식 텍스트 주석 카드 및 4중 무손실 합성 (New in v1.4.6)**:
-   - Pointer Capture 기반 부드러운 드래그 앤 드롭 이동, 더블 클릭 인라인 재편집, 핀 고정(📌) 및 삭제(✕) 지원.
-   - 스틸 캡처(JPG/PNG/WebP), MP4 녹화, PDF 내보내기, 돋보기 뷰에 왜곡 없이 자동 합성.
+1. **📐 7대 기하 도형 & 텍스트 주석 자유 이동 및 4중 무손실 벡터 합성 (New in v1.4.7)**:
+   - 직선, 사각형, 원, 삼각형, 화살표, 별표 등 7대 기하 도형 및 텍스트 카드 드래그 앤 드롭 이동 (Pointer Capture Drag Engine).
+   - 호버 시 핀 고정(📌) 및 개별 삭제(✕), 캡처·녹화·PDF·돋보기 4중 무손실 벡터 자동 합성.
 2. **초고해상도 실물화상기 & 웹캠 지원**: ⭐ 최고화질(Native Max) 자동 탐색, 4K UHD, 8MP 문서전용, QHD 2K, FHD 1080p 지원 및 실시간 해상도 티어 컬러 뱃지.
 3. **지능형 카메라 3대 유형 감지 & 상세정보 진단**:
    - **실물화상기(★)**(IPEVO, Aver 등), **외장 웹캠(🎥)**(Logitech 등), **노트북 내장(💻)** 지능형 분류 및 우선 정렬.
    - **`[🔍 상세정보]` 진단 모달**: 실제 해상도/FPS/종횡비, 줌/초점/노출/조명 UVC 하드웨어 제어 기능, 전체 장치 목록 및 원클릭 클립보드 복사.
 4. **🛡️ 가상 카메라 화면 무한 복제(Droste Effect) 원천 차단**:
    - OBS Virtual Camera, screen-recorder-device 등 가상 카메라 식별 및 자동 연결 배제, 물리 카메라 부재 시에도 안정적 대기 화면 유지.
-5. **⚡ 순수 창작 Win32 Native DLL 15종 API 완성 (`ClassroomVisualizerCore.dll`, v1.4.6)**:
+5. **⚡ 순수 창작 Win32 Native DLL 15종 API 완성 (`ClassroomVisualizerCore.dll`, v1.4.7)**:
    - 하드웨어 비프음(수업 타이머 스로틀링 면역), 디스크 잔여 용량 사전 진단, 주 모니터 DPI 자동 감지, 항상 위 창 고정(PIP), QPC 마이크로초 타이머 탑재.
    - 15개 전수 네이티브 함수에 예외 차단 쉴드 탑재로 포인터 오작동 호스트 크래시 0% 달성 (테스트 15/15 PASS).
 5. **카메라 반복 권한 허용 팝업 원천 차단**:

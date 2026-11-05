@@ -4,6 +4,39 @@
 
 ---
 
+## 2026-11-05 (v1.4.7)
+
+### 작업 36: 자유 이동식 기하 도형(Movable Geometric Shapes) 엔진 및 4중 무손실 합성 시스템 탑재
+- **요청 사항**: 판서 도구로 작성한 도형도 텍스트처럼 자유롭게 이동 및 재배치할 수 있도록 구현
+- **원인 분석 및 아키텍처 설계**:
+  1. 기존 `drawShapeOn`은 `pointerup` 시 캔버스 비트맵 `ctx`에 직접 구워버려(Bake), 한 번 작성된 사각형, 원, 화살표 등의 도형을 옮길 수 없었음.
+  2. 실물화상기 특성상 카메라 아래 대상물의 위치가 이동할 때 강조용 도형(화살표, 사각형, 별표 등)도 함께 이동해야 한다는 사용자 요구 수용.
+  3. 7대 기하 도형(직선, 사각형, 원, 삼각형, 화살표, 양방향 화살표, 별표)을 즉시 조작 가능한 인터랙티브 이동 카드(`createMovableShapeCard`)로 생성하고, 캡처/녹화/PDF/돋보기 렌더링 시에는 최고 해상도 벡터로 무손실 합성(`renderShapeAnnotationsToCanvas`)하는 멀티레이어 아키텍처 구현.
+- **수정 및 구현 내역**:
+  - **1. 7대 기하 도형 이동식 시스템 (`shapeAnnotations[]`, `createMovableShapeCard`) 구현**:
+    - Pointer Capture 기반 드래그 앤 드롭 이동: 마우스가 바운딩 박스를 벗어나도 끊김 없는 이동 보장.
+    - 여유 있는 패딩 바운딩 박스: 얇은 선이나 작은 도형도 쉽게 잡고 이동할 수 있도록 편의성 제공.
+    - 호버 시 삭제(`✕`) 및 캔버스 융합(📌 핀) 버튼 지원: 핀 버튼 클릭 시 비트맵 판서 레이어로 영구 고정(Bake) 및 Undo 스택 등록.
+    - 선 스타일(실선/파선/점선), 채우기(없음/25%/50%/솔리드), 두께, 색상 완벽 보존.
+  - **2. 4중 멀티레이어 무손실 벡터 합성 (`renderShapeAnnotationsToCanvas`)**:
+    - 스틸 캡처(`capture`): 원본 캔버스 해상도(최고 4K UHD)에 맞춰 벡터 스케일링 무손실 합성.
+    - 동영상 녹화(`renderCurrentRecFrame`): 매 프레임 실시간으로 도형을 정확한 좌표에 부드럽게 합성.
+    - PDF 내보내기(`frameData`): 다중 페이지 PDF 저장 시 도형 벡터 보존.
+    - 돋보기 뷰(`renderMagnifier`): 돋보기 배율 및 중심 좌표에 맞게 실시간 벡터 확대 렌더링.
+  - **3. 판서 지우기(`clearDraw`) 통합**:
+    - 판서 지우기 시 이동식 텍스트 카드 및 이동식 도형 일괄 안전 삭제.
+  - **4. 버전 관리 및 순수 창작 DLL 동기화**:
+    - `ClassroomVisualizerCore.dll` 버전 상수 `0x01040700 (v1.4.7)` 갱신 및 15/15 전수 단위 테스트 통과.
+    - Inno Setup 인스톨러 및 무설치 포터블 패키지 빌드 완료.
+- **변경 파일**: `index.html`, `교실용_실물화상기.html`, `아비캠뷰어_(AhBiCamViewer).html`, `(AhBiYout)_공용_실물화상기_보기.html`, `version.json`, `installer.iss`, `src/dll/ClassroomVisualizerCore.il`, `src/dll/TestRunner.cs`, `docs/PATCHNOTES.md`, `docs/CHANGELOG.md`, `docs/WORK_LOG.md`
+- **검증 결과**:
+  - Node.js 구문 검증 통과 (4개 script 블록 0 error).
+  - 4대 HTML 파일 바이트 수 및 SHA-256 100% 일치 확인.
+  - TestRunner 15/15 테스트 100% PASS 확인.
+  - Inno Setup 및 Portable Zip 빌드 완료.
+
+---
+
 ## 2026-11-05 (v1.4.6)
 
 ### 작업 35: 자유 이동식 텍스트 주석 카드(Movable Text Annotation Cards) 엔진 및 멀티레이어 합성 시스템 탑재

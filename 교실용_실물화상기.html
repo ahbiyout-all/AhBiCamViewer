@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>아비캠뷰어 (AhBiCamViewer) v1.4.6</title>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>아비캠뷰어 (AhBiCamViewer) v1.4.7</title>
 <link rel="icon" type="image/png" href="assets/icon.png">
 <style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}body{background:#101114;color:#f5f5f5;font-family:system-ui,sans-serif}.app{height:100vh;display:flex;flex-direction:column}
@@ -230,13 +230,17 @@ body.capturing #zoomIndicator,
 body.capturing .text-annotation-card,
 body.capturing .text-ann-del,
 body.capturing .text-ann-bake,
+body.capturing .shape-annotation-wrap,
+body.capturing .shape-ann-del,
+body.capturing .shape-ann-bake,
 body.recording-clean .left-toolbar,
 body.recording-clean .bottom-toolbar,
 body.recording-clean header,
 body.recording-clean .cam-switch,
 body.recording-clean .res-badge,
 body.recording-clean #zoomIndicator,
-body.recording-clean .text-annotation-card{
+body.recording-clean .text-annotation-card,
+body.recording-clean .shape-annotation-wrap{
   opacity:0 !important;
   pointer-events:none !important;
   transition:opacity .15s ease;
@@ -353,7 +357,7 @@ body.recording-clean .text-annotation-card{
 
 </style></head><body><div class="app">
 <header>
-  <h1>📷 아비캠뷰어 (AhBiCamViewer) <span class="version-badge" id="appVerBadge">v1.4.6</span><span class="pro-tier-badge pro-tier-pro" id="tierBadge" title="모든 Pro 기능이 제약 없이 무료로 개방되어 있습니다">PRO (전체 기능 개방)</span></h1>
+  <h1>📷 아비캠뷰어 (AhBiCamViewer) <span class="version-badge" id="appVerBadge">v1.4.7</span><span class="pro-tier-badge pro-tier-pro" id="tierBadge" title="모든 Pro 기능이 제약 없이 무료로 개방되어 있습니다">PRO (전체 기능 개방)</span></h1>
   <div class="header-right">
     <button id="aboutBtn" style="padding:4px 9px;font-size:12px">ℹ️ 정보</button>
     <span id="status" class="status">카메라 연결 필요</span>
@@ -1369,6 +1373,195 @@ function createMovableTextCard(x, y, text, cardStyle, fontSize, color){
   return ann;
 }
 
+// ===== MOVABLE SHAPE ANNOTATIONS =====
+const shapeAnnotations = []; // { el, type, x1, y1, x2, y2, col, lw, filled, shiftKey, strokeStyle, fillMode }
+
+function renderShapeAnnotationsToCanvas(targetCtx, canvasW, canvasH){
+  const stW = stage.clientWidth || canvasW;
+  const stH = stage.clientHeight || canvasH;
+  const scX = canvasW / stW;
+  const scY = canvasH / stH;
+  shapeAnnotations.forEach(ann => {
+    if(!ann.el) return;
+    drawShapeOn(
+      targetCtx,
+      ann.type,
+      ann.x1 * scX,
+      ann.y1 * scY,
+      ann.x2 * scX,
+      ann.y2 * scY,
+      ann.col,
+      ann.lw * Math.min(scX, scY),
+      ann.filled,
+      false,
+      ann.strokeStyle,
+      ann.fillMode
+    );
+  });
+}
+
+function removeShapeAnnotation(ann){
+  const idx = shapeAnnotations.indexOf(ann);
+  if(idx >= 0) shapeAnnotations.splice(idx, 1);
+  if(ann.el && ann.el.parentNode) ann.el.remove();
+}
+
+function clearAllShapeAnnotations(){
+  while(shapeAnnotations.length){
+    const ann = shapeAnnotations.pop();
+    if(ann.el && ann.el.parentNode) ann.el.remove();
+  }
+}
+
+function createMovableShapeCard(type, x1, y1, x2, y2, col, lw, filled, shiftKey, strokeStyle, fillMode){
+  const ann = {
+    el: null,
+    type,
+    x1, y1, x2, y2,
+    col,
+    lw,
+    filled,
+    shiftKey: false,
+    strokeStyle: strokeStyle || (typeof shapeStrokeStyle !== 'undefined' ? shapeStrokeStyle : 'solid'),
+    fillMode: fillMode || (typeof shapeFillMode !== 'undefined' ? shapeFillMode : 'none')
+  };
+
+  const pad = Math.max(16, Math.ceil(lw * 3) + 8);
+  const minX = Math.min(x1, x2) - pad;
+  const minY = Math.min(y1, y2) - pad;
+  const maxX = Math.max(x1, x2) + pad;
+  const maxY = Math.max(y1, y2) + pad;
+  const w = Math.max(32, maxX - minX);
+  const h = Math.max(32, maxY - minY);
+
+  const wrap = document.createElement('div');
+  wrap.className = 'shape-annotation-wrap';
+  wrap.style.cssText = `position:absolute;left:${minX}px;top:${minY}px;width:${w}px;height:${h}px;z-index:31;cursor:move;user-select:none;box-sizing:border-box;border:1px dashed transparent;border-radius:6px;transition:border-color 0.15s,box-shadow 0.15s;`;
+
+  const cv = document.createElement('canvas');
+  cv.width = w * devicePixelRatio;
+  cv.height = h * devicePixelRatio;
+  cv.style.cssText = 'width:100%;height:100%;display:block;pointer-events:none;';
+  const cctx = cv.getContext('2d');
+  cctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+
+  // Draw local shape
+  drawShapeOn(
+    cctx,
+    type,
+    x1 - minX,
+    y1 - minY,
+    x2 - minX,
+    y2 - minY,
+    col,
+    lw,
+    filled,
+    false,
+    ann.strokeStyle,
+    ann.fillMode
+  );
+  wrap.appendChild(cv);
+
+  // Delete button (visible on hover)
+  const delBtn = document.createElement('span');
+  delBtn.className = 'shape-ann-del';
+  delBtn.textContent = '✕';
+  delBtn.title = '도형 삭제';
+  delBtn.style.cssText = 'position:absolute;top:-8px;right:-8px;width:20px;height:20px;background:#ef4444;color:#fff;border-radius:50%;font-size:12px;line-height:20px;text-align:center;cursor:pointer;opacity:0;transition:opacity 0.15s;z-index:33;box-shadow:0 2px 6px rgba(0,0,0,0.4);pointer-events:auto;';
+  wrap.appendChild(delBtn);
+
+  // Bake button (캔버스에 고정)
+  const bakeBtn = document.createElement('span');
+  bakeBtn.className = 'shape-ann-bake';
+  bakeBtn.textContent = '📌';
+  bakeBtn.title = '캔버스에 고정 (이동 불가로 전환)';
+  bakeBtn.style.cssText = 'position:absolute;top:-8px;right:16px;width:20px;height:20px;background:#2563eb;color:#fff;border-radius:50%;font-size:11px;line-height:20px;text-align:center;cursor:pointer;opacity:0;transition:opacity 0.15s;z-index:33;box-shadow:0 2px 6px rgba(0,0,0,0.4);pointer-events:auto;';
+  wrap.appendChild(bakeBtn);
+
+  let isDragging = false, dragOX = 0, dragOY = 0;
+  let startLeft = 0, startTop = 0;
+  let startX1 = 0, startY1 = 0, startX2 = 0, startY2 = 0;
+
+  wrap.addEventListener('mouseenter', () => {
+    wrap.style.borderColor = 'rgba(56,189,248,0.7)';
+    wrap.style.boxShadow = '0 0 10px rgba(56,189,248,0.25)';
+    delBtn.style.opacity = '1';
+    bakeBtn.style.opacity = '1';
+  });
+
+  wrap.addEventListener('mouseleave', () => {
+    if(!isDragging){
+      wrap.style.borderColor = 'transparent';
+      wrap.style.boxShadow = 'none';
+      delBtn.style.opacity = '0';
+      bakeBtn.style.opacity = '0';
+    }
+  });
+
+  delBtn.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    removeShapeAnnotation(ann);
+  });
+
+  bakeBtn.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    saveState();
+    drawShapeOn(ctx, ann.type, ann.x1, ann.y1, ann.x2, ann.y2, ann.col, ann.lw, ann.filled, false, ann.strokeStyle, ann.fillMode);
+    removeShapeAnnotation(ann);
+  });
+
+  wrap.addEventListener('pointerdown', (ev) => {
+    if(ev.target === delBtn || ev.target === bakeBtn) return;
+    isDragging = true;
+    dragOX = ev.clientX;
+    dragOY = ev.clientY;
+    startLeft = wrap.offsetLeft;
+    startTop = wrap.offsetTop;
+    startX1 = ann.x1;
+    startY1 = ann.y1;
+    startX2 = ann.x2;
+    startY2 = ann.y2;
+    wrap.setPointerCapture(ev.pointerId);
+    wrap.style.zIndex = '34';
+    wrap.style.borderColor = '#38bdf8';
+    wrap.style.boxShadow = '0 8px 24px rgba(56,189,248,0.45)';
+    ev.preventDefault();
+    ev.stopPropagation();
+  });
+
+  wrap.addEventListener('pointermove', (ev) => {
+    if(!isDragging) return;
+    const dx = ev.clientX - dragOX;
+    const dy = ev.clientY - dragOY;
+    const nx = startLeft + dx;
+    const ny = startTop + dy;
+    wrap.style.left = nx + 'px';
+    wrap.style.top = ny + 'px';
+    ann.x1 = startX1 + dx;
+    ann.y1 = startY1 + dy;
+    ann.x2 = startX2 + dx;
+    ann.y2 = startY2 + dy;
+    ev.preventDefault();
+    ev.stopPropagation();
+  });
+
+  wrap.addEventListener('pointerup', (ev) => {
+    if(!isDragging) return;
+    isDragging = false;
+    wrap.style.zIndex = '31';
+    wrap.style.borderColor = 'transparent';
+    wrap.style.boxShadow = 'none';
+    delBtn.style.opacity = '0';
+    bakeBtn.style.opacity = '0';
+    ev.stopPropagation();
+  });
+
+  ann.el = wrap;
+  stage.appendChild(wrap);
+  shapeAnnotations.push(ann);
+  return ann;
+}
+
 // Undo/Redo
 const UNDO_LIMIT = 50;
 let undoStack=[],redoStack=[];
@@ -2224,10 +2417,11 @@ function doFreeze(){
   }
 }
 function clearDraw(){
-  if(confirm('현재 화면의 모든 판서를 지우시겠습니까? (되돌리기 가능)\n※ 이동 가능한 텍스트 카드도 함께 삭제됩니다.')){
+  if(confirm('현재 화면의 모든 판서를 지우시겠습니까? (되돌리기 가능)\n※ 이동 가능한 텍스트 카드 및 도형도 함께 삭제됩니다.')){
     saveState();
     ctx.clearRect(0,0,draw.clientWidth,draw.clientHeight);
     clearAllTextAnnotations();
+    clearAllShapeAnnotations();
   }
 }
 function pos(e){const r=draw.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
@@ -2321,7 +2515,7 @@ function setShapeSize(sz){
   renderShapeTipPreview();
 }
 
-function drawShapeOn(context, t, x1, y1, x2, y2, col, lw, filled=false, shiftKey=false){
+function drawShapeOn(context, t, x1, y1, x2, y2, col, lw, filled=false, shiftKey=false, customStroke=null, customFill=null){
   context.save();
   context.strokeStyle = col;
   context.lineWidth = lw;
@@ -2330,10 +2524,13 @@ function drawShapeOn(context, t, x1, y1, x2, y2, col, lw, filled=false, shiftKey
   context.globalAlpha = 1;
   context.globalCompositeOperation = 'source-over';
 
+  const effStroke = customStroke || shapeStrokeStyle;
+  const effFill = customFill || shapeFillMode;
+
   // 선 스타일 반영 (solid, dashed, dotted)
-  if(shapeStrokeStyle === 'dashed'){
+  if(effStroke === 'dashed'){
     context.setLineDash([Math.max(6, lw * 2.5), Math.max(4, lw * 1.5)]);
-  } else if(shapeStrokeStyle === 'dotted'){
+  } else if(effStroke === 'dotted'){
     context.setLineDash([Math.max(2, lw * 0.8), Math.max(4, lw * 1.6)]);
   } else {
     context.setLineDash([]);
@@ -2356,11 +2553,11 @@ function drawShapeOn(context, t, x1, y1, x2, y2, col, lw, filled=false, shiftKey
   }
 
   // 채우기 모드 반영
-  const isFilled = (shapeFillMode !== 'none') || filled;
+  const isFilled = (effFill !== 'none') || filled;
   let fillAlpha = 0.28;
-  if(shapeFillMode === 'trans25') fillAlpha = 0.25;
-  else if(shapeFillMode === 'trans50') fillAlpha = 0.50;
-  else if(shapeFillMode === 'solid') fillAlpha = 1.0;
+  if(effFill === 'trans25') fillAlpha = 0.25;
+  else if(effFill === 'trans50') fillAlpha = 0.50;
+  else if(effFill === 'solid') fillAlpha = 1.0;
   context.fillStyle = hexToRgba(col, fillAlpha);
 
   if(t === 'shapeLine'){
@@ -3320,8 +3517,37 @@ draw.addEventListener('pointerup', e => {
   if(isShapeTool(tool) && shapeStart){
     const p = pos(e);
     spCtx.clearRect(0, 0, shapePreview.clientWidth, shapePreview.clientHeight);
-    saveState();
-    drawShapeOn(ctx, tool, shapeStart.x, shapeStart.y, p.x, p.y, color.value, shapeSize || +size.value, isShapeFilled, e.shiftKey);
+    let effX2 = p.x, effY2 = p.y;
+    if(e.shiftKey){
+      let dx = effX2 - shapeStart.x, dy = effY2 - shapeStart.y;
+      if(tool === 'shapeRect' || tool === 'shapeCircle' || tool === 'shapeStar'){
+        const maxDim = Math.max(Math.abs(dx), Math.abs(dy));
+        effX2 = shapeStart.x + Math.sign(dx || 1) * maxDim;
+        effY2 = shapeStart.y + Math.sign(dy || 1) * maxDim;
+      } else if(tool === 'shapeLine' || tool === 'shapeArrow' || tool === 'shapeDoubleArrow'){
+        const angle = Math.atan2(dy, dx);
+        const snapAngle = Math.round(angle / (Math.PI / 4)) * (Math.PI / 4);
+        const dist = Math.hypot(dx, dy);
+        effX2 = shapeStart.x + Math.cos(snapAngle) * dist;
+        effY2 = shapeStart.y + Math.sin(snapAngle) * dist;
+      }
+    }
+    const dist = Math.hypot(effX2 - shapeStart.x, effY2 - shapeStart.y);
+    if(dist >= 5){
+      createMovableShapeCard(
+        tool,
+        shapeStart.x,
+        shapeStart.y,
+        effX2,
+        effY2,
+        color.value,
+        shapeSize || +size.value,
+        isShapeFilled,
+        false,
+        shapeStrokeStyle,
+        shapeFillMode
+      );
+    }
     shapeStart = null;
     return;
   }
@@ -4552,8 +4778,9 @@ function capture(){
     c.filter = 'none';
     c.drawImage(draw, 0, 0, out.width, out.height);
     
-    // 3. 이동 가능한 텍스트 주석 합성
+    // 3. 이동 가능한 텍스트 및 도형 주석 합성
     renderTextAnnotationsToCanvas(c, out.width, out.height);
+    renderShapeAnnotationsToCanvas(c, out.width, out.height);
     
     const capFmt = getCaptureFormatConfig();
     const captureQuality = capFmt.quality;
@@ -4749,8 +4976,9 @@ updateResolutionDots(getLastCamera());
       mctx.drawImage(draw, 0, 0, stage.clientWidth, stage.clientHeight);
     }
 
-    // 3. 이동 가능한 텍스트 주석 렌더링
+    // 3. 이동 가능한 텍스트 및 도형 주석 렌더링
     renderTextAnnotationsToCanvas(mctx, stage.clientWidth, stage.clientHeight);
+    renderShapeAnnotationsToCanvas(mctx, stage.clientWidth, stage.clientHeight);
 
     mctx.restore();
 
@@ -4916,6 +5144,7 @@ updateResolutionDots(getLastCamera());
     }
     x.drawImage(draw,0,0,c.width,c.height);
     renderTextAnnotationsToCanvas(x, c.width, c.height);
+    renderShapeAnnotationsToCanvas(x, c.width, c.height);
     return c.toDataURL('image/jpeg',.95);
   }
 
@@ -4993,8 +5222,9 @@ updateResolutionDots(getLastCamera());
     recCtx.filter = 'none';
     recCtx.drawImage(draw, 0, 0, recCanvas.width, recCanvas.height);
 
-    // 3. 이동 가능한 텍스트 주석 합성
+    // 3. 이동 가능한 텍스트 및 도형 주석 합성
     renderTextAnnotationsToCanvas(recCtx, recCanvas.width, recCanvas.height);
+    renderShapeAnnotationsToCanvas(recCtx, recCanvas.width, recCanvas.height);
   }
 
   function initRecCanvas(){
@@ -5490,7 +5720,7 @@ updateResolutionDots(getLastCamera());
   };
 
   // ===== 7. GITHUB RELEASES AUTO UPDATE SYSTEM & ABOUT MODAL =====
-  const APP_VERSION = "1.4.6";
+  const APP_VERSION = "1.4.7";
   const GITHUB_REPO = "AhBiYout-all/ClassroomVisualizer";
   const GITHUB_USER = "AhBiYout";
   const GITHUB_URL = "https://github.com/AhBiYout-all";

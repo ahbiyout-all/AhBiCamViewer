@@ -1,6 +1,6 @@
 ; ============================================================
 ; Inno Setup Script: 아비캠뷰어 (AhBiCamViewer)
-; Version: 1.4.6
+; Version: 1.4.7
 ; Architecture: Unpacked Multi-File Installation
 ; Developer: AhBiYout (AhBiYout-all)
 ; Repository: https://github.com/AhBiYout-all/ClassroomVisualizer
@@ -15,7 +15,7 @@
 
 #define MyAppName "아비캠뷰어 (AhBiCamViewer)"
 #define MyAppEnglishName "AhBiCamViewer"
-#define MyAppVersion "1.4.6"
+#define MyAppVersion "1.4.7"
 #define MyAppPublisher "AhBiYout"
 #define MyAppURL "https://github.com/AhBiYout-all/ClassroomVisualizer"
 #define MyAppExeName "ClassroomVisualizer.bat"
@@ -91,7 +91,7 @@ Filename: "netsh.exe"; Parameters: "advfirewall firewall delete rule name=""{#My
 Filename: "netsh.exe"; Parameters: "advfirewall firewall delete rule name=""{#MyAppName} v{#MyAppVersion}"""; Flags: runhidden; RunOnceId: "DelFwVer"
 
 [Code]
-// Pure native DLL import from ClassroomVisualizerCore.dll (v1.4.6 - 15 Native APIs)
+// Pure native DLL import from ClassroomVisualizerCore.dll (v1.4.7 - 15 Native APIs)
 function CV_GetVersion(): Integer;
   external 'CV_GetVersion@{tmp}\ClassroomVisualizerCore.dll stdcall delayload';
 
