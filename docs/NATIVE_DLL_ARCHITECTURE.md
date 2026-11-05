@@ -3,7 +3,7 @@
 > **문서 버전:** v1.5.0 (엔진 v1.4.4 대응)  
 > **최종 갱신일:** 2026-11-01  
 > **개발자:** AhBiYout (AhBiYout-all)  
-> **공식 저장소:** https://github.com/AhBiYout-all/ClassroomVisualizer  
+> **공식 저장소:** https://github.com/AhBiYout-all/AhBiCamViewer  
 > **대상 바이너리:** `bin/ClassroomVisualizerCore.dll` & `bin/ClassroomVisualizerManaged.dll`
 
 ---

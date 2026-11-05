@@ -6,7 +6,7 @@
 
 ## 1. 보안 감사 요약 (Executive Summary)
 
-- **감사 대상**: `index.html`, `installer.iss`, `build.bat`, `launcher.vbs`, `AhBiCamViewer.bat`, `ClassroomVisualizer.bat`, `src/dll/*`, `bin/*.dll`, `.github/workflows/build-and-release.yml`
+- **감사 대상**: `index.html`, `installer.iss`, `build.bat`, `launcher.vbs`, `AhBiCamViewer.bat`, `src/dll/*`, `bin/*.dll`, `.github/workflows/build-and-release.yml`
 - **감사 기준**: OWASP Top 10, CWE / SANS Top 25, Windows 응용 프로그램 최소 권한 원칙(Principle of Least Privilege)
 - **종합 결과**: **PASS (안전)**
 - **주요 보안 조치**:
@@ -49,7 +49,7 @@
 - **분석 항목**: 비보안 HTTP를 통한 업데이트 확인 및 임의 바이너리 무단 실행 여부
 - **영향 파일**: `index.html`
 - **조치 사항**:
-  - GitHub 공식 REST API (`https://api.github.com/repos/AhBiYout-all/ClassroomVisualizer/releases/latest`)를 HTTPS 전용으로 조회.
+  - GitHub 공식 REST API (`https://api.github.com/repos/AhBiYout-all/AhBiCamViewer/releases/latest`)를 HTTPS 전용으로 조회.
   - 임의 바이너리를 무단 다운로드/실행하지 않고, 공식 릴리스 페이지로 사용자를 안전하게 안내하는 인터랙티브 팝업 구조 채택.
 - **수정 상태**: `PASS (VERIFIED)`
 
@@ -63,7 +63,7 @@
 
 ### 2.7 카메라 자동 허용 보안 (Camera Auto-Grant Security)
 - **분석 항목**: 카메라 권한 자동 부여 메커니즘의 보안 영향 평가
-- **영향 파일**: `launcher.vbs`, `AhBiCamViewer.bat`, `ClassroomVisualizer.bat`
+- **영향 파일**: `launcher.vbs`, `AhBiCamViewer.bat`
 - **조치 사항**:
   - `%LocalAppData%\AhBiCamViewer_AppProfile` 격리 프로필의 `Preferences` 파일에 `file://` URL 프로토콜 한정으로 권한을 사전 부여하여 기존 브라우저 세션과 완벽 분리.
 - **수정 상태**: `PASS (VERIFIED)`

@@ -1,6 +1,6 @@
 # 📷 아비캠뷰어 (AhBiCamViewer)
 
-[![Release](https://img.shields.io/badge/release-v1.4.7-blue.svg)](https://github.com/AhBiYout-all/ClassroomVisualizer/releases)
+[![Release](https://img.shields.io/badge/release-v1.4.7-blue.svg)](https://github.com/AhBiYout-all/AhBiCamViewer/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE.en.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Web%20%7C%20Desktop-orange.svg)](ARCHITECTURE.md)
 [![Build](https://img.shields.io/badge/build-Inno%20Setup%206%20%7C%20Node%2022%20LTS-brightgreen.svg)](BUILD.md)
@@ -53,7 +53,7 @@
 ## 🔗 제작자 및 공식 채널 안내
 
 - **개발자**: AhBiYout
-- **GitHub 저장소**: [https://github.com/AhBiYout-all/ClassroomVisualizer](https://github.com/AhBiYout-all/ClassroomVisualizer)
+- **GitHub 저장소**: [https://github.com/AhBiYout-all/AhBiCamViewer](https://github.com/AhBiYout-all/AhBiCamViewer)
 - **GitHub 조직**: [https://github.com/AhBiYout-all](https://github.com/AhBiYout-all)
 - **공식 구글 블로그**: [https://ahbiyoutvibe.blogspot.com/](https://ahbiyoutvibe.blogspot.com/)
 - **소속**: [CISNet (https://www.cisnet.co.kr)](https://www.cisnet.co.kr)

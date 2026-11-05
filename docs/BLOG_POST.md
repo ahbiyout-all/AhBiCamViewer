@@ -61,9 +61,9 @@
 ## 5. 다운로드
 아래 공식 GitHub Releases 링크에서 최신 설치 파일 및 포터블 버전을 무료로 다운로드하실 수 있습니다:
 
-- 🚀 **윈도우 정식 설치 프로그램**: [AhBiCamViewer_Setup_v1.4.7.exe 다운로드](https://github.com/AhBiYout-all/ClassroomVisualizer/releases/download/v1.4.7/%EC%95%84%EB%B9%84%EC%BA%A0%EB%B7%B0%EC%96%B4.(AhBiCamViewer)_Setup_v1.4.7.exe)
-- 🧰 **무설치 포터블 패키지**: [AhBiCamViewer_Portable_v1.4.7.zip 다운로드](https://github.com/AhBiYout-all/ClassroomVisualizer/releases/download/v1.4.7/AhBiCamViewer_Portable_v1.4.7.zip)
-- 🌐 **GitHub 릴리스 전체 목록**: [GitHub Releases](https://github.com/AhBiYout-all/ClassroomVisualizer/releases)
+- 🚀 **윈도우 정식 설치 프로그램**: [AhBiCamViewer_Setup_v1.4.7.exe 다운로드](https://github.com/AhBiYout-all/AhBiCamViewer/releases/download/v1.4.7/%EC%95%84%EB%B9%84%EC%BA%A0%EB%B7%B0%EC%96%B4.(AhBiCamViewer)_Setup_v1.4.7.exe)
+- 🧰 **무설치 포터블 패키지**: [AhBiCamViewer_Portable_v1.4.7.zip 다운로드](https://github.com/AhBiYout-all/AhBiCamViewer/releases/download/v1.4.7/AhBiCamViewer_Portable_v1.4.7.zip)
+- 🌐 **GitHub 릴리스 전체 목록**: [GitHub Releases](https://github.com/AhBiYout-all/AhBiCamViewer/releases)
 
 ---
 
@@ -225,10 +225,10 @@
     <h2 style="font-size: 20px; font-weight: 800; color: #1e40af; margin-top: 0; margin-bottom: 12px;">무료 다운로드 (Official GitHub Releases)</h2>
     <p style="font-size: 14px; color: #1e3a8a; margin-bottom: 20px;">학교, 관공서, 학원, 기업, 가정 등 어디서나 조건 없이 100% 무료로 이용하실 수 있습니다.</p>
     <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-      <a href="https://github.com/AhBiYout-all/ClassroomVisualizer/releases/download/v1.4.7/%EC%95%84%EB%B9%84%EC%BA%A0%EB%B7%B0%EC%96%B4.(AhBiCamViewer)_Setup_v1.4.7.exe" style="display: inline-block; background: #2563eb; color: #ffffff; font-weight: 700; font-size: 15px; padding: 12px 24px; border-radius: 8px; text-decoration: none; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.4);">
+      <a href="https://github.com/AhBiYout-all/AhBiCamViewer/releases/download/v1.4.7/%EC%95%84%EB%B9%84%EC%BA%A0%EB%B7%B0%EC%96%B4.(AhBiCamViewer)_Setup_v1.4.7.exe" style="display: inline-block; background: #2563eb; color: #ffffff; font-weight: 700; font-size: 15px; padding: 12px 24px; border-radius: 8px; text-decoration: none; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.4);">
         📥 정식 인스톨러 (.exe) 다운로드
       </a>
-      <a href="https://github.com/AhBiYout-all/ClassroomVisualizer/releases/download/v1.4.7/AhBiCamViewer_Portable_v1.4.7.zip" style="display: inline-block; background: #059669; color: #ffffff; font-weight: 700; font-size: 15px; padding: 12px 24px; border-radius: 8px; text-decoration: none; box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.4);">
+      <a href="https://github.com/AhBiYout-all/AhBiCamViewer/releases/download/v1.4.7/AhBiCamViewer_Portable_v1.4.7.zip" style="display: inline-block; background: #059669; color: #ffffff; font-weight: 700; font-size: 15px; padding: 12px 24px; border-radius: 8px; text-decoration: none; box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.4);">
         🧰 무설치 포터블 (.zip) 다운로드
       </a>
     </div>

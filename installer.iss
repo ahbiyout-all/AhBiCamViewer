@@ -3,7 +3,7 @@
 ; Version: 1.4.7
 ; Architecture: Unpacked Multi-File Installation
 ; Developer: AhBiYout (AhBiYout-all)
-; Repository: https://github.com/AhBiYout-all/ClassroomVisualizer
+; Repository: https://github.com/AhBiYout-all/AhBiCamViewer
 ; Official Blog: https://ahbiyoutvibe.blogspot.com/
 ; Features:
 ;  - Unpacked multi-file individual files (no zip bundling)
@@ -17,8 +17,8 @@
 #define MyAppEnglishName "AhBiCamViewer"
 #define MyAppVersion "1.4.7"
 #define MyAppPublisher "AhBiYout"
-#define MyAppURL "https://github.com/AhBiYout-all/ClassroomVisualizer"
-#define MyAppExeName "ClassroomVisualizer.bat"
+#define MyAppURL "https://github.com/AhBiYout-all/AhBiCamViewer"
+#define MyAppExeName "AhBiCamViewer.bat"
 
 [Setup]
 AppId={{E68A9F21-7A39-4E61-9A3F-470295BCA120}
@@ -60,9 +60,7 @@ Source: "assets\*"; DestDir: "{app}\assets"; Flags: ignoreversion recursesubdirs
 Source: "docs\*"; DestDir: "{app}\docs"; Excludes: "*SYSTEM.txt"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "tools\launcher.vbs"; DestDir: "{app}"; Flags: ignoreversion
 Source: "tools\launcher.vbs"; DestDir: "{app}\tools"; Flags: ignoreversion
-Source: "tools\ClassroomVisualizer.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "tools\AhBiCamViewer.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "tools\ClassroomVisualizer.bat"; DestDir: "{app}\tools"; Flags: ignoreversion
 Source: "tools\AhBiCamViewer.bat"; DestDir: "{app}\tools"; Flags: ignoreversion
 Source: "bin\*.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
 ; Files required during setup execution

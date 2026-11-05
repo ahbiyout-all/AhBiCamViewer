@@ -1,7 +1,7 @@
 # MIT 라이선스 (MIT License - 한국어 참고용)
 
 Copyright (c) 2026 AhBiYout (CISNet)  
-공식 저장소: https://github.com/AhBiYout-all/ClassroomVisualizer  
+공식 저장소: https://github.com/AhBiYout-all/AhBiCamViewer  
 공식 블로그: https://ahbiyoutvibe.blogspot.com/  
 소속 회사: CISNet (http://www.cisnet.co.kr/)
 

@@ -1,4 +1,4 @@
-name: Build and Release Classroom Visualizer
+name: Build and Release AhBiCamViewer
 
 on:
   push:
@@ -110,7 +110,7 @@ jobs:
           } else {
             $body = "Release v$($env:APP_VERSION) of Classroom Visualizer."
           }
-          $body += "`r`n`r`n---`r`n### 👤 제작자 및 공식 채널`r`n- 개발자: AhBiYout`r`n- GitHub: https://github.com/AhBiYout-all`r`n- 저장소: https://github.com/AhBiYout-all/ClassroomVisualizer`r`n- 공식 블로그: https://ahbiyoutvibe.blogspot.com/`r`n- 공식 소속: https://www.cisnet.co.kr"
+          $body += "`r`n`r`n---`r`n### 👤 제작자 및 공식 채널`r`n- 개발자: AhBiYout`r`n- GitHub: https://github.com/AhBiYout-all`r`n- 저장소: https://github.com/AhBiYout-all/AhBiCamViewer`r`n- 공식 블로그: https://ahbiyoutvibe.blogspot.com/`r`n- 공식 소속: https://www.cisnet.co.kr"
           [System.IO.File]::WriteAllText("release_body.md", $body, [System.Text.Encoding]::UTF8)
 
       - name: Publish GitHub Release (Installer Only)

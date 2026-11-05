@@ -8,11 +8,11 @@
 
 - **개발자 (Developer)**: `AhBiYout`
 - **GitHub 공식 계정/조직**: [`AhBiYout-all`](https://github.com/AhBiYout-all)
-- **GitHub 공식 저장소**: [`https://github.com/AhBiYout-all/ClassroomVisualizer`](https://github.com/AhBiYout-all/ClassroomVisualizer)
+- **GitHub 공식 저장소**: [`https://github.com/AhBiYout-all/AhBiCamViewer`](https://github.com/AhBiYout-all/AhBiCamViewer)
 - **공식 구글 블로그**: [`https://ahbiyoutvibe.blogspot.com/`](https://ahbiyoutvibe.blogspot.com/)
 - **공식 소속**: [`CISNet (https://www.cisnet.co.kr)`](https://www.cisnet.co.kr)
 
-> **저장소 명명 규칙**: 저장소 이름은 앱 이름(`ClassroomVisualizer`)으로 기본 생성되어 관리됩니다.
+> **저장소 명명 규칙**: 저장소 이름은 앱 이름(`AhBiCamViewer`)으로 기본 생성되어 관리됩니다.
 
 ---
 
@@ -65,7 +65,7 @@ sequenceDiagram
     participant GH as GitHub Releases API
     
     App->>App: 앱 시작 시 checkUpdateSilently() 비동기 호출
-    App->>GH: GET /repos/AhBiYout-all/ClassroomVisualizer/releases/latest
+    App->>GH: GET /repos/AhBiYout-all/AhBiCamViewer/releases/latest
     GH-->>App: 최신 릴리스 정보 응답 (tag_name: v1.4.5, html_url)
     alt 신규 버전 감지 (remoteVersion > localVersion)
         App->>User: 업데이트 알림 팝업 모달창 자동 표시
@@ -79,7 +79,7 @@ sequenceDiagram
 ### 3.2 업데이트 알림 팝업 UI 구성요소
 - **버전 정보 표시**: 현재 실행 중인 로컬 버전(`version.json`)과 GitHub에 릴리스된 최신 버전 비교 표시.
 - **업데이트 다운로드 버튼**: 클릭 시 최신 공식 설치 파일(`.exe`) 직접 다운로드 또는 GitHub Releases 페이지로 안전하게 연결.
-- **공식 GitHub 경로**: 저장소 주소(`https://github.com/AhBiYout-all/ClassroomVisualizer`)를 원클릭으로 열람할 수 있는 링크 제공.
+- **공식 GitHub 경로**: 저장소 주소(`https://github.com/AhBiYout-all/AhBiCamViewer`)를 원클릭으로 열람할 수 있는 링크 제공.
 
 ---
 

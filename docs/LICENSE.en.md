@@ -1,7 +1,7 @@
 # MIT License
 
 Copyright (c) 2026 AhBiYout (CISNet)  
-Official Repository: https://github.com/AhBiYout-all/ClassroomVisualizer  
+Official Repository: https://github.com/AhBiYout-all/AhBiCamViewer  
 Official Blog: https://ahbiyoutvibe.blogspot.com/  
 Company: CISNet (http://www.cisnet.co.kr/)
 

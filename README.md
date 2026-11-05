@@ -1,6 +1,6 @@
 # 📷 아비캠뷰어 (AhBiCamViewer)
 
-[![Release](https://img.shields.io/badge/release-v1.4.7-blue.svg)](https://github.com/AhBiYout-all/ClassroomVisualizer/releases)
+[![Release](https://img.shields.io/badge/release-v1.4.7-blue.svg)](https://github.com/AhBiYout-all/AhBiCamViewer/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](docs/LICENSE.en.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Web%20%7C%20Desktop-orange.svg)](docs/ARCHITECTURE.md)
 [![Build](https://img.shields.io/badge/build-Inno%20Setup%206%20%7C%20Node%2022%20LTS-brightgreen.svg)](docs/BUILD.md)
@@ -96,7 +96,7 @@
 │   └── LICENSE.en.md            # 영문 라이선스
 └── tools/                       # 유틸리티 및 빌드 도구
     ├── build_dll.bat            # 순수 창작 DLL 컴파일 및 15/15 검증 테스트 실행기
-    ├── ClassroomVisualizer.bat  # 스탠드얼론 실행 배치
+    ├── AhBiCamViewer.bat       # 스탠드얼론 실행 배치
     ├── AhBiCamViewer.bat        # 아비캠뷰어 전용 실행 배치
     ├── launcher.vbs             # 무음 창모드 런처
     ├── check_syntax.cjs         # HTML 스크립트 블록 문법 자동 검증기
@@ -122,7 +122,7 @@
 ## 🔗 제작자 및 공식 채널 안내
 
 - **개발자**: AhBiYout
-- **GitHub 저장소**: [https://github.com/AhBiYout-all/ClassroomVisualizer](https://github.com/AhBiYout-all/ClassroomVisualizer)
+- **GitHub 저장소**: [https://github.com/AhBiYout-all/AhBiCamViewer](https://github.com/AhBiYout-all/AhBiCamViewer)
 - **GitHub 계정/조직**: [https://github.com/AhBiYout-all](https://github.com/AhBiYout-all)
 - **공식 구글 블로그**: [https://ahbiyoutvibe.blogspot.com/](https://ahbiyoutvibe.blogspot.com/)
 - **소속**: [CISNet (https://www.cisnet.co.kr)](https://www.cisnet.co.kr)
