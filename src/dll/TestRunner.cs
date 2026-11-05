@@ -69,17 +69,17 @@ namespace AhBiYout.ClassroomVisualizer.Testing
             int passed = 0;
             int total = 15;
 
-            // TEST 1: CV_GetVersion (0x01040500 for v1.4.5)
+            // TEST 1: CV_GetVersion (0x01040600 for v1.4.6)
             int ver = CV_GetVersion();
             Console.WriteLine("[TEST 1] CV_GetVersion: 0x{0:X8}", ver);
-            if (ver == 0x01040500)
+            if (ver == 0x01040600)
             {
-                Console.WriteLine("         PASS: Version matches v1.4.5.0 (0x01040500)");
+                Console.WriteLine("         PASS: Version matches v1.4.6.0 (0x01040600)");
                 passed++;
             }
             else
             {
-                Console.WriteLine("         FAIL: Expected 0x01040500");
+                Console.WriteLine("         FAIL: Expected 0x01040600");
             }
 
             // TEST 2: CV_ValidateKeyA

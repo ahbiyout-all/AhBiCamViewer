@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>아비캠뷰어 (AhBiCamViewer) v1.4.5</title>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>아비캠뷰어 (AhBiCamViewer) v1.4.6</title>
 <link rel="icon" type="image/png" href="assets/icon.png">
 <style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden}body{background:#101114;color:#f5f5f5;font-family:system-ui,sans-serif}.app{height:100vh;display:flex;flex-direction:column}
@@ -227,12 +227,16 @@ body.capturing header,
 body.capturing .cam-switch,
 body.capturing .res-badge,
 body.capturing #zoomIndicator,
+body.capturing .text-annotation-card,
+body.capturing .text-ann-del,
+body.capturing .text-ann-bake,
 body.recording-clean .left-toolbar,
 body.recording-clean .bottom-toolbar,
 body.recording-clean header,
 body.recording-clean .cam-switch,
 body.recording-clean .res-badge,
-body.recording-clean #zoomIndicator{
+body.recording-clean #zoomIndicator,
+body.recording-clean .text-annotation-card{
   opacity:0 !important;
   pointer-events:none !important;
   transition:opacity .15s ease;
@@ -349,7 +353,7 @@ body.recording-clean #zoomIndicator{
 
 </style></head><body><div class="app">
 <header>
-  <h1>📷 아비캠뷰어 (AhBiCamViewer) <span class="version-badge" id="appVerBadge">v1.4.5</span><span class="pro-tier-badge pro-tier-pro" id="tierBadge" title="모든 Pro 기능이 제약 없이 무료로 개방되어 있습니다">PRO (전체 기능 개방)</span></h1>
+  <h1>📷 아비캠뷰어 (AhBiCamViewer) <span class="version-badge" id="appVerBadge">v1.4.6</span><span class="pro-tier-badge pro-tier-pro" id="tierBadge" title="모든 Pro 기능이 제약 없이 무료로 개방되어 있습니다">PRO (전체 기능 개방)</span></h1>
   <div class="header-right">
     <button id="aboutBtn" style="padding:4px 9px;font-size:12px">ℹ️ 정보</button>
     <span id="status" class="status">카메라 연결 필요</span>
@@ -1135,6 +1139,235 @@ document.getElementById('proKeyInput').addEventListener('input', function(){
   let formatted = v.match(/.{1,4}/g)?.join('-') || v;
   this.value = formatted;
 });
+
+// ===== MOVABLE TEXT ANNOTATIONS =====
+const textAnnotations = []; // {el, x, y, text, style, fontSize, color, lines}
+
+function renderTextAnnotationsToCanvas(targetCtx, canvasW, canvasH){
+  const stW = stage.clientWidth || canvasW;
+  const stH = stage.clientHeight || canvasH;
+  const scX = canvasW / stW;
+  const scY = canvasH / stH;
+  textAnnotations.forEach(ann => {
+    if(!ann.el || !ann.text) return;
+    const ax = ann.x * scX;
+    const ay = ann.y * scY;
+    const fs = ann.fontSize * Math.min(scX, scY);
+    const font = `600 ${fs}px system-ui,-apple-system,sans-serif`;
+    targetCtx.save();
+    targetCtx.font = font;
+    targetCtx.globalAlpha = 1;
+    targetCtx.globalCompositeOperation = 'source-over';
+    const lines = ann.text.split('\n');
+    const lineH = fs * 1.35;
+    let maxW = 0;
+    lines.forEach(l => { const w = targetCtx.measureText(l).width; if(w > maxW) maxW = w; });
+    const padX = 12 * scX, padY = 10 * scY;
+    const cardW = maxW + padX * 2;
+    const cardH = lines.length * lineH + padY * 2;
+    if(ann.style === 'dark'){
+      targetCtx.fillStyle = 'rgba(16,17,20,0.85)';
+      targetCtx.beginPath(); targetCtx.roundRect(ax, ay, cardW, cardH, 8 * Math.min(scX, scY)); targetCtx.fill();
+      targetCtx.strokeStyle = 'rgba(255,255,255,0.18)'; targetCtx.lineWidth = 1; targetCtx.stroke();
+    } else if(ann.style === 'light'){
+      targetCtx.fillStyle = 'rgba(248,250,252,0.92)';
+      targetCtx.beginPath(); targetCtx.roundRect(ax, ay, cardW, cardH, 8 * Math.min(scX, scY)); targetCtx.fill();
+      targetCtx.strokeStyle = 'rgba(15,23,42,0.2)'; targetCtx.lineWidth = 1; targetCtx.stroke();
+    } else if(ann.style === 'yellow'){
+      targetCtx.fillStyle = 'rgba(254,240,138,0.95)';
+      targetCtx.beginPath(); targetCtx.roundRect(ax, ay, cardW, cardH, 8 * Math.min(scX, scY)); targetCtx.fill();
+      targetCtx.strokeStyle = 'rgba(234,179,8,0.5)'; targetCtx.lineWidth = 1; targetCtx.stroke();
+    }
+    targetCtx.fillStyle = ann.color;
+    if(ann.style === 'none' || ann.style === 'dark'){
+      targetCtx.shadowColor = 'rgba(0,0,0,0.85)'; targetCtx.shadowBlur = 4;
+    } else { targetCtx.shadowColor = 'transparent'; targetCtx.shadowBlur = 0; }
+    lines.forEach((line, i) => {
+      targetCtx.fillText(line, ax + padX, ay + padY + (i + 0.8) * lineH);
+    });
+    targetCtx.restore();
+  });
+}
+
+function removeTextAnnotation(ann){
+  const idx = textAnnotations.indexOf(ann);
+  if(idx >= 0) textAnnotations.splice(idx, 1);
+  if(ann.el && ann.el.parentNode) ann.el.remove();
+}
+
+function clearAllTextAnnotations(){
+  while(textAnnotations.length){
+    const ann = textAnnotations.pop();
+    if(ann.el && ann.el.parentNode) ann.el.remove();
+  }
+}
+
+function createMovableTextCard(x, y, text, cardStyle, fontSize, color){
+  const ann = { el: null, x, y, text, style: cardStyle, fontSize, color };
+
+  const card = document.createElement('div');
+  card.className = 'text-annotation-card';
+  card.style.cssText = `position:absolute;left:${x}px;top:${y}px;z-index:32;cursor:move;user-select:none;font-size:${fontSize}px;font-family:system-ui,-apple-system,sans-serif;font-weight:600;line-height:1.35;padding:10px 12px;border-radius:8px;min-width:40px;white-space:pre-wrap;word-break:break-word;transition:box-shadow 0.15s;`;
+
+  // Apply card style
+  if(cardStyle === 'dark'){
+    card.style.background = 'rgba(16,17,20,0.85)';
+    card.style.border = '1px solid rgba(255,255,255,0.18)';
+    card.style.color = color;
+    card.style.textShadow = '0 1px 4px rgba(0,0,0,0.85)';
+  } else if(cardStyle === 'light'){
+    card.style.background = 'rgba(248,250,252,0.92)';
+    card.style.border = '1px solid rgba(15,23,42,0.2)';
+    const c = (color === '#ffffff' || color.toLowerCase() === '#fff') ? '#0f172a' : color;
+    card.style.color = c;
+    ann.color = c;
+  } else if(cardStyle === 'yellow'){
+    card.style.background = 'rgba(254,240,138,0.95)';
+    card.style.border = '1px solid rgba(234,179,8,0.5)';
+    const c = (color === '#ffffff' || color.toLowerCase() === '#fff') ? '#1c1917' : color;
+    card.style.color = c;
+    ann.color = c;
+  } else {
+    card.style.background = 'transparent';
+    card.style.border = 'none';
+    card.style.color = color;
+    card.style.textShadow = '0 1px 4px rgba(0,0,0,0.85)';
+  }
+
+  card.textContent = text;
+
+  // Delete button (visible on hover)
+  const delBtn = document.createElement('span');
+  delBtn.className = 'text-ann-del';
+  delBtn.textContent = '✕';
+  delBtn.title = '삭제';
+  delBtn.style.cssText = 'position:absolute;top:-8px;right:-8px;width:20px;height:20px;background:#ef4444;color:#fff;border-radius:50%;font-size:12px;line-height:20px;text-align:center;cursor:pointer;opacity:0;transition:opacity 0.15s;z-index:33;box-shadow:0 2px 6px rgba(0,0,0,0.4);pointer-events:auto;';
+  card.appendChild(delBtn);
+
+  // Bake button (캔버스에 고정)
+  const bakeBtn = document.createElement('span');
+  bakeBtn.className = 'text-ann-bake';
+  bakeBtn.textContent = '📌';
+  bakeBtn.title = '캔버스에 고정 (이동 불가로 전환)';
+  bakeBtn.style.cssText = 'position:absolute;top:-8px;right:16px;width:20px;height:20px;background:#2563eb;color:#fff;border-radius:50%;font-size:11px;line-height:20px;text-align:center;cursor:pointer;opacity:0;transition:opacity 0.15s;z-index:33;box-shadow:0 2px 6px rgba(0,0,0,0.4);pointer-events:auto;';
+  card.appendChild(bakeBtn);
+
+  // Show/hide buttons on hover
+  card.addEventListener('mouseenter', () => { delBtn.style.opacity = '1'; bakeBtn.style.opacity = '1'; card.style.boxShadow = '0 4px 16px rgba(37,99,235,0.4)'; });
+  card.addEventListener('mouseleave', () => { delBtn.style.opacity = '0'; bakeBtn.style.opacity = '0'; card.style.boxShadow = 'none'; });
+
+  // Delete handler
+  delBtn.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    removeTextAnnotation(ann);
+  });
+
+  // Bake to canvas handler
+  bakeBtn.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    saveState();
+    // Render this single annotation to the draw canvas
+    const stW = stage.clientWidth;
+    const stH = stage.clientHeight;
+    const scX = draw.width / stW;
+    const scY = draw.height / stH;
+    const ax = ann.x * scX, ay = ann.y * scY;
+    const fs = ann.fontSize * Math.min(scX, scY);
+    ctx.save();
+    ctx.font = `600 ${fs}px system-ui,-apple-system,sans-serif`;
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
+    const lines = ann.text.split('\n');
+    const lineH = fs * 1.35;
+    let maxW = 0;
+    lines.forEach(l => { const w = ctx.measureText(l).width; if(w > maxW) maxW = w; });
+    const padX = 12 * scX, padY = 10 * scY;
+    const cardW = maxW + padX * 2;
+    const cardH = lines.length * lineH + padY * 2;
+    if(ann.style === 'dark'){
+      ctx.fillStyle = 'rgba(16,17,20,0.85)';
+      ctx.beginPath(); ctx.roundRect(ax, ay, cardW, cardH, 8 * Math.min(scX, scY)); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)'; ctx.lineWidth = 1; ctx.stroke();
+    } else if(ann.style === 'light'){
+      ctx.fillStyle = 'rgba(248,250,252,0.92)';
+      ctx.beginPath(); ctx.roundRect(ax, ay, cardW, cardH, 8 * Math.min(scX, scY)); ctx.fill();
+      ctx.strokeStyle = 'rgba(15,23,42,0.2)'; ctx.lineWidth = 1; ctx.stroke();
+    } else if(ann.style === 'yellow'){
+      ctx.fillStyle = 'rgba(254,240,138,0.95)';
+      ctx.beginPath(); ctx.roundRect(ax, ay, cardW, cardH, 8 * Math.min(scX, scY)); ctx.fill();
+      ctx.strokeStyle = 'rgba(234,179,8,0.5)'; ctx.lineWidth = 1; ctx.stroke();
+    }
+    ctx.fillStyle = ann.color;
+    if(ann.style === 'none' || ann.style === 'dark'){
+      ctx.shadowColor = 'rgba(0,0,0,0.85)'; ctx.shadowBlur = 4;
+    }
+    lines.forEach((line, i) => {
+      ctx.fillText(line, ax + padX, ay + padY + (i + 0.8) * lineH);
+    });
+    ctx.restore();
+    removeTextAnnotation(ann);
+  });
+
+  // Drag functionality
+  let isDragging = false, dragOX = 0, dragOY = 0;
+  card.addEventListener('pointerdown', (ev) => {
+    if(ev.target === delBtn || ev.target === bakeBtn) return;
+    isDragging = true;
+    dragOX = ev.clientX - card.offsetLeft;
+    dragOY = ev.clientY - card.offsetTop;
+    card.setPointerCapture(ev.pointerId);
+    card.style.zIndex = '34';
+    card.style.boxShadow = '0 8px 28px rgba(37,99,235,0.5)';
+    ev.preventDefault();
+    ev.stopPropagation();
+  });
+  card.addEventListener('pointermove', (ev) => {
+    if(!isDragging) return;
+    const nx = ev.clientX - dragOX;
+    const ny = ev.clientY - dragOY;
+    card.style.left = nx + 'px';
+    card.style.top = ny + 'px';
+    ann.x = nx;
+    ann.y = ny;
+    ev.preventDefault();
+    ev.stopPropagation();
+  });
+  card.addEventListener('pointerup', (ev) => {
+    isDragging = false;
+    card.style.zIndex = '32';
+    card.style.boxShadow = 'none';
+    ev.stopPropagation();
+  });
+
+  // Double-click to edit
+  card.addEventListener('dblclick', (ev) => {
+    ev.stopPropagation();
+    const ta = document.createElement('textarea');
+    ta.value = ann.text;
+    ta.style.cssText = `position:absolute;left:${ann.x}px;top:${ann.y}px;z-index:36;background:${card.style.background || 'rgba(20,22,26,0.94)'};color:${card.style.color};border:2px solid #2563eb;border-radius:8px;padding:8px 10px;font-size:${ann.fontSize}px;font-family:system-ui,-apple-system,sans-serif;font-weight:600;resize:both;min-width:140px;min-height:48px;outline:none;box-shadow:0 8px 24px rgba(0,0,0,.6);line-height:1.4`;
+    card.style.display = 'none';
+    stage.appendChild(ta);
+    ta.focus();
+    ta.select();
+    const finishEdit = () => {
+      if(ta.value.trim()){
+        ann.text = ta.value;
+        card.childNodes[0].textContent = ta.value;
+      }
+      card.style.display = '';
+      ta.remove();
+    };
+    ta.addEventListener('blur', finishEdit, { once: true });
+    ta.addEventListener('keydown', (ke) => {
+      if(ke.key === 'Escape'){ ta.blur(); }
+    });
+  });
+
+  ann.el = card;
+  stage.appendChild(card);
+  textAnnotations.push(ann);
+  return ann;
+}
 
 // Undo/Redo
 const UNDO_LIMIT = 50;
@@ -1991,9 +2224,10 @@ function doFreeze(){
   }
 }
 function clearDraw(){
-  if(confirm('현재 화면의 모든 판서를 지우시겠습니까? (되돌리기 가능)')){
+  if(confirm('현재 화면의 모든 판서를 지우시겠습니까? (되돌리기 가능)\n※ 이동 가능한 텍스트 카드도 함께 삭제됩니다.')){
     saveState();
     ctx.clearRect(0,0,draw.clientWidth,draw.clientHeight);
+    clearAllTextAnnotations();
   }
 }
 function pos(e){const r=draw.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
@@ -2470,85 +2704,33 @@ function placeText(e){
   let inputBg = 'rgba(20,22,26,0.94)';
   let inputBorder = '2px solid #2563eb';
   let inputColor = effColor;
+  const curCardStyle = textCardStyle; // snapshot current style
 
-  if(textCardStyle === 'light'){
+  if(curCardStyle === 'light'){
     inputBg = 'rgba(248,250,252,0.96)';
     inputBorder = '2px solid #64748b';
     if(effColor === '#ffffff' || effColor.toLowerCase() === '#fff') effColor = '#0f172a';
     inputColor = effColor;
-  } else if(textCardStyle === 'yellow'){
+  } else if(curCardStyle === 'yellow'){
     inputBg = 'rgba(254,240,138,0.98)';
     inputBorder = '2px solid #eab308';
     if(effColor === '#ffffff' || effColor.toLowerCase() === '#fff') effColor = '#1c1917';
     inputColor = effColor;
-  } else if(textCardStyle === 'none'){
+  } else if(curCardStyle === 'none'){
     inputBg = 'rgba(15,23,42,0.78)';
     inputBorder = '2px dashed #38bdf8';
     inputColor = effColor;
   }
 
-  input.placeholder = '텍스트 입력 후 바깥을 클릭하세요';
+  input.placeholder = '텍스트 입력 후 바깥을 클릭하세요 (이동 가능)';
   input.style.cssText = `position:absolute;left:${p.x}px;top:${p.y}px;z-index:35;background:${inputBg};color:${inputColor};border:${inputBorder};border-radius:8px;padding:8px 10px;font-size:${effFontSize}px;font-family:system-ui,-apple-system,sans-serif;font-weight:600;resize:both;min-width:140px;min-height:48px;outline:none;box-shadow:0 8px 24px rgba(0,0,0,.6);line-height:1.4`;
   stage.appendChild(input);
   input.focus();
 
   const finishText = () => {
     if(input.value.trim()){
-      saveState();
-      ctx.save();
-      ctx.font = `600 ${effFontSize}px system-ui,-apple-system,sans-serif`;
-      ctx.globalAlpha = 1;
-      ctx.globalCompositeOperation = 'source-over';
-      const lines = input.value.split('\n');
-      const lineH = effFontSize * 1.35;
-      
-      // Calculate card background dimensions
-      let maxW = 0;
-      lines.forEach(l => { const w = ctx.measureText(l).width; if(w > maxW) maxW = w; });
-      const padX = 12, padY = 10;
-      const cardW = maxW + padX * 2;
-      const cardH = lines.length * lineH + padY * 2;
-
-      // Draw rounded card background if not 'none'
-      if(textCardStyle === 'dark'){
-        ctx.fillStyle = 'rgba(16,17,20,0.85)';
-        ctx.beginPath();
-        ctx.roundRect(p.x, p.y, cardW, cardH, 8);
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(255,255,255,0.18)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      } else if(textCardStyle === 'light'){
-        ctx.fillStyle = 'rgba(248,250,252,0.92)';
-        ctx.beginPath();
-        ctx.roundRect(p.x, p.y, cardW, cardH, 8);
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(15,23,42,0.2)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      } else if(textCardStyle === 'yellow'){
-        ctx.fillStyle = 'rgba(254,240,138,0.95)';
-        ctx.beginPath();
-        ctx.roundRect(p.x, p.y, cardW, cardH, 8);
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(234,179,8,0.5)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
-
-      // Render text
-      ctx.fillStyle = effColor;
-      if(textCardStyle === 'none' || textCardStyle === 'dark'){
-        ctx.shadowColor = 'rgba(0,0,0,0.85)';
-        ctx.shadowBlur = 4;
-      } else {
-        ctx.shadowColor = 'transparent';
-        ctx.shadowBlur = 0;
-      }
-      lines.forEach((line, i) => {
-        ctx.fillText(line, p.x + padX, p.y + padY + (i + 0.8) * lineH);
-      });
-      ctx.restore();
+      // Create movable text card instead of baking to canvas
+      createMovableTextCard(p.x, p.y, input.value, curCardStyle, effFontSize, effColor);
     }
     input.remove();
   };
@@ -4370,6 +4552,9 @@ function capture(){
     c.filter = 'none';
     c.drawImage(draw, 0, 0, out.width, out.height);
     
+    // 3. 이동 가능한 텍스트 주석 합성
+    renderTextAnnotationsToCanvas(c, out.width, out.height);
+    
     const capFmt = getCaptureFormatConfig();
     const captureQuality = capFmt.quality;
     const img = captureQuality !== null ? out.toDataURL(capFmt.mime, captureQuality) : out.toDataURL(capFmt.mime);
@@ -4564,6 +4749,9 @@ updateResolutionDots(getLastCamera());
       mctx.drawImage(draw, 0, 0, stage.clientWidth, stage.clientHeight);
     }
 
+    // 3. 이동 가능한 텍스트 주석 렌더링
+    renderTextAnnotationsToCanvas(mctx, stage.clientWidth, stage.clientHeight);
+
     mctx.restore();
 
     // 돋보기 십자선 가이드
@@ -4727,6 +4915,7 @@ updateResolutionDots(getLastCamera());
       x.fillRect(0,0,c.width,c.height);
     }
     x.drawImage(draw,0,0,c.width,c.height);
+    renderTextAnnotationsToCanvas(x, c.width, c.height);
     return c.toDataURL('image/jpeg',.95);
   }
 
@@ -4803,6 +4992,9 @@ updateResolutionDots(getLastCamera());
     // 2. 판서 캔버스 합성 (메뉴 및 도구 UI는 일체 제외)
     recCtx.filter = 'none';
     recCtx.drawImage(draw, 0, 0, recCanvas.width, recCanvas.height);
+
+    // 3. 이동 가능한 텍스트 주석 합성
+    renderTextAnnotationsToCanvas(recCtx, recCanvas.width, recCanvas.height);
   }
 
   function initRecCanvas(){
@@ -5298,7 +5490,7 @@ updateResolutionDots(getLastCamera());
   };
 
   // ===== 7. GITHUB RELEASES AUTO UPDATE SYSTEM & ABOUT MODAL =====
-  const APP_VERSION = "1.4.5";
+  const APP_VERSION = "1.4.6";
   const GITHUB_REPO = "AhBiYout-all/ClassroomVisualizer";
   const GITHUB_USER = "AhBiYout";
   const GITHUB_URL = "https://github.com/AhBiYout-all";

@@ -6,6 +6,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.6] - 2026-11-05
+### Added
+- **Movable & Editable Text Annotation Cards System**:
+  - Implemented interactive movable DOM text annotation card engine supporting smooth pointer capture drag-and-drop.
+  - Added double-click in-place text re-editing with ESC cancellation and newline support.
+  - Added one-click Delete (`✕`) and Canvas Bake (`📌`) hover action buttons.
+  - Multi-layer canvas compositing engine (`renderTextAnnotationsToCanvas`):
+    - Full-fidelity rendering in JPG/PNG still capture downloads with resolution-aware coordinate scaling.
+    - Real-time frame compositing in MP4/WebM video recording without UI overhead.
+    - High-quality compositing in bundled multi-page PDF export (`pdfAll`).
+    - Exact real-time magnified rendering in the interactive Magnifier tool (`renderMagnifier`).
+  - Integrated text card cleanup into the clear all drawings (`clearDraw`) confirmation flow.
+  - Updated Pure Creative Native DLL (`ClassroomVisualizerCore.dll`) version constant to `0x01040600 (v1.4.6)` with 15/15 unit test verification.
+
+---
+
 ## [1.4.5] - 2026-11-04
 ### Added
 - **Speed & Pressure Sensitive Brush Tip Engine (`drawBrushPreview`)**:
