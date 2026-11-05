@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## [1.4.7] - 2026-11-05
+### Changed
+- **Repository Rename**: GitHub repository renamed from `ClassroomVisualizer` to `AhBiCamViewer` across all 17+ project files.
+- **Launcher Consolidation**: Removed duplicate `tools/ClassroomVisualizer.bat`; unified to `tools/AhBiCamViewer.bat`.
+- **Installer Update**: `installer.iss` now references `AhBiCamViewer.bat` as the app executable name.
+
 ### Added
 - **Movable Geometric Shape Cards & Multi-Layer Compositing Engine**:
   - Implemented movable interactive shape cards for all 7 geometric shape tools (Line, Rectangle, Circle, Triangle, Arrow, Double Arrow, Star).

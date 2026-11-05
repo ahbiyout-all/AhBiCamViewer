@@ -6,6 +6,27 @@
 
 ## 2026-11-05 (v1.4.7)
 
+### 작업 37: GitHub 저장소 이름 변경 (ClassroomVisualizer → AhBiCamViewer)
+- **요청 사항**: GitHub 저장소 이름을 `ClassroomVisualizer`에서 `AhBiCamViewer`로 변경하고 프로젝트 전체 파일에 반영
+- **수정 내역**:
+  1. **Git remote URL 변경**: `origin` → `https://github.com/AhBiYout-all/AhBiCamViewer.git`
+  2. **저장소 URL 일괄 치환** (13개 파일, 총 33건):
+     - `index.html`, `version.json`, `installer.iss`, `.github/workflows/build-and-release.yml`
+     - `.gitignore`, `git-release.bat`, `push_github.bat`
+     - `README.md`, `docs/README.md`, `docs/BLOG_POST.md`, `docs/GITHUB.md`
+     - `docs/INSTALL.md`, `docs/LICENSE.en.md`, `docs/LICENSE.ko.md`
+     - `docs/NATIVE_DLL_ARCHITECTURE.md`, `docs/SECURITY.md`
+  3. **런처 파일 통합**: `tools/ClassroomVisualizer.bat` 삭제 (SHA-256 해시 동일한 `tools/AhBiCamViewer.bat`으로 통합)
+  4. **installer.iss 업데이트**: `MyAppExeName` → `AhBiCamViewer.bat`, 배포 소스 경로 갱신
+  5. **HTML 동기화**: `sync_html.cjs`로 3개 배포 HTML 자동 동기화 (SHA-256 일치 확인)
+  6. **의도적 보존 항목**:
+     - DLL 제품명(`ClassroomVisualizerCore.dll`, `ClassroomVisualizerManaged.dll`): 순수 창작 DLL 아이덴티티
+     - 블로그 SEO 태그 키워드: 검색 노출 목적
+     - 과거 변경 로그(CHANGELOG, PATCHNOTES, WORK_LOG): 역사 기록
+- **검증**: `check_syntax.cjs` 4/4 통과, `sync_html.cjs` 4/4 MATCH, `git grep AhBiYout-all/ClassroomVisualizer` 0건
+
+---
+
 ### 작업 36: 자유 이동식 기하 도형(Movable Geometric Shapes) 엔진 및 4중 무손실 합성 시스템 탑재
 - **요청 사항**: 판서 도구로 작성한 도형도 텍스트처럼 자유롭게 이동 및 재배치할 수 있도록 구현
 - **원인 분석 및 아키텍처 설계**:

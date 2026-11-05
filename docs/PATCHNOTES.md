@@ -12,6 +12,23 @@
 
 ---
 
+### 🔄 저장소 이름 변경: ClassroomVisualizer → AhBiCamViewer (2026-11-05)
+- **GitHub 저장소 URL 일괄 변경**: `AhBiYout-all/ClassroomVisualizer` → `AhBiYout-all/AhBiCamViewer`
+- **대상 파일 (총 17개)**:
+  - `index.html` (GITHUB_REPO 상수), `version.json` (repo 필드)
+  - `installer.iss` (MyAppURL, MyAppExeName, 배포 소스 경로)
+  - `.github/workflows/build-and-release.yml` (워크플로우 이름, 릴리스 노트 푸터)
+  - `.gitignore`, `git-release.bat`, `push_github.bat`
+  - `README.md`, `docs/README.md`, `docs/BLOG_POST.md`, `docs/GITHUB.md`
+  - `docs/INSTALL.md`, `docs/LICENSE.en.md`, `docs/LICENSE.ko.md`
+  - `docs/NATIVE_DLL_ARCHITECTURE.md`, `docs/SECURITY.md`
+  - 3개 HTML 배포 파일 (sync_html.cjs 자동 동기화)
+- **런처 파일 통합**: `tools/ClassroomVisualizer.bat` 삭제 (동일 내용의 `tools/AhBiCamViewer.bat`으로 통합)
+- **DLL 제품명 보존**: `ClassroomVisualizerCore.dll`, `ClassroomVisualizerManaged.dll`은 순수 창작 DLL 아이덴티티로 변경 없이 유지
+- **SEO 태그 보존**: 블로그 포스트의 검색 태그에 `ClassroomVisualizer` 키워드 유지 (검색 노출 목적)
+
+---
+
 ## v1.4.7 자유 이동식 기하 도형(Movable Geometric Shapes) 엔진 및 멀티레이어 무손실 벡터 합성 시스템 탑재 (2026-11-05)
 
 ### 📐 7대 기하 도형 자유 이동(Movable Shapes) 및 캔버스 융합(Bake) 엔진 탑재
