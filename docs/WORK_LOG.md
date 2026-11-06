@@ -6,6 +6,29 @@
 
 ## 2026-11-06 (v1.4.7)
 
+### 작업 40: 하단 메뉴 구역별 접이식 가로 아코디언(Horizontal Accordion) 시스템 도입
+- **요청 사항**: "하단 메뉴에 구역 별로 접이식 가로 아코디언 구조 도입"
+- **설계 및 구현 내역**:
+  1. **3대 기능 구역 분할 및 래핑**:
+     - `bAccSectionCapture` (🎬 촬영·제어): 카메라 시작/정지, 캡처, JPG/PNG/WebP, 수업 녹화, MP4/WebM, 효과, 전체화면, 모니터 점프, 반전, 회전
+     - `bAccSectionDevice` (🎥 카메라·화질): 카메라 선택, 해상도 선택, 지원 여부 닷, 방향, 재탐색, 상세정보
+     - `bAccSectionTools` (🧰 영상조절·수업도구): 영상/렌즈 조절 드롭다운, 수업 도구 드롭다운
+     - 우측 고정 컨트롤: 캡처 갤러리 토글 버튼, 하단 메뉴 고정 핀
+  2. **가로 슬라이딩 CSS 아코디언 엔진**:
+     - `.b-acc-section`, `.b-acc-toggle`, `.b-acc-content` 스타일 및 `cubic-bezier(0.4, 0, 0.2, 1)` 트랜지션
+     - 접힘 시 `max-width: 0 !important; opacity: 0; pointer-events: none;` 처리로 완벽한 공간 절약
+  3. **자바스크립트 아코디언 컨트롤러**:
+     - `toggleBottomAccordion(zoneKey, forceExpanded)`: 클릭 시 구역 토글 및 드롭다운 위치 자동 재정렬
+     - `saveBottomAccordionState()` / `loadBottomAccordionState()`: `localStorage` 영속화 지원
+     - `updateBottomAccordionIndicators()`: 접힌 구역 내 녹화/카메라/도구 활성 시 인디케이터 점등
+     - Alt+클릭 시 전체 구역 일괄 접기/펼치기 지원
+  4. **반응형 최적화**: `@media(max-width:960px)`에서 토글 버튼 텍스트 자동 숨김 및 아이콘 전용 모드
+- **검증**: `check_syntax.cjs` 4/4 통과, `sync_html.cjs` 4대 파일 100% SHA-256 일치, Inno Setup 및 Portable 패키지 빌드 성공
+
+---
+
+## 2026-11-06 (v1.4.7)
+
 ### 작업 39: 좌측 수업 발표 보조 도구 메뉴 하단 툴바 가림 현상 수정
 - **요청 사항**: "왼쪽 발표 수업 발표 도구 메뉴가 하단 메뉴에 가려짐" 문제 해결
 - **원인 분석**:

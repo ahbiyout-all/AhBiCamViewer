@@ -164,6 +164,23 @@ select option.pro-option{color:inherit}
 
 .b-group{display:inline-flex;align-items:center;gap:3px;flex-shrink:0}
 .b-divider{width:1px;height:20px;background:#31343d;margin:0 2px;flex-shrink:0}
+
+/* Horizontal Collapsible Accordion Sections in Bottom Toolbar */
+.b-acc-section{display:inline-flex;align-items:center;gap:3px;flex-shrink:0;transition:all .25s ease}
+.b-acc-toggle{display:inline-flex;align-items:center;gap:4px;background:#202228;color:#94a3b8;border:1px solid #383c46;border-radius:7px;padding:3px 7px;font-size:11px;font-weight:600;cursor:pointer;user-select:none;transition:all .15s ease;white-space:nowrap;flex-shrink:0;height:26px}
+.b-acc-toggle:hover{background:#2b2e37;color:#f1f5f9;border-color:#4f5666}
+.b-acc-toggle.collapsed{background:#1a1c22;color:#64748b;border-color:#2e323b}
+.b-acc-toggle.collapsed:hover{background:#262933;color:#cbd5e1;border-color:#475569}
+.b-acc-toggle .acc-icon{font-size:12px;line-height:1}
+.b-acc-toggle .acc-label{font-size:10.5px;letter-spacing:-0.2px}
+.b-acc-toggle .acc-chevron{font-size:9px;color:#64748b;transition:transform .2s ease;display:inline-block;line-height:1}
+.b-acc-section.collapsed .b-acc-toggle .acc-chevron{transform:rotate(180deg);color:#94a3b8}
+.b-acc-toggle .acc-active-dot{display:none;width:6px;height:6px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e;margin-left:1px}
+.b-acc-toggle.has-active .acc-active-dot{display:inline-block}
+.b-acc-toggle.has-recording .acc-active-dot{display:inline-block;background:#ef4444;box-shadow:0 0 6px #ef4444;animation:recPulse 1.2s infinite ease-in-out}
+.b-acc-content{display:inline-flex;align-items:center;gap:3px;flex-shrink:0;max-width:900px;opacity:1;overflow:hidden;transition:max-width .28s cubic-bezier(0.4, 0, 0.2, 1), opacity .2s ease}
+.b-acc-section.collapsed .b-acc-content{max-width:0 !important;opacity:0 !important;padding:0 !important;margin:0 !important;pointer-events:none !important;gap:0 !important}
+.b-fixed-controls{margin-left:auto;display:inline-flex;align-items:center;gap:3px;flex-shrink:0}
 .action-chip{font:inherit;background:#262830;color:#eee;border:1px solid #444852;border-radius:7px;padding:4px 7px;font-size:11px;cursor:pointer;display:inline-flex;align-items:center;gap:3px;transition:all .12s ease;white-space:nowrap;flex-shrink:0}
 .action-chip:hover{background:#32353e;border-color:#666}
 .action-chip.active{background:#2563eb;border-color:#3b82f6;color:#fff}
@@ -215,6 +232,10 @@ select option.pro-option{color:inherit}
   #resolution{max-width:115px}
   #camera{max-width:85px}
   #facing{max-width:70px}
+}
+@media(max-width:960px){
+  .b-acc-toggle .acc-label{display:none}
+  .b-acc-toggle{padding:3px 5px}
 }
 
 /* Fullscreen & Capture/Record UI Protection */
@@ -841,123 +862,153 @@ body.recording-clean .shape-annotation-wrap{
   </div>
 </div>
 
-<!-- 하단 가로 툴바: 카메라 & 화질 & 화면제어 & 유틸리티 -->
+<!-- 하단 가로 툴바: 카메라 & 화질 & 화면제어 & 유틸리티 (접이식 가로 아코디언 구조) -->
 <div class="bottom-toolbar" id="bottomToolbar">
-  <div class="b-group">
-    <button id="start" class="active action-chip" title="카메라 시작">📷 카메라<span class="lbl-extra"> 시작</span></button>
-    <button id="freeze" class="action-chip" title="화면 정지 (Space)">⏸ 정지</button>
-    <button id="capture" class="action-chip primary-chip" title="화면 캡처 (S)">📸 캡처</button>
-    <button id="capFormatBadge" class="action-chip" title="캡처 이미지 포맷 변경 (클릭 시 JPG → PNG → WebP 순환)" style="font-size:11px;padding:3px 6px;background:#1e293b;border-color:#a78bfa;color:#a78bfa;font-weight:bold">🖼 JPG</button>
-    <button id="record" class="action-chip record-chip" title="동영상 수업 녹화 시작/중지 (V)">⏺ 수업<span class="lbl-extra"> 녹화</span></button>
-    <button id="recFormatBadge" class="action-chip" title="동영상 녹화 포맷 변경 (클릭 시 MP4 ↔ WebM 전환)" style="font-size:11px;padding:3px 6px;background:#1e293b;border-color:#38bdf8;color:#38bdf8;font-weight:bold">🎬 MP4</button>
-    <button id="mediaFxBtn" class="action-chip" title="캡처 및 동영상 녹화 효과 설정 (사운드 및 시작/종료 애니메이션)" style="font-size:11px;padding:4px 6px">🎬 효과</button>
-    <button id="fullscreen" class="action-chip" title="전체화면 (F11)">⛶ 전체<span class="lbl-extra">화면</span></button>
-    <button id="jumpMonitor" class="action-chip" title="모니터 1 ↔ 모니터 2 점프 이동 (Win+Shift+방향키)">🖥️ 모니터<span class="lbl-extra"> 점프</span></button>
-    <button id="mirror" class="action-chip" title="좌우 반전">↔ 반전</button>
-    <button id="rotate" class="action-chip" title="90도 회전">⟳ 회전</button>
+  <!-- [구역 1] 촬영 & 화면 제어 아코디언 -->
+  <div class="b-acc-section" id="bAccSectionCapture" data-zone="capture">
+    <button class="b-acc-toggle" id="bAccToggleCapture" title="촬영·제어 구역 접기/펼치기 (Alt+클릭 시 전체 접기/펼치기)" aria-expanded="true">
+      <span class="acc-icon">🎬</span>
+      <span class="acc-label">촬영·제어</span>
+      <span class="acc-chevron">◂</span>
+      <span class="acc-active-dot" id="accDotCapture"></span>
+    </button>
+    <div class="b-acc-content" id="bAccContentCapture">
+      <button id="start" class="active action-chip" title="카메라 시작">📷 카메라<span class="lbl-extra"> 시작</span></button>
+      <button id="freeze" class="action-chip" title="화면 정지 (Space)">⏸ 정지</button>
+      <button id="capture" class="action-chip primary-chip" title="화면 캡처 (S)">📸 캡처</button>
+      <button id="capFormatBadge" class="action-chip" title="캡처 이미지 포맷 변경 (클릭 시 JPG → PNG → WebP 순환)" style="font-size:11px;padding:3px 6px;background:#1e293b;border-color:#a78bfa;color:#a78bfa;font-weight:bold">🖼 JPG</button>
+      <button id="record" class="action-chip record-chip" title="동영상 수업 녹화 시작/중지 (V)">⏺ 수업<span class="lbl-extra"> 녹화</span></button>
+      <button id="recFormatBadge" class="action-chip" title="동영상 녹화 포맷 변경 (클릭 시 MP4 ↔ WebM 전환)" style="font-size:11px;padding:3px 6px;background:#1e293b;border-color:#38bdf8;color:#38bdf8;font-weight:bold">🎬 MP4</button>
+      <button id="mediaFxBtn" class="action-chip" title="캡처 및 동영상 녹화 효과 설정 (사운드 및 시작/종료 애니메이션)" style="font-size:11px;padding:4px 6px">🎬 효과</button>
+      <button id="fullscreen" class="action-chip" title="전체화면 (F11)">⛶ 전체<span class="lbl-extra">화면</span></button>
+      <button id="jumpMonitor" class="action-chip" title="모니터 1 ↔ 모니터 2 점프 이동 (Win+Shift+방향키)">🖥️ 모니터<span class="lbl-extra"> 점프</span></button>
+      <button id="mirror" class="action-chip" title="좌우 반전">↔ 반전</button>
+      <button id="rotate" class="action-chip" title="90도 회전">⟳ 회전</button>
+    </div>
   </div>
 
   <div class="b-divider"></div>
 
-  <div class="b-group">
-    <select id="camera" title="카메라 장치 선택" class="select-chip"><option value="">카메라 선택</option></select>
-    <select id="resolution" title="카메라 해상도 선택 (오른쪽 점: ● 지원, ○ 미지원)" class="select-chip">
-      <option value="max">⭐ 최고화질 (기기 최대)  ●</option>
-      <option value="3840x2160">4K UHD (3840×2160)  ○</option>
-      <option value="3264x2448">8MP 문서 (3264×2448)  ○</option>
-      <option value="2560x1440">QHD 2K (2560×1440)  ○</option>
-      <option value="1920x1080" selected>FHD 1080p (1920×1080)  ●</option>
-      <option value="1280x720">HD 720p (1280×720)  ●</option>
-      <option value="640x480">SD 480p (640×480)  ●</option>
-    </select>
-    <span id="resSupportDot" class="res-support-dot supported" title="선택한 해상도의 카메라 지원 상태 (녹색: 지원됨, 주황: 미지원)"></span>
-    <select id="facing" title="카메라 방향 선택" class="select-chip">
-      <option value="environment">📷 후면(실물)</option>
-      <option value="user">🤳 전면</option>
-    </select>
-    <button id="rescanBtn" class="action-chip" title="카메라 재탐색" style="min-width:auto;padding:4px 6px">🔄</button>
-    <button id="camInfoBtn" class="action-chip" title="인식된 카메라 상세정보 보기 (하드웨어 능력치, 실제 해상도, 센서 기능)" style="font-size:11px;padding:4px 6px">🔍 상세<span class="lbl-extra">정보</span></button>
+  <!-- [구역 2] 카메라 & 화질 아코디언 -->
+  <div class="b-acc-section" id="bAccSectionDevice" data-zone="device">
+    <button class="b-acc-toggle" id="bAccToggleDevice" title="카메라·화질 구역 접기/펼치기 (Alt+클릭 시 전체 접기/펼치기)" aria-expanded="true">
+      <span class="acc-icon">🎥</span>
+      <span class="acc-label">카메라·화질</span>
+      <span class="acc-chevron">◂</span>
+      <span class="acc-active-dot" id="accDotDevice"></span>
+    </button>
+    <div class="b-acc-content" id="bAccContentDevice">
+      <select id="camera" title="카메라 장치 선택" class="select-chip"><option value="">카메라 선택</option></select>
+      <select id="resolution" title="카메라 해상도 선택 (오른쪽 점: ● 지원, ○ 미지원)" class="select-chip">
+        <option value="max">⭐ 최고화질 (기기 최대)  ●</option>
+        <option value="3840x2160">4K UHD (3840×2160)  ○</option>
+        <option value="3264x2448">8MP 문서 (3264×2448)  ○</option>
+        <option value="2560x1440">QHD 2K (2560×1440)  ○</option>
+        <option value="1920x1080" selected>FHD 1080p (1920×1080)  ●</option>
+        <option value="1280x720">HD 720p (1280×720)  ●</option>
+        <option value="640x480">SD 480p (640×480)  ●</option>
+      </select>
+      <span id="resSupportDot" class="res-support-dot supported" title="선택한 해상도의 카메라 지원 상태 (녹색: 지원됨, 주황: 미지원)"></span>
+      <select id="facing" title="카메라 방향 선택" class="select-chip">
+        <option value="environment">📷 후면(실물)</option>
+        <option value="user">🤳 전면</option>
+      </select>
+      <button id="rescanBtn" class="action-chip" title="카메라 재탐색" style="min-width:auto;padding:4px 6px">🔄</button>
+      <button id="camInfoBtn" class="action-chip" title="인식된 카메라 상세정보 보기 (하드웨어 능력치, 실제 해상도, 센서 기능)" style="font-size:11px;padding:4px 6px">🔍 상세<span class="lbl-extra">정보</span></button>
+    </div>
   </div>
 
   <div class="b-divider"></div>
 
-  <div class="b-group">
-    <!-- 영상 및 렌즈 조절 풀다운 -->
-    <div class="b-dropdown-wrap" id="adjustDropdownWrap">
-      <button class="b-dropdown-btn" id="adjustMasterBtn">⚙️ 영상/렌즈<span class="lbl-extra"> 조절</span> ▾</button>
-      <div class="b-dropdown-panel" id="adjustDropdownPanel" style="min-width:320px">
-        <div class="flyout-title" style="display:flex;align-items:center;justify-content:space-between">
-          <span>⚙️ 영상 및 렌즈 조절</span>
-          <button id="resetAdjustBtn" class="size-preset-btn" style="padding:2px 8px;font-size:11px" title="영상 및 렌즈 조절 기본값(1.0x/100%/100%/0.0)으로 복원">↺ 초기화</button>
-        </div>
+  <!-- [구역 3] 영상 조절 & 수업 도구 아코디언 -->
+  <div class="b-acc-section" id="bAccSectionTools" data-zone="tools">
+    <button class="b-acc-toggle" id="bAccToggleTools" title="영상조절·수업도구 구역 접기/펼치기 (Alt+클릭 시 전체 접기/펼치기)" aria-expanded="true">
+      <span class="acc-icon">🧰</span>
+      <span class="acc-label">조절·도구</span>
+      <span class="acc-chevron">◂</span>
+      <span class="acc-active-dot" id="accDotTools"></span>
+    </button>
+    <div class="b-acc-content" id="bAccContentTools">
+      <!-- 영상 및 렌즈 조절 풀다운 -->
+      <div class="b-dropdown-wrap" id="adjustDropdownWrap">
+        <button class="b-dropdown-btn" id="adjustMasterBtn">⚙️ 영상/렌즈<span class="lbl-extra"> 조절</span> ▾</button>
+        <div class="b-dropdown-panel" id="adjustDropdownPanel" style="min-width:320px">
+          <div class="flyout-title" style="display:flex;align-items:center;justify-content:space-between">
+            <span>⚙️ 영상 및 렌즈 조절</span>
+            <button id="resetAdjustBtn" class="size-preset-btn" style="padding:2px 8px;font-size:11px" title="영상 및 렌즈 조절 기본값(1.0x/100%/100%/0.0)으로 복원">↺ 초기화</button>
+          </div>
 
-        <!-- 🔍 렌즈 줌 (Zoom) 배율 -->
-        <div style="font-size:11px;color:#94a3b8;margin:6px 0 3px">🔍 렌즈 줌(Zoom) 배율</div>
-        <div class="size-presets zoom-presets" style="display:flex;gap:4px">
-          <button class="size-preset-btn active" data-zoom-val="1" title="기본 배율 (1.0x)">1.0x</button>
-          <button class="size-preset-btn" data-zoom-val="1.5" title="1.5배 확대">1.5x</button>
-          <button class="size-preset-btn" data-zoom-val="2" title="2.0배 확대">2.0x</button>
-          <button class="size-preset-btn" data-zoom-val="3" title="3.0배 확대">3.0x</button>
-        </div>
-        <div style="margin-top:6px;display:flex;align-items:center;gap:8px">
-          <input id="adjustZoomSlider" type="range" min="1" max="5" step="0.1" value="1" style="flex:1">
-          <span id="adjustZoomValText" style="font-size:11px;color:#38bdf8;font-weight:bold;width:34px;text-align:right">1.0x</span>
-        </div>
+          <!-- 🔍 렌즈 줌 (Zoom) 배율 -->
+          <div style="font-size:11px;color:#94a3b8;margin:6px 0 3px">🔍 렌즈 줌(Zoom) 배율</div>
+          <div class="size-presets zoom-presets" style="display:flex;gap:4px">
+            <button class="size-preset-btn active" data-zoom-val="1" title="기본 배율 (1.0x)">1.0x</button>
+            <button class="size-preset-btn" data-zoom-val="1.5" title="1.5배 확대">1.5x</button>
+            <button class="size-preset-btn" data-zoom-val="2" title="2.0배 확대">2.0x</button>
+            <button class="size-preset-btn" data-zoom-val="3" title="3.0배 확대">3.0x</button>
+          </div>
+          <div style="margin-top:6px;display:flex;align-items:center;gap:8px">
+            <input id="adjustZoomSlider" type="range" min="1" max="5" step="0.1" value="1" style="flex:1">
+            <span id="adjustZoomValText" style="font-size:11px;color:#38bdf8;font-weight:bold;width:34px;text-align:right">1.0x</span>
+          </div>
 
-        <div class="flyout-divider"></div>
+          <div class="flyout-divider"></div>
 
-        <!-- 🎯 렌즈 보정 & 조명 -->
-        <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">🎯 렌즈 보정 & 조명</div>
-        <div class="adjust-row" style="display:flex;gap:5px;margin-bottom:6px">
-          <button id="document" class="flyout-item" style="flex:1" title="문서 글씨를 또렷하게 강조하는 고대비 모드">📄 문서 고대비</button>
-          <button id="focusBtn" class="flyout-item" style="flex:1" title="화면의 특정 글자나 영역을 터치/클릭하여 초점 맞추기">🎯 터치 초점</button>
-          <button id="autoFocusBtn" class="flyout-item" style="flex:1" title="카메라 하드웨어 자동 초점(AF) 재설정">⚡ 자동 초점</button>
-          <button id="torchBtn" class="flyout-item" style="flex:1" title="스마트폰/지원 카메라 플래시 LED 켜기/끄기">🔦 조명</button>
-        </div>
+          <!-- 🎯 렌즈 보정 & 조명 -->
+          <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">🎯 렌즈 보정 & 조명</div>
+          <div class="adjust-row" style="display:flex;gap:5px;margin-bottom:6px">
+            <button id="document" class="flyout-item" style="flex:1" title="문서 글씨를 또렷하게 강조하는 고대비 모드">📄 문서 고대비</button>
+            <button id="focusBtn" class="flyout-item" style="flex:1" title="화면의 특정 글자나 영역을 터치/클릭하여 초점 맞추기">🎯 터치 초점</button>
+            <button id="autoFocusBtn" class="flyout-item" style="flex:1" title="카메라 하드웨어 자동 초점(AF) 재설정">⚡ 자동 초점</button>
+            <button id="torchBtn" class="flyout-item" style="flex:1" title="스마트폰/지원 카메라 플래시 LED 켜기/끄기">🔦 조명</button>
+          </div>
 
-        <div class="flyout-divider"></div>
+          <div class="flyout-divider"></div>
 
-        <!-- 🎨 영상 색조 및 센서 노출 -->
-        <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">🎨 영상 색조 및 센서 노출</div>
-        <div class="adjust-control-row">
-          <label style="width:48px;font-size:11px;color:#cbd5e1">☀️ 밝기</label>
-          <input id="brightness" type="range" min="50" max="150" value="100" style="flex:1">
-          <span id="brightnessValText" style="font-size:11px;color:#aaa;width:36px;text-align:right">100%</span>
+          <!-- 🎨 영상 색조 및 센서 노출 -->
+          <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">🎨 영상 색조 및 센서 노출</div>
+          <div class="adjust-control-row">
+            <label style="width:48px;font-size:11px;color:#cbd5e1">☀️ 밝기</label>
+            <input id="brightness" type="range" min="50" max="150" value="100" style="flex:1">
+            <span id="brightnessValText" style="font-size:11px;color:#aaa;width:36px;text-align:right">100%</span>
+          </div>
+          <div class="adjust-control-row">
+            <label style="width:48px;font-size:11px;color:#cbd5e1">🌓 대비</label>
+            <input id="contrast" type="range" min="50" max="180" value="100" style="flex:1">
+            <span id="contrastValText" style="font-size:11px;color:#aaa;width:36px;text-align:right">100%</span>
+          </div>
+          <div class="adjust-control-row">
+            <label style="width:48px;font-size:11px;color:#cbd5e1">☀️ 노출</label>
+            <input id="exposure" type="range" min="-2" max="2" step="0.2" value="0" style="flex:1">
+            <span id="exposureValText" style="font-size:11px;color:#aaa;width:36px;text-align:right">0.0</span>
+          </div>
         </div>
-        <div class="adjust-control-row">
-          <label style="width:48px;font-size:11px;color:#cbd5e1">🌓 대비</label>
-          <input id="contrast" type="range" min="50" max="180" value="100" style="flex:1">
-          <span id="contrastValText" style="font-size:11px;color:#aaa;width:36px;text-align:right">100%</span>
-        </div>
-        <div class="adjust-control-row">
-          <label style="width:48px;font-size:11px;color:#cbd5e1">☀️ 노출</label>
-          <input id="exposure" type="range" min="-2" max="2" step="0.2" value="0" style="flex:1">
-          <span id="exposureValText" style="font-size:11px;color:#aaa;width:36px;text-align:right">0.0</span>
+      </div>
+
+      <!-- 수업 도구 풀다운 -->
+      <div class="b-dropdown-wrap" id="utilityDropdownWrap">
+        <button class="b-dropdown-btn" id="utilityMasterBtn">🧰 수업<span class="lbl-extra"> </span>도구 ▾</button>
+        <div class="b-dropdown-panel utility-panel" id="utilityDropdownPanel">
+          <div class="flyout-title">🧰 교실 수업 지원 도구</div>
+          <div class="utility-grid">
+            <button id="timerBtn" class="flyout-item">⏱ 타이머</button>
+            <button id="gridBtn" class="flyout-item">🔲 격자</button>
+            <button id="boardBtn" class="flyout-item">🎨 배경판</button>
+            <button id="bellBtn" class="flyout-item">🔔 주목 벨</button>
+            <button id="compareBtn" class="flyout-item">🖼 2분할 비교</button>
+            <button id="pipBtn" class="flyout-item">🖥 PIP 분할</button>
+            <button id="pdfAll" class="flyout-item">📑 PDF 묶기</button>
+            <button id="utilityRecordBtn" class="flyout-item">⏺ 수업 녹화</button>
+            <button id="utilityMediaFxBtn" class="flyout-item">🎬 캡처/녹화 효과</button>
+          </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- 수업 도구 풀다운 -->
-    <div class="b-dropdown-wrap" id="utilityDropdownWrap">
-      <button class="b-dropdown-btn" id="utilityMasterBtn">🧰 수업<span class="lbl-extra"> </span>도구 ▾</button>
-      <div class="b-dropdown-panel utility-panel" id="utilityDropdownPanel">
-        <div class="flyout-title">🧰 교실 수업 지원 도구</div>
-        <div class="utility-grid">
-          <button id="timerBtn" class="flyout-item">⏱ 타이머</button>
-          <button id="gridBtn" class="flyout-item">🔲 격자</button>
-          <button id="boardBtn" class="flyout-item">🎨 배경판</button>
-          <button id="bellBtn" class="flyout-item">🔔 주목 벨</button>
-          <button id="compareBtn" class="flyout-item">🖼 2분할 비교</button>
-          <button id="pipBtn" class="flyout-item">🖥 PIP 분할</button>
-          <button id="pdfAll" class="flyout-item">📑 PDF 묶기</button>
-          <button id="utilityRecordBtn" class="flyout-item">⏺ 수업 녹화</button>
-          <button id="utilityMediaFxBtn" class="flyout-item">🎬 캡처/녹화 효과</button>
-        </div>
-      </div>
-    </div>
+  <div class="b-divider"></div>
 
-    <div class="b-divider"></div>
-
+  <!-- [고정 컨트롤] 캡처 갤러리 토글 & 하단 메뉴 고정 핀 -->
+  <div class="b-group b-fixed-controls">
     <button class="action-chip" id="toggleThumbsBtn" title="하단 캡처 갤러리 접기/펼치기">🖼 캡처<span class="lbl-extra"> 목록</span> ▾</button>
     <button class="pin-btn" id="pinBottomBtn" title="하단 메뉴 고정/해제 (고정 해제 시 아코디언식 자동 수축)" style="margin-left:4px">📌</button>
   </div>
@@ -3874,6 +3925,117 @@ if(toggleThumbsBtn){
     resizeCanvas();
   });
 }
+
+// ===== BOTTOM TOOLBAR HORIZONTAL ACCORDION ENGINE (하단 메뉴 구역별 접이식 가로 아코디언) =====
+const LS_KEY_BOTTOM_ACCORDION = 'cv_bottom_accordion_zones';
+
+function toggleBottomAccordion(zoneKey, forceExpanded = null){
+  const section = document.querySelector(`.b-acc-section[data-zone="${zoneKey}"]`);
+  if(!section) return;
+  const toggle = section.querySelector('.b-acc-toggle');
+  const isCurrentlyCollapsed = section.classList.contains('collapsed');
+  const shouldExpand = forceExpanded !== null ? !!forceExpanded : isCurrentlyCollapsed;
+
+  if(shouldExpand){
+    section.classList.remove('collapsed');
+    if(toggle){
+      toggle.classList.remove('collapsed');
+      toggle.setAttribute('aria-expanded', 'true');
+      const chev = toggle.querySelector('.acc-chevron');
+      if(chev) chev.textContent = '◂';
+    }
+  } else {
+    section.classList.add('collapsed');
+    if(toggle){
+      toggle.classList.add('collapsed');
+      toggle.setAttribute('aria-expanded', 'false');
+      const chev = toggle.querySelector('.acc-chevron');
+      if(chev) chev.textContent = '▸';
+    }
+    // Close any open dropdown inside this section
+    section.querySelectorAll('.b-dropdown-wrap.open').forEach(el => el.classList.remove('open'));
+  }
+
+  saveBottomAccordionState();
+  setTimeout(updateOpenDropdownPositions, 300);
+}
+
+function saveBottomAccordionState(){
+  const state = {};
+  document.querySelectorAll('.b-acc-section').forEach(sec => {
+    const zone = sec.getAttribute('data-zone');
+    if(zone){
+      state[zone] = sec.classList.contains('collapsed');
+    }
+  });
+  try { localStorage.setItem(LS_KEY_BOTTOM_ACCORDION, JSON.stringify(state)); } catch(e){}
+}
+
+function loadBottomAccordionState(){
+  try {
+    const raw = localStorage.getItem(LS_KEY_BOTTOM_ACCORDION);
+    if(!raw) return;
+    const state = JSON.parse(raw);
+    Object.keys(state).forEach(zone => {
+      if(state[zone]){
+        toggleBottomAccordion(zone, false); // collapse
+      }
+    });
+  } catch(e){}
+}
+
+function updateBottomAccordionIndicators(){
+  const secCapToggle = document.getElementById('bAccToggleCapture');
+  const secDevToggle = document.getElementById('bAccToggleDevice');
+  const secToolsToggle = document.getElementById('bAccToggleTools');
+
+  // Zone 1 (Capture/Record): check recording, freeze, or streaming
+  if(secCapToggle){
+    const isRecording = typeof isRecordingActive !== 'undefined' && isRecordingActive;
+    const isFrozen = typeof frozen !== 'undefined' && frozen;
+    const isStreaming = typeof stream !== 'undefined' && stream && stream.active;
+    secCapToggle.classList.toggle('has-recording', !!isRecording);
+    secCapToggle.classList.toggle('has-active', !!(!isRecording && (isFrozen || isStreaming)));
+  }
+
+  // Zone 2 (Device): check if camera selected / supported
+  if(secDevToggle){
+    const hasCam = typeof currentDeviceId !== 'undefined' && !!currentDeviceId;
+    secDevToggle.classList.toggle('has-active', hasCam);
+  }
+
+  // Zone 3 (Tools): check if any special tool/adjust is active
+  if(secToolsToggle){
+    const hasActiveTool = (typeof currentMode !== 'undefined' && currentMode !== 'normal') ||
+                          (typeof isShapeFilled !== 'undefined' && isShapeFilled) ||
+                          (typeof isDocContrastOn !== 'undefined' && isDocContrastOn);
+    secToolsToggle.classList.toggle('has-active', !!hasActiveTool);
+  }
+}
+
+// Bind click events on all accordion toggles
+document.querySelectorAll('.b-acc-section').forEach(sec => {
+  const toggle = sec.querySelector('.b-acc-toggle');
+  const zone = sec.getAttribute('data-zone');
+  if(!toggle || !zone) return;
+
+  toggle.addEventListener('click', e => {
+    e.stopPropagation();
+    if(e.altKey){
+      // Alt+Click: Toggle all sections together
+      const anyExpanded = Array.from(document.querySelectorAll('.b-acc-section')).some(s => !s.classList.contains('collapsed'));
+      document.querySelectorAll('.b-acc-section').forEach(s => {
+        toggleBottomAccordion(s.getAttribute('data-zone'), !anyExpanded);
+      });
+    } else {
+      toggleBottomAccordion(zone);
+    }
+  });
+});
+
+// Restore saved accordion state and start indicator loop
+loadBottomAccordionState();
+setInterval(updateBottomAccordionIndicators, 1000);
 
 function selectTool(t){
   tool = t;

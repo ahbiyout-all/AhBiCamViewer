@@ -21,6 +21,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Installer Update**: `installer.iss` now references `AhBiCamViewer.bat` as the app executable name.
 
 ### Added
+- **Horizontal Collapsible Accordion Sections in Bottom Toolbar**:
+  - Structured the bottom toolbar into 3 collapsible functional zones:
+    1. 🎬 **Capture & Screen Control** (`capture`): Camera start/stop, freeze, snap, format switch, record, effects, fullscreen, dual-monitor jump, mirror, rotate.
+    2. 🎥 **Camera Device & Quality** (`device`): Device picker, resolution picker with support indicator dot, facing switch, device rescan, and hardware spec modal.
+    3. 🧰 **Video Adjust & Teaching Tools** (`tools`): Zoom slider, presets, document contrast, AF, torch, brightness/contrast/exposure sliders, and classroom utility grid.
+  - Smooth horizontal collapse/expand animations (`max-width: 900px` ↔ `0px`) using CSS cubic-bezier transitions.
+  - State persistence in `localStorage` (`cv_bottom_accordion_zones`) across reloads.
+  - Active feature indicator dots on collapsed toggle pills (recording pulse red dot, active green dot, tool blue dot).
+  - Alt+Click shortcut to toggle all accordion sections at once.
+  - Compact responsive display on tablets and narrow viewports (`@media(max-width:960px)`).
 - **Movable Geometric Shape Cards & Multi-Layer Compositing Engine**:
   - Implemented movable interactive shape cards for all 7 geometric shape tools (Line, Rectangle, Circle, Triangle, Arrow, Double Arrow, Star).
   - Smooth Pointer Capture drag-and-drop movement across the canvas with comfortable bounding-box padding.
