@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## [1.4.7] - 2026-11-06
+### Fixed
+- **Presentation Flyout Menu Occlusion**: Fixed the left toolbar's presentation tools flyout menu (`#presentFlyoutPanel`) being hidden/cut off behind the bottom toolbar by anchoring it upwards (`bottom: 0`), implementing real-time boundary collision guard (`adjustFlyoutPanelPosition`), and elevating `.left-toolbar` z-index to 60/65.
+
 ### Changed
 - **Pure Native & Managed DLL Rename**:
   - Renamed `ClassroomVisualizerCore.dll` → `AhBiCamViewerCore.dll` and `ClassroomVisualizerManaged.dll` → `AhBiCamViewerManaged.dll` to prevent naming collision with existing external web applications.

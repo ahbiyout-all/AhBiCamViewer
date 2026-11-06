@@ -88,7 +88,8 @@ header{height:56px;display:flex;align-items:center;padding:0 15px;gap:12px;backg
 select option.pro-option{color:inherit}
 /* Split Layout: Left Toolbar & Bottom Toolbar */
 .main-container{flex:1;display:flex;position:relative;overflow:hidden;min-height:0}
-.left-toolbar{width:56px;background:#17181c;border-right:1px solid #2d3038;display:flex;flex-direction:column;align-items:center;padding:6px 3px 8px 3px;gap:5px;z-index:25;user-select:none;flex-shrink:0;transition:transform .25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .25s ease}
+.left-toolbar{width:56px;background:#17181c;border-right:1px solid #2d3038;display:flex;flex-direction:column;align-items:center;padding:6px 3px 8px 3px;gap:5px;z-index:60;user-select:none;flex-shrink:0;transition:transform .25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .25s ease}
+.left-toolbar:has(.flyout-wrap.open), .left-toolbar.has-open-flyout{z-index:65}
 .pin-btn{width:32px;height:22px;border:none;background:transparent;color:#94a3b8;font-size:12px;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s ease;padding:0;margin-bottom:2px}
 .pin-btn:hover{background:#2a2d36;color:#fff}
 .pin-btn.unpinned{color:#f59e0b;opacity:.85}
@@ -112,6 +113,7 @@ select option.pro-option{color:inherit}
 /* Left Flyout Dropdowns */
 .flyout-wrap{position:relative}
 .flyout-panel{position:absolute;left:calc(100% + 8px);top:0;background:#1e2026;border:1px solid #3c404a;border-radius:12px;padding:10px;box-shadow:0 10px 32px rgba(0,0,0,.75);display:none;z-index:100;min-width:180px;backdrop-filter:blur(8px)}
+#presentFlyoutPanel{top:auto;bottom:0}
 .flyout-wrap.open .flyout-panel{display:block;animation:flyoutFade .15s ease-out}
 @keyframes flyoutFade{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
 .flyout-title{font-size:11px;font-weight:bold;color:#94a3b8;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #2d3038}
@@ -3678,9 +3680,50 @@ function updateOpenDropdownPositions(){
     const panel = wrap.querySelector('.b-dropdown-panel');
     if(btn && panel) positionDropdownPanel(btn, panel);
   });
+  document.querySelectorAll('.flyout-wrap.open').forEach(adjustFlyoutPanelPosition);
 }
 
 window.addEventListener('resize', updateOpenDropdownPositions);
+
+function adjustFlyoutPanelPosition(wrap){
+  if(!wrap) return;
+  const panel = wrap.querySelector('.flyout-panel');
+  if(!panel) return;
+  
+  if(wrap.id === 'presentFlyoutWrap'){
+    panel.style.top = 'auto';
+    panel.style.bottom = '0px';
+  } else {
+    panel.style.top = '0px';
+    panel.style.bottom = 'auto';
+  }
+  panel.style.maxHeight = '';
+  panel.style.overflowY = '';
+
+  const bottomToolbarEl = document.getElementById('bottomToolbar');
+  const bottomLimit = bottomToolbarEl ? bottomToolbarEl.getBoundingClientRect().top : window.innerHeight;
+  const headerEl = document.querySelector('header');
+  const topLimit = headerEl ? headerEl.getBoundingClientRect().bottom + 4 : 4;
+
+  const rect = panel.getBoundingClientRect();
+  if(rect.bottom > bottomLimit - 6){
+    const overflow = rect.bottom - (bottomLimit - 6);
+    if(wrap.id === 'presentFlyoutWrap'){
+      panel.style.bottom = `${overflow + 4}px`;
+    } else {
+      panel.style.top = `${-overflow}px`;
+    }
+  }
+
+  const adjustedRect = panel.getBoundingClientRect();
+  if(adjustedRect.top < topLimit){
+    const wrapRect = wrap.getBoundingClientRect();
+    panel.style.top = `${topLimit - wrapRect.top}px`;
+    panel.style.bottom = 'auto';
+    panel.style.maxHeight = `${Math.max(160, bottomLimit - topLimit - 12)}px`;
+    panel.style.overflowY = 'auto';
+  }
+}
 
 function setupFlyoutToggle(btn, wrap){
   if(!btn || !wrap) return;
@@ -3696,6 +3739,11 @@ function setupFlyoutToggle(btn, wrap){
         positionDropdownPanel(btn, panel);
         if(typeof bottomToolbar !== 'undefined' && bottomToolbar) bottomToolbar.classList.add('peek-open');
       }
+      if(wrap.querySelector('.flyout-panel')){
+        adjustFlyoutPanelPosition(wrap);
+        const lt = document.getElementById('leftToolbar');
+        if(lt) lt.classList.add('has-open-flyout');
+      }
       if(wrap === shapeFlyoutWrap && typeof renderShapeTipPreview === 'function') renderShapeTipPreview();
       if(wrap === adjustDropdownWrap && typeof syncAdjustPanelDisplay === 'function') syncAdjustPanelDisplay();
     }
@@ -3703,9 +3751,20 @@ function setupFlyoutToggle(btn, wrap){
 }
 
 function closeAllMenus(){
-  document.querySelectorAll('.flyout-wrap.open, .b-dropdown-wrap.open').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('.flyout-wrap.open, .b-dropdown-wrap.open').forEach(el => {
+    el.classList.remove('open');
+    const fp = el.querySelector('.flyout-panel');
+    if(fp){
+      fp.style.top = '';
+      fp.style.bottom = '';
+      fp.style.maxHeight = '';
+      fp.style.overflowY = '';
+    }
+  });
   document.querySelectorAll('.b-dropdown-btn.active').forEach(el => el.classList.remove('active'));
   if(typeof bottomToolbar !== 'undefined' && bottomToolbar) bottomToolbar.classList.remove('peek-open');
+  const lt = document.getElementById('leftToolbar');
+  if(lt) lt.classList.remove('has-open-flyout');
 }
 
 document.addEventListener('click', e => {
@@ -3966,6 +4025,9 @@ function setupToolWithFlyout(btn, wrap, toolName){
     closeAllMenus();
     if(!isAlreadyOpen){
       wrap.classList.add('open');
+      adjustFlyoutPanelPosition(wrap);
+      const lt = document.getElementById('leftToolbar');
+      if(lt) lt.classList.add('has-open-flyout');
       if(toolName === 'pen' && typeof renderPenTipPreview === 'function') renderPenTipPreview();
       else if(toolName === 'marker' && typeof renderMarkerTipPreview === 'function') renderMarkerTipPreview();
       else if(toolName === 'laserTrail' && typeof renderLaserStylePreview === 'function') renderLaserStylePreview();

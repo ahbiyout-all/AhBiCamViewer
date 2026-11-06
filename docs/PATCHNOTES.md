@@ -12,6 +12,22 @@
 
 ---
 
+### 🎨 좌측 수업 발표 보조 도구 메뉴 하단 툴바 가림 현상 수정 (2026-11-06)
+- **결함 원인 분석**:
+  - 좌측 세로 툴바 최하단에 위치한 `presentFlyoutWrap` (💡 발표 도구: 레이저, 돋보기, 스포트라이트, 가림막) 패널이 기본값 `top: 0`으로 아래쪽으로 펼쳐지면서, 부모 컨테이너 `.main-container`의 `overflow: hidden` 및 하단 가로 툴바(`.bottom-toolbar`, `z-index: 50`)에 의해 메뉴 하단 70% 이상이 잘려 가려지는 현상 발생.
+  - `.left-toolbar`의 기본 `z-index`가 `25`로 설정되어 있어 하단 툴바(`z-index: 50`) 뒤로 렌더링 스택이 밀리는 CSS Stacking Context 결함 동반.
+- **수정 및 개선 내역**:
+  1. **발표 도구 패널 상향 전개 (`#presentFlyoutPanel { top: auto; bottom: 0; }`)**:
+     - 발표 도구 버튼 하단 기준선에 맞춰 메뉴가 위쪽으로 펼쳐지도록 CSS 앵커 변경.
+  2. **동적 뷰포트 바운더리 가드 (`adjustFlyoutPanelPosition`) 탑재**:
+     - 메뉴 열림 시 하단 툴바와의 충돌 여부를 실시간 측정하여, 창 크기가 작거나 리사이즈될 때도 하단 툴바 위(`bottomLimit - 8px`)에 정확히 머물도록 자동 오프셋 계산.
+     - 상단 헤더와의 충돌 시 자동 스크롤(`maxHeight`, `overflowY: auto`)을 활성화하여 100% 가독성 및 클릭성 보장.
+  3. **좌측 툴바 z-index 격상**:
+     - `.left-toolbar` 기본 `z-index: 60`, 플라이아웃 활성 시 `z-index: 65`로 승격하여 하단 메뉴(`z-index: 50`)보다 항시 상위에 렌더링되도록 보정.
+- **영향 파일**: `index.html` (4개 배포 HTML 파일 동기화 완료)
+
+---
+
 ### 🔄 네이티브 DLL 및 저장소 명칭 전면 개편: ClassroomVisualizer → AhBiCamViewer (2026-11-06)
 - **개편 배경 (Motivation)**:
   - 기존 `ClassroomVisualizerCore.dll` 및 `ClassroomVisualizer` 명칭이 인터넷 상의 기존 타 애플리케이션과 중복/충돌되는 문제가 확인됨.

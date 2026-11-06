@@ -6,6 +6,27 @@
 
 ## 2026-11-06 (v1.4.7)
 
+### 작업 39: 좌측 수업 발표 보조 도구 메뉴 하단 툴바 가림 현상 수정
+- **요청 사항**: "왼쪽 발표 수업 발표 도구 메뉴가 하단 메뉴에 가려짐" 문제 해결
+- **원인 분석**:
+  - 좌측 세로 툴바 최하단에 위치한 `presentFlyoutWrap` (💡 발표 도구: 레이저, 돋보기, 스포트라이트, 가림막)이 기본 `top: 0`으로 하향 전개됨.
+  - 상위 컨테이너 `.main-container`의 `overflow: hidden` 및 하단 가로 툴바(`.bottom-toolbar`, `z-index: 50`)에 의해 메뉴의 70% 이상이 잘려 가려짐.
+  - `.left-toolbar`가 `z-index: 25`로 설정되어 하단 툴바보다 낮은 CSS Stacking Context에 위치함.
+- **수정 내역**:
+  1. **CSS 상향 전개 앵커 적용 (`#presentFlyoutPanel { top: auto; bottom: 0; }`)**:
+     - 발표 도구 버튼 하단선에 맞춰 메뉴가 위쪽으로 펼쳐지도록 CSS 앵커 변경.
+  2. **동적 뷰포트 충돌 방지 가드 탑재 (`adjustFlyoutPanelPosition`)**:
+     - 메뉴 오픈 시 하단 툴바 위치(`bottomLimit - 8px`) 및 상단 헤더(`topLimit`)와의 경계를 실시간 연산하여 항상 가시 영역 내에 위치하도록 보정.
+     - 창 높이가 좁아질 경우 `maxHeight`와 `overflowY: auto` 스크롤을 활성화하여 잘림 현상 방지.
+  3. **좌측 툴바 z-index 승격**:
+     - `.left-toolbar` 기본 `z-index: 60`, 플라이아웃 오픈 시 `z-index: 65`로 지정하여 하단 메뉴(`z-index: 50`) 상위에 렌더링되도록 개선.
+  4. **4대 배포 HTML 파일 동기화**: `sync_html.cjs`를 통해 4대 배포 파일 100% SHA-256 동기화 완료.
+- **검증**: `check_syntax.cjs` 4/4 통과, `sync_html.cjs` 4/4 일치, Inno Setup 빌드 성공
+
+---
+
+## 2026-11-06 (v1.4.7)
+
 ### 작업 38: 순수 창작 Native DLL 및 C# 코어 명칭 개편 (ClassroomVisualizerCore.dll → AhBiCamViewerCore.dll)
 - **요청 사항**: 인터넷 상에 `ClassroomVisualizer`를 사용하는 기존 앱이 존재함에 따라, 브랜드 중복/충돌 방지를 위해 DLL 및 코어 명칭을 `AhBiCamViewer`로 전면 개편
 - **수정 내역**:
