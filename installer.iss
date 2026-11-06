@@ -64,8 +64,8 @@ Source: "tools\AhBiCamViewer.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "tools\AhBiCamViewer.bat"; DestDir: "{app}\tools"; Flags: ignoreversion
 Source: "bin\*.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
 ; Files required during setup execution
-Source: "bin\ClassroomVisualizerCore.dll"; Flags: dontcopy
-Source: "bin\ClassroomVisualizerManaged.dll"; Flags: dontcopy
+Source: "bin\AhBiCamViewerCore.dll"; Flags: dontcopy
+Source: "bin\AhBiCamViewerManaged.dll"; Flags: dontcopy
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\launcher.vbs"; WorkingDir: "{app}"; IconFilename: "{app}\assets\app.ico"
@@ -89,21 +89,21 @@ Filename: "netsh.exe"; Parameters: "advfirewall firewall delete rule name=""{#My
 Filename: "netsh.exe"; Parameters: "advfirewall firewall delete rule name=""{#MyAppName} v{#MyAppVersion}"""; Flags: runhidden; RunOnceId: "DelFwVer"
 
 [Code]
-// Pure native DLL import from ClassroomVisualizerCore.dll (v1.4.7 - 15 Native APIs)
+// Pure native DLL import from AhBiCamViewerCore.dll (v1.4.7 - 15 Native APIs)
 function CV_GetVersion(): Integer;
-  external 'CV_GetVersion@{tmp}\ClassroomVisualizerCore.dll stdcall delayload';
+  external 'CV_GetVersion@{tmp}\AhBiCamViewerCore.dll stdcall delayload';
 
 function CV_GetMonitorCount(): Integer;
-  external 'CV_GetMonitorCount@{tmp}\ClassroomVisualizerCore.dll stdcall delayload';
+  external 'CV_GetMonitorCount@{tmp}\AhBiCamViewerCore.dll stdcall delayload';
 
 function CV_PreventSleep(enable: Integer): Integer;
-  external 'CV_PreventSleep@{tmp}\ClassroomVisualizerCore.dll stdcall delayload';
+  external 'CV_PreventSleep@{tmp}\AhBiCamViewerCore.dll stdcall delayload';
 
 function CV_GetDiskFreeSpaceMB(drivePath: PAnsiChar; var freeMB: Integer): Integer;
-  external 'CV_GetDiskFreeSpaceMB@{tmp}\ClassroomVisualizerCore.dll stdcall delayload';
+  external 'CV_GetDiskFreeSpaceMB@{tmp}\AhBiCamViewerCore.dll stdcall delayload';
 
 function CV_GetDisplayDpi(var dpiX, dpiY: Integer): Integer;
-  external 'CV_GetDisplayDpi@{tmp}\ClassroomVisualizerCore.dll stdcall delayload';
+  external 'CV_GetDisplayDpi@{tmp}\AhBiCamViewerCore.dll stdcall delayload';
 
 // Detect existing installation, verify DLL integrity and prompt user (supports silent install)
 function InitializeSetup(): Boolean;
@@ -119,8 +119,8 @@ begin
 
   // Extract and verify native core DLL integrity before setup execution
   try
-    ExtractTemporaryFile('ClassroomVisualizerManaged.dll');
-    ExtractTemporaryFile('ClassroomVisualizerCore.dll');
+    ExtractTemporaryFile('AhBiCamViewerManaged.dll');
+    ExtractTemporaryFile('AhBiCamViewerCore.dll');
     DllVer := CV_GetVersion();
     MonCount := CV_GetMonitorCount();
     FreeMB := 0;

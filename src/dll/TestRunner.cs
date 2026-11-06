@@ -1,6 +1,6 @@
 // ==============================================================================
-// AhBiYout Classroom Visualizer - Native DLL Test Runner (15 Native Tests)
-// Verifies 100% of native exported functions in ClassroomVisualizerCore.dll
+// AhBiYout AhBiCamViewer - Native DLL Test Runner (15 Native Tests)
+// Verifies 100% of native exported functions in AhBiCamViewerCore.dll
 // ==============================================================================
 
 using System;
@@ -9,11 +9,11 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
-namespace AhBiYout.ClassroomVisualizer.Testing
+namespace AhBiYout.AhBiCamViewer.Testing
 {
     class Program
     {
-        private const string DLL_PATH = "ClassroomVisualizerCore.dll";
+        private const string DLL_PATH = "AhBiCamViewerCore.dll";
 
         [DllImport(DLL_PATH, CallingConvention = CallingConvention.StdCall)]
         public static extern int CV_GetVersion();
@@ -63,7 +63,7 @@ namespace AhBiYout.ClassroomVisualizer.Testing
         static int Main(string[] args)
         {
             Console.WriteLine("============================================================");
-            Console.WriteLine("[TEST SUITE] ClassroomVisualizer Pure Native DLL Verification (15 Tests)");
+            Console.WriteLine("[TEST SUITE] AhBiCamViewer Pure Native DLL Verification (15 Tests)");
             Console.WriteLine("============================================================");
 
             int passed = 0;

@@ -12,20 +12,32 @@
 
 ---
 
-### 🔄 저장소 이름 변경: ClassroomVisualizer → AhBiCamViewer (2026-11-05)
-- **GitHub 저장소 URL 일괄 변경**: `AhBiYout-all/ClassroomVisualizer` → `AhBiYout-all/AhBiCamViewer`
-- **대상 파일 (총 17개)**:
+### 🔄 네이티브 DLL 및 저장소 명칭 전면 개편: ClassroomVisualizer → AhBiCamViewer (2026-11-06)
+- **개편 배경 (Motivation)**:
+  - 기존 `ClassroomVisualizerCore.dll` 및 `ClassroomVisualizer` 명칭이 인터넷 상의 기존 타 애플리케이션과 중복/충돌되는 문제가 확인됨.
+  - 고유 브랜드 및 순수 창작 DLL 식별성 확보를 위해 DLL 파일명, 어셈블리/네임스페이스, 인스톨러 연동 구조를 `AhBiCamViewer`로 전면 개편.
+- **순수 창작 Win32 Native DLL 및 C# 코어 명칭 변경**:
+  - `src/dll/ClassroomVisualizerCore.il` → `src/dll/AhBiCamViewerCore.il` (ILASM 어셈블리 및 VTable Fixup Export Thunk)
+  - `src/dll/ClassroomVisualizerCore.dll` → `bin/AhBiCamViewerCore.dll` (15대 Win32 stdcall 네이티브 PE 익스포트)
+  - `src/dll/ClassroomVisualizerManaged.dll` → `bin/AhBiCamViewerManaged.dll` (.NET Framework 4.0 IL 매니지드 코어)
+  - C# 및 IL 네임스페이스 갱신: `AhBiYout.ClassroomVisualizer.Core` → `AhBiYout.AhBiCamViewer.Core`
+  - 단위 테스트 러너 갱신: `AhBiYout.AhBiCamViewer.Testing`, `AhBiCamViewerCore.dll` 15/15 검증 테스트 100% 통과
+  - 인스톨러(`installer.iss`) 연동: 설치 전 사전 무결성 검사 호출 대상 DLL을 `AhBiCamViewerCore.dll`로 갱신
+  - CI/CD 워크플로우(`.github/workflows/build-and-release.yml`) 및 빌드 스크립트(`tools/build_dll.bat`) 전면 동기화
+- **GitHub 저장소 URL 및 문서 일괄 변경**: `AhBiYout-all/ClassroomVisualizer` → `AhBiYout-all/AhBiCamViewer`
+- **대상 파일 (총 22개)**:
   - `index.html` (GITHUB_REPO 상수), `version.json` (repo 필드)
-  - `installer.iss` (MyAppURL, MyAppExeName, 배포 소스 경로)
-  - `.github/workflows/build-and-release.yml` (워크플로우 이름, 릴리스 노트 푸터)
-  - `.gitignore`, `git-release.bat`, `push_github.bat`
+  - `installer.iss` (MyAppURL, MyAppExeName, 배포 소스 경로, DLL import)
+  - `.github/workflows/build-and-release.yml` (빌드 파이프라인, 릴리스 노트 푸터)
+  - `.gitignore`, `git-release.bat`, `push_github.bat`, `tools/build_dll.bat`
+  - `src/dll/AhBiCamViewerCore.il`, `src/dll/LicenseCore.cs`, `src/dll/NativeSystemCore.cs`, `src/dll/TestRunner.cs`
   - `README.md`, `docs/README.md`, `docs/BLOG_POST.md`, `docs/GITHUB.md`
   - `docs/INSTALL.md`, `docs/LICENSE.en.md`, `docs/LICENSE.ko.md`
+  - `docs/ARCHITECTURE.md`, `docs/BUILD.md`, `docs/MODULES.md`
   - `docs/NATIVE_DLL_ARCHITECTURE.md`, `docs/SECURITY.md`
   - 3개 HTML 배포 파일 (sync_html.cjs 자동 동기화)
-- **런처 파일 통합**: `tools/ClassroomVisualizer.bat` 삭제 (동일 내용의 `tools/AhBiCamViewer.bat`으로 통합)
-- **DLL 제품명 보존**: `ClassroomVisualizerCore.dll`, `ClassroomVisualizerManaged.dll`은 순수 창작 DLL 아이덴티티로 변경 없이 유지
-- **SEO 태그 보존**: 블로그 포스트의 검색 태그에 `ClassroomVisualizer` 키워드 유지 (검색 노출 목적)
+- **런처 파일 통합**: `tools/ClassroomVisualizer.bat` 삭제 (`tools/AhBiCamViewer.bat` 단일 통합)
+- **블로그 태그 정리**: 기존 외부 앱 중복 방지를 위해 블로그 검색 키워드에서 `ClassroomVisualizer` 제거
 
 ---
 

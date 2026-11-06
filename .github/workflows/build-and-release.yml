@@ -56,12 +56,12 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path "bin" -Force | Out-Null
           
-          Write-Host "[1/3] Compiling Managed Core: bin/ClassroomVisualizerManaged.dll..."
-          csc /target:library /platform:x86 /out:bin\ClassroomVisualizerManaged.dll /optimize+ src\dll\LicenseCore.cs src\dll\NativeSystemCore.cs
+          Write-Host "[1/3] Compiling Managed Core: bin/AhBiCamViewerManaged.dll..."
+          csc /target:library /platform:x86 /out:bin\AhBiCamViewerManaged.dll /optimize+ src\dll\LicenseCore.cs src\dll\NativeSystemCore.cs
           if ($LASTEXITCODE -ne 0) { throw "Managed DLL compilation failed" }
 
-          Write-Host "[2/3] Assembling Native Export DLL: bin/ClassroomVisualizerCore.dll..."
-          ilasm /dll /quiet /out=bin\ClassroomVisualizerCore.dll src\dll\ClassroomVisualizerCore.il
+          Write-Host "[2/3] Assembling Native Export DLL: bin/AhBiCamViewerCore.dll..."
+          ilasm /dll /quiet /out=bin\AhBiCamViewerCore.dll src\dll\AhBiCamViewerCore.il
           if ($LASTEXITCODE -ne 0) { throw "ILASM assembly failed" }
 
           Write-Host "[3/3] Compiling & Running TestRunner.exe..."

@@ -4,6 +4,39 @@
 
 ---
 
+## 2026-11-06 (v1.4.7)
+
+### 작업 38: 순수 창작 Native DLL 및 C# 코어 명칭 개편 (ClassroomVisualizerCore.dll → AhBiCamViewerCore.dll)
+- **요청 사항**: 인터넷 상에 `ClassroomVisualizer`를 사용하는 기존 앱이 존재함에 따라, 브랜드 중복/충돌 방지를 위해 DLL 및 코어 명칭을 `AhBiCamViewer`로 전면 개편
+- **수정 내역**:
+  1. **네이티브 및 매니지드 DLL 명칭 변경**:
+     - `ClassroomVisualizerCore.dll` → `AhBiCamViewerCore.dll` (15대 Win32 stdcall PE Export DLL)
+     - `ClassroomVisualizerManaged.dll` → `AhBiCamViewerManaged.dll` (.NET Framework 4.0 Managed DLL)
+  2. **IL 소스 파일 및 어셈블리 선언부 갱신**:
+     - `src/dll/ClassroomVisualizerCore.il` 삭제 및 `src/dll/AhBiCamViewerCore.il` 신규 생성
+     - `.assembly extern AhBiCamViewerManaged`, `.assembly AhBiCamViewerCore`, `.module AhBiCamViewerCore.dll`
+     - AssemblyTitleAttribute: `(AhBiYout) AhBiCamViewer Native Core`
+     - AssemblyVersion: `1.4.7.0`
+  3. **C# 소스 코드 및 네임스페이스 갱신**:
+     - `src/dll/LicenseCore.cs`: `namespace AhBiYout.AhBiCamViewer.Core`
+     - `src/dll/NativeSystemCore.cs`: `namespace AhBiYout.AhBiCamViewer.Core`
+     - `src/dll/TestRunner.cs`: `DLL_PATH = "AhBiCamViewerCore.dll"`, `namespace AhBiYout.AhBiCamViewer.Testing`
+  4. **빌드 및 인스톨러 스크립트 갱신**:
+     - `tools/build_dll.bat`: `AhBiCamViewerCore.dll`, `AhBiCamViewerManaged.dll` 빌드 및 테스트 자동화
+     - `installer.iss`: 설치 전 사전 무결성 검증 루틴 및 배포 파일 목록 갱신
+     - `.github/workflows/build-and-release.yml`: CI/CD 워크플로우 DLL 컴파일 스텝 갱신
+  5. **기술 문서 전면 갱신**:
+     - `README.md`, `docs/ARCHITECTURE.md`, `docs/BUILD.md`, `docs/GITHUB.md`
+     - `docs/MODULES.md`, `docs/NATIVE_DLL_ARCHITECTURE.md`, `docs/README.md`, `docs/SECURITY.md`, `docs/BLOG_POST.md`
+     - 블로그 검색 태그에서 `ClassroomVisualizer` 제거하여 외부 앱과의 브랜드 혼선 원천 차단
+- **검증**:
+  - `build_dll.bat`: 15/15 Native Unit Test PASS (100%)
+  - `build.bat`: Inno Setup 인스톨러 컴파일 성공, Portable ZIP 패키지 생성 완료
+  - `check_syntax.cjs`: 4/4 스크립트 블록 통과
+  - `sync_html.cjs`: 4대 배포 HTML 파일 100% SHA-256 일치
+
+---
+
 ## 2026-11-05 (v1.4.7)
 
 ### 작업 37: GitHub 저장소 이름 변경 (ClassroomVisualizer → AhBiCamViewer)

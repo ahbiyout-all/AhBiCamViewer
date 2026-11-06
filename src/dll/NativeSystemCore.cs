@@ -1,5 +1,5 @@
 // ==============================================================================
-// AhBiYout Classroom Visualizer - Native System & Presentation Core
+// AhBiYout AhBiCamViewer - Native System & Presentation Core
 // Pure-C# implementation of Windows Presentation Sleep Prevention,
 // Multi-Monitor / Projector topology detection, High-DPI sensor scaling,
 // Disk storage safety verification, Hardware tone generation, and Window Topmost.
@@ -8,7 +8,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace AhBiYout.ClassroomVisualizer.Core
+namespace AhBiYout.AhBiCamViewer.Core
 {
     public static class NativeSystemCore
     {

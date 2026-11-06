@@ -32,7 +32,7 @@
 | **영상 녹화 엔진** | Offscreen Canvas `captureStream(30)` + `MediaRecorder` | 메뉴 제외 순수 영상+판서 30 FPS MP4/WebM 실시간 합성 녹화 (0KB 버그 해결) |
 | **문서 컴파일러** | 내장 경량 jsPDF 엔진 | 캡처 이미지 A4 랜드스케이프 규격 다중 페이지 PDF 변환 |
 | **오디오 엔진** | Web Audio API + Win32 `kernel32!Beep` (`CV_PlayCustomTone`) | 신시사이저 차임음 및 하드웨어 스피커 직결 무지연 타이머 톤 송출 |
-| **순수 창작 네이티브 코어** | Pure C#/IL Hybrid Win32 DLL (`ClassroomVisualizerCore.dll`) | VTable Fixup 기반 15대 unmanaged stdcall 함수 수출 및 예외 쉴드 |
+| **순수 창작 네이티브 코어** | Pure C#/IL Hybrid Win32 DLL (`AhBiCamViewerCore.dll`) | VTable Fixup 기반 15대 unmanaged stdcall 함수 수출 및 예외 쉴드 |
 | **단독 실행 런처** | VBScript + Windows Script Host (`launcher.vbs`) | `--app="file:///..."` 및 격리 프로필을 통한 무팝업 단독 창 모드 구동 |
 | **패키징 & 배포** | Inno Setup 6 | 언팩형 다중 파일(Unpacked Multi-File) 인스톨러, 방화벽 규칙 사전 등록, 무인 설치 |
 
@@ -88,7 +88,7 @@ flowchart TD
     end
 
     subgraph Native Win32 Core
-        DLL["ClassroomVisualizerCore.dll (15대 Native APIs)"]
+        DLL["AhBiCamViewerCore.dll (15대 Native APIs)"]
         IL["VTable Fixup Export Thunk (.try ... catch Shield)"]
         SYS["Win32 System (Beep / GetDiskFreeSpace / DPI / Topmost / QPC)"]
     end
@@ -132,7 +132,7 @@ flowchart TD
 
 ## 5. 순수 창작 Native DLL 15대 API 구조
 
-`ClassroomVisualizerCore.dll`은 C#/IL 하이브리드 아키텍처를 적용하여 100% C/C++ 네이티브 `stdcall` 바이너리 인터페이스를 제공합니다:
+`AhBiCamViewerCore.dll`은 C#/IL 하이브리드 아키텍처를 적용하여 100% C/C++ 네이티브 `stdcall` 바이너리 인터페이스를 제공합니다:
 
 1. `CV_GetVersion`: 바이너리 버전 반환 (0x01040400).
 2. `CV_ValidateKeyA`: Modulo-97 가중 체크섬 알고리즘 기반 라이선스 키 검증.

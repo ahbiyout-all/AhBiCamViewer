@@ -40,7 +40,7 @@
   - 실시간 돋보기 뷰에서도 확대 배율에 맞춰 도형이 정밀하게 벡터 확대 표출.
 - **🖌️ 형광펜 붓펜 촉(Brush Tip) 속도/필압 반응형 테이퍼링 및 프리뷰 고도화**:
   - 이동 속도(0.35배~1.65배)와 필압에 실시간 반응하는 4단계 베지어 연속 보간 렌더링.
-- **⚡ 순수 창작 Native DLL 15대 API 완성 (`ClassroomVisualizerCore.dll`, v1.4.7)**:
+- **⚡ 순수 창작 Native DLL 15대 API 완성 (`AhBiCamViewerCore.dll`, v1.4.7)**:
   - 윈도우 하드웨어 비프 톤(수업 집중벨), 디스크 용량 진단, 모니터 DPI 자동 감지, 항상 위 고정, QPC 마이크로초 타이머 탑재.
 - **🛡️ 가상 카메라 화면 무한 복제(Droste Effect) 원천 차단**:
   - OBS Virtual Cam, screen-recorder-device 등 가상 카메라 자동 연결 배제 및 안정적 대기 화면 유지.
@@ -151,7 +151,7 @@
 ---
 
 ## 10. 추천 태그
-아비캠뷰어,실물화상기,웹캠뷰어,수업도구,교실화상기,전자칠판,화상수업,무료소프트웨어,AhBiCamViewer,ClassroomVisualizer,WebcamViewer,Visualizer,DocumentCamera,EdTech,ScreenCapture,WindowsApp,CISNet,AhBiYout
+아비캠뷰어,실물화상기,웹캠뷰어,수업도구,교실화상기,전자칠판,화상수업,무료소프트웨어,AhBiCamViewer,WebcamViewer,Visualizer,DocumentCamera,EdTech,ScreenCapture,WindowsApp,CISNet,AhBiYout
 
 *(한글/영어 혼합 18개 태그, 공백/쉼표 포함 182자 - 20개 이하 및 200자 이내 준수)*
 
@@ -304,7 +304,7 @@
   <!-- 10. 추천 태그 -->
   <footer style="background: #f1f5f9; border-radius: 12px; padding: 18px 22px; font-size: 13px; color: #475569;">
     <strong style="color: #0f172a; display: block; margin-bottom: 6px;">🏷️ 추천 태그 (복사하여 태그 입력란에 넣으세요):</strong>
-    <code style="display: block; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; word-break: break-all; color: #0f766e;">아비캠뷰어,실물화상기,웹캠뷰어,수업도구,교실화상기,전자칠판,화상수업,무료소프트웨어,AhBiCamViewer,ClassroomVisualizer,WebcamViewer,Visualizer,DocumentCamera,EdTech,ScreenCapture,WindowsApp,CISNet,AhBiYout</code>
+    <code style="display: block; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; word-break: break-all; color: #0f766e;">아비캠뷰어,실물화상기,웹캠뷰어,수업도구,교실화상기,전자칠판,화상수업,무료소프트웨어,AhBiCamViewer,WebcamViewer,Visualizer,DocumentCamera,EdTech,ScreenCapture,WindowsApp,CISNet,AhBiYout</code>
   </footer>
 
 </div>

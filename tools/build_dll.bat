@@ -2,16 +2,16 @@
 setlocal enabledelayedexpansion
 
 REM ============================================================
-REM Build Script: ClassroomVisualizer Native & Managed DLLs
+REM Build Script: AhBiCamViewer Native & Managed DLLs
 REM Compiles:
-REM 1. src\dll\LicenseCore.cs & NativeSystemCore.cs -> src\dll\ClassroomVisualizerManaged.dll
-REM 2. src\dll\ClassroomVisualizerCore.il -> src\dll\ClassroomVisualizerCore.dll
+REM 1. src\dll\LicenseCore.cs & NativeSystemCore.cs -> src\dll\AhBiCamViewerManaged.dll
+REM 2. src\dll\AhBiCamViewerCore.il -> src\dll\AhBiCamViewerCore.dll
 REM 3. Copies outputs to bin\
 REM 4. Compiles and runs src\dll\TestRunner.cs
 REM ============================================================
 
 echo ============================================================
-echo [BUILD DLL] Compiling ClassroomVisualizer Pure Native DLLs
+echo [BUILD DLL] Compiling AhBiCamViewer Pure Native DLLs
 echo ============================================================
 
 set "CSC_EXE=C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe"
@@ -31,28 +31,28 @@ cd /d "%~dp0\.."
 
 if not exist "bin" mkdir "bin"
 
-echo [*] Compiling Managed Core: src\dll\ClassroomVisualizerManaged.dll...
-"%CSC_EXE%" /target:library /platform:x86 /out:src\dll\ClassroomVisualizerManaged.dll src\dll\LicenseCore.cs src\dll\NativeSystemCore.cs
+echo [*] Compiling Managed Core: src\dll\AhBiCamViewerManaged.dll...
+"%CSC_EXE%" /target:library /platform:x86 /out:src\dll\AhBiCamViewerManaged.dll src\dll\LicenseCore.cs src\dll\NativeSystemCore.cs
 if errorlevel 1 (
-    echo [ERROR] Failed to compile ClassroomVisualizerManaged.dll
+    echo [ERROR] Failed to compile AhBiCamViewerManaged.dll
     exit /b 1
 )
 
-echo [*] Assembling Native Export DLL: src\dll\ClassroomVisualizerCore.dll...
-"%ILASM_EXE%" /dll /out:src\dll\ClassroomVisualizerCore.dll src\dll\ClassroomVisualizerCore.il
+echo [*] Assembling Native Export DLL: src\dll\AhBiCamViewerCore.dll...
+"%ILASM_EXE%" /dll /out:src\dll\AhBiCamViewerCore.dll src\dll\AhBiCamViewerCore.il
 if errorlevel 1 (
-    echo [ERROR] Failed to assemble ClassroomVisualizerCore.dll
+    echo [ERROR] Failed to assemble AhBiCamViewerCore.dll
     exit /b 1
 )
 
 echo [*] Copying DLLs to bin\ directory...
-copy /y "src\dll\ClassroomVisualizerCore.dll" "bin\" >nul
-copy /y "src\dll\ClassroomVisualizerManaged.dll" "bin\" >nul
+copy /y "src\dll\AhBiCamViewerCore.dll" "bin\" >nul
+copy /y "src\dll\AhBiCamViewerManaged.dll" "bin\" >nul
 
 echo ============================================================
 echo [SUCCESS] DLL Build Complete:
-echo - bin\ClassroomVisualizerCore.dll
-echo - bin\ClassroomVisualizerManaged.dll
+echo - bin\AhBiCamViewerCore.dll
+echo - bin\AhBiCamViewerManaged.dll
 echo ============================================================
 
 if exist "src\dll\TestRunner.cs" (

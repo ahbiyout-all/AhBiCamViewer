@@ -6,9 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.4.7] - 2026-11-05
+## [1.4.7] - 2026-11-06
 ### Changed
-- **Repository Rename**: GitHub repository renamed from `ClassroomVisualizer` to `AhBiCamViewer` across all 17+ project files.
+- **Pure Native & Managed DLL Rename**:
+  - Renamed `ClassroomVisualizerCore.dll` → `AhBiCamViewerCore.dll` and `ClassroomVisualizerManaged.dll` → `AhBiCamViewerManaged.dll` to prevent naming collision with existing external web applications.
+  - Renamed IL source `src/dll/ClassroomVisualizerCore.il` → `src/dll/AhBiCamViewerCore.il`.
+  - Updated .NET namespaces from `AhBiYout.ClassroomVisualizer.Core` to `AhBiYout.AhBiCamViewer.Core`.
+  - Updated Inno Setup installer (`installer.iss`), test suite (`TestRunner.cs`), CI/CD workflow, and all documentation.
+- **Repository Rename**: GitHub repository renamed from `ClassroomVisualizer` to `AhBiCamViewer` across all project files.
 - **Launcher Consolidation**: Removed duplicate `tools/ClassroomVisualizer.bat`; unified to `tools/AhBiCamViewer.bat`.
 - **Installer Update**: `installer.iss` now references `AhBiCamViewer.bat` as the app executable name.
 

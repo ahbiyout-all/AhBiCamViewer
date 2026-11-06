@@ -4,7 +4,7 @@
 > **최종 갱신일:** 2026-11-01  
 > **개발자:** AhBiYout (AhBiYout-all)  
 > **공식 저장소:** https://github.com/AhBiYout-all/AhBiCamViewer  
-> **대상 바이너리:** `bin/ClassroomVisualizerCore.dll` & `bin/ClassroomVisualizerManaged.dll`
+> **대상 바이너리:** `bin/AhBiCamViewerCore.dll` & `bin/AhBiCamViewerManaged.dll`
 
 ---
 
@@ -32,7 +32,7 @@
                  Win32 StdCall 호출 (PE Export Directory)
                                      ▼
 +---------------------------------------------------------------------------------+
-| [계층 1] ClassroomVisualizerCore.dll (순수 IL 어셈블리 썽크)                      |
+| [계층 1] AhBiCamViewerCore.dll (순수 IL 어셈블리 썽크)                      |
 |                                                                                 |
 |  - PE Header: .corflags 0x00000002 (32BITREQUIRED)                              |
 |  - VTable Fixups (.vtfixup [15] int32 fromunmanaged)                            |
@@ -44,7 +44,7 @@
                            CLR 내부 고속 프록시 호출
                                      ▼
 +---------------------------------------------------------------------------------+
-| [계층 2] ClassroomVisualizerManaged.dll (순수 C# 비즈니스 로직 & Win32 API)       |
+| [계층 2] AhBiCamViewerManaged.dll (순수 C# 비즈니스 로직 & Win32 API)       |
 |                                                                                 |
 |  - LicenseCore.cs: Modulo-97 체크섬 알고리즘, 트라이얼 만료 계산, 머신 해시 생성      |
 |  - NativeSystemCore.cs: SetThreadExecutionState (절전 방지), DPI 감지,          |
@@ -220,14 +220,14 @@
 
 ```batch
 REM 1단계: 순수 C# 관리형 어셈블리 컴파일
-csc /target:library /platform:anycpu /out:bin\ClassroomVisualizerManaged.dll /optimize+ ^
+csc /target:library /platform:anycpu /out:bin\AhBiCamViewerManaged.dll /optimize+ ^
     src\dll\LicenseCore.cs src\dll\NativeSystemCore.cs
 
 REM 2단계: VTable Fixup 기반 순수 IL 어셈블리 컴파일 (PE Export Directory 생성)
-ilasm /dll /quiet /out=bin\ClassroomVisualizerCore.dll src\dll\ClassroomVisualizerCore.il
+ilasm /dll /quiet /out=bin\AhBiCamViewerCore.dll src\dll\AhBiCamViewerCore.il
 
 REM 3단계: 단위 검증 러너 컴파일 및 15개 전수 테스트 실행
-csc /target:exe /platform:x64 /out:bin\TestRunner.exe /reference:bin\ClassroomVisualizerManaged.dll src\dll\TestRunner.cs
+csc /target:exe /platform:x64 /out:bin\TestRunner.exe /reference:bin\AhBiCamViewerManaged.dll src\dll\TestRunner.cs
 bin\TestRunner.exe
 ```
 
@@ -239,7 +239,7 @@ bin\TestRunner.exe
 
 ```
 ============================================================
-[TEST SUITE] ClassroomVisualizer Pure Native DLL Verification (15 Tests)
+[TEST SUITE] AhBiCamViewer Pure Native DLL Verification (15 Tests)
 ============================================================
 [TEST 1] CV_GetVersion: 0x01040400
          PASS: Version matches v1.4.4.0 (0x01040400)

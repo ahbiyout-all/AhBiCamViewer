@@ -26,7 +26,7 @@
 3. **🛡️ 가상 카메라 화면 무한 복제(Droste Effect) 원천 차단**
    - DirectShow 가상 캡처 필터(`screen-recorder-device`, `OBS Virtual Camera` 등) 지능형 식별 및 자동 연결 배제
    - 물리 카메라가 없을 때도 화면이 무한히 빨려 들어가는 거울 방 현상 없이 깔끔한 대기 플레이스홀더 화면 유지
-4. **⚡ 15대 Win32 순수 창작 Native DLL 탑재 (`ClassroomVisualizerCore.dll`, v1.4.7)**
+4. **⚡ 15대 Win32 순수 창작 Native DLL 탑재 (`AhBiCamViewerCore.dll`, v1.4.7)**
    - **하드웨어 톤 송출 (`CV_PlayCustomTone`)**: `kernel32!Beep` 직접 구동으로 브라우저 탭 스로틀링 없이 즉각적인 수업 타이머/주목음 송출
    - **잔여 디스크 용량 진단 (`CV_GetDiskFreeSpaceMB`)**: 녹화 저장소 용량 사전 검증으로 0KB 동영상 저장 사고 방지
    - **주 모니터 DPI 자동 감지 (`CV_GetDisplayDpi`)**: 전자칠판 및 4K 프로젝터 연결 시 100%~200% 디스플레이 배율 실시간 대응
@@ -75,7 +75,7 @@
 │   ├── icon.png
 │   └── app.ico
 ├── src/dll/                     # 순수 창작 Win32 Native DLL 소스코드
-│   ├── ClassroomVisualizerCore.il # IL 어셈블리 및 VTable Fixup Export Thunk (15 Native APIs)
+│   ├── AhBiCamViewerCore.il # IL 어셈블리 및 VTable Fixup Export Thunk (15 Native APIs)
 │   ├── LicenseCore.cs           # 라이선스 및 모듈러 매니지드 코어
 │   ├── NativeSystemCore.cs      # Win32 네이티브 시스템 코어 (톤, 디스크, DPI, Topmost, QPC)
 │   └── TestRunner.cs            # 네이티브 DLL 15대 API 전수 검증 테스트 수트
@@ -112,8 +112,8 @@
 
 ### 2. 윈도우 인스톨러 빌드
 프로젝트 루트에서 `build.bat`을 실행하면 다음 과정이 한 번에 자동 진행됩니다:
-1. `ClassroomVisualizerManaged.dll` 컴파일 (C# 5.0)
-2. `ClassroomVisualizerCore.dll` 순수 네이티브 DLL 어셈블 (ilasm)
+1. `AhBiCamViewerManaged.dll` 컴파일 (C# 5.0)
+2. `AhBiCamViewerCore.dll` 순수 네이티브 DLL 어셈블 (ilasm)
 3. `TestRunner.exe` 실행을 통한 15/15 네이티브 API 단위 테스트 전수 검증
 4. Inno Setup 6을 통한 멀티파일 인스톨러(`아비캠뷰어 (AhBiCamViewer)_Setup_v1.4.7.exe`) 및 포터블 패키지(`dist/`) 자동 생성
 

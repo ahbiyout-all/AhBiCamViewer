@@ -97,7 +97,7 @@ GitHub Actions 워크플로는 최신 규격을 엄격히 준수하여 자동화
 3. **버전 파싱**: `version.json`에서 현재 타겟 시맨틱 버전 동적 추출.
 4. **순수 창작 Win32 Native DLL 빌드**:
    - .NET C# 컴파일러(`csc.exe`)로 `src/dll/LicenseCore.cs` 및 `NativeSystemCore.cs` 컴파일.
-   - IL Assembler(`ilasm.exe`)로 `src/dll/ClassroomVisualizerCore.il` 어셈블하여 VTable Fixup 기반 순수 stdcall DLL 생성.
+   - IL Assembler(`ilasm.exe`)로 `src/dll/AhBiCamViewerCore.il` 어셈블하여 VTable Fixup 기반 순수 stdcall DLL 생성.
 5. **15/15 전수 단위 테스트 검증**:
    - `TestRunner.exe`를 컴파일하고 즉시 실행하여 15개 네이티브 API에 대한 전수 검증 통과(100% PASS) 확인. 실패 시 파이프라인 즉각 중단.
 6. **Inno Setup 6 멀티파일 인스톨러 빌드**:

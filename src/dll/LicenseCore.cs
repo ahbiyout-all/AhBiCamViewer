@@ -1,5 +1,5 @@
 // ==============================================================================
-// AhBiYout Classroom Visualizer - Native License Core
+// AhBiYout AhBiCamViewer - Native License Core
 // Pure-C# implementation of offline checksum, trial license expiry verification,
 // and hardware environment hashing for classroom document camera application.
 // ==============================================================================
@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace AhBiYout.ClassroomVisualizer.Core
+namespace AhBiYout.AhBiCamViewer.Core
 {
     public static class LicenseCore
     {

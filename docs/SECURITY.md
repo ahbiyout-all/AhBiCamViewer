@@ -70,7 +70,7 @@
 
 ### 2.8 순수 창작 Native DLL 15대 API 무결성 및 크래시 방어 (Native Robustness)
 - **분석 항목**: unmanaged DLL 호출 시 메모리 누수, 잘못된 포인터 참조에 의한 프로세스 비정상 종료 위험
-- **영향 파일**: `src/dll/ClassroomVisualizerCore.il`, `src/dll/NativeSystemCore.cs`
+- **영향 파일**: `src/dll/AhBiCamViewerCore.il`, `src/dll/NativeSystemCore.cs`
 - **조치 사항**:
   - 15개 전체 unmanaged export thunk에 `.try ... catch [mscorlib]System.Exception` 예외 쉴드를 장착하여 잘못된 매개변수나 NULL 포인터 전달 시에도 0 또는 실패 코드를 반환하도록 보호.
   - `TestRunner.exe` 전수 단위 테스트(15/15)를 통해 NULL 안전성 및 메모리 정합성 100% 검증 완료.

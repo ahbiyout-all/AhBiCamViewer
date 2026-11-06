@@ -34,8 +34,8 @@ C:\Users\user\.gemini\antigravity\scratch\교실용_실물화상기> build.bat
 1. **버전 파싱**: `version.json`에서 현재 타겟 시맨틱 버전(`v1.4.4`)을 읽어옵니다.
 2. **출력 폴더 준비**: `dist/` 및 버전별 격리 폴더 `dist/1.4.4/`를 생성합니다.
 3. **순수 창작 네이티브 DLL 15대 API 컴파일 (`tools\build_dll.bat`)**:
-   - `csc.exe`로 `src/dll/LicenseCore.cs`와 `src/dll/NativeSystemCore.cs`를 `src/dll/ClassroomVisualizerManaged.dll`로 빌드합니다.
-   - `ilasm.exe`로 `src/dll/ClassroomVisualizerCore.il`을 어셈블하여 VTable Fixup 기반 순수 stdcall PE Export DLL(`ClassroomVisualizerCore.dll`)을 생성합니다.
+   - `csc.exe`로 `src/dll/LicenseCore.cs`와 `src/dll/NativeSystemCore.cs`를 `src/dll/AhBiCamViewerManaged.dll`로 빌드합니다.
+   - `ilasm.exe`로 `src/dll/AhBiCamViewerCore.il`을 어셈블하여 VTable Fixup 기반 순수 stdcall PE Export DLL(`AhBiCamViewerCore.dll`)을 생성합니다.
    - `TestRunner.cs`를 컴파일하고 15개 네이티브 함수에 대한 단위 테스트를 실행하여 15/15 PASS(100%)를 검증합니다.
 4. **Inno Setup 6 멀티파일 인스톨러 컴파일**:
    - `ISCC.exe`를 탐색하고 매개변수 `/DMyAppVersion="1.4.4"`를 전달하여 `installer.iss`를 컴파일합니다.
@@ -61,8 +61,8 @@ dist/
 ### DLL 산출물 (`bin/` 폴더):
 ```
 bin/
-├── ClassroomVisualizerCore.dll      # 15대 네이티브 Win32 C/C++ 스타일 stdcall DLL
-└── ClassroomVisualizerManaged.dll   # .NET 매니지드 어셈블리 DLL
+├── AhBiCamViewerCore.dll      # 15대 네이티브 Win32 C/C++ 스타일 stdcall DLL
+└── AhBiCamViewerManaged.dll   # .NET 매니지드 어셈블리 DLL
 ```
 
 ---
@@ -103,4 +103,4 @@ GitHub에 `v1.4.4` 태그를 푸시하면 다음 자동화 워크플로가 클�
 | 방화벽 사전 등록 | 설치 시 Windows 방화벽 규칙을 기본 앱 이름 및 버전 표기 이름으로 사전 조용히 등록 |
 | 방화벽 정리 | 제거 시 등록된 방화벽 규칙 자동 삭제 |
 | 런처 실행 | 설치 완료 후 `launcher.vbs`를 무음 백그라운드로 실행 |
-| DLL 무결성 검증 | `InitializeSetup()` 코드에서 `ClassroomVisualizerCore.dll`의 `CV_GetVersion()`을 호출하여 무결성 확인 |
+| DLL 무결성 검증 | `InitializeSetup()` 코드에서 `AhBiCamViewerCore.dll`의 `CV_GetVersion()`을 호출하여 무결성 확인 |

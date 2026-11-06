@@ -3,24 +3,24 @@
   .publickeytoken = (B7 7A 5C 56 19 34 E0 89)
   .ver 4:0:0:0
 }
-.assembly extern ClassroomVisualizerManaged
+.assembly extern AhBiCamViewerManaged
 {
   .ver 0:0:0:0
 }
 
-.assembly ClassroomVisualizerCore
+.assembly AhBiCamViewerCore
 {
-  .custom instance void [mscorlib]System.Reflection.AssemblyTitleAttribute::.ctor(string) = ( 01 00 24 28 41 68 42 69 59 6F 75 74 29 20 43 6C 61 73 73 72 6F 6F 6D 20 56 69 73 75 61 6C 69 7A 65 72 20 4E 61 74 69 76 65 20 43 6F 72 65 00 00 ) 
+  .custom instance void [mscorlib]System.Reflection.AssemblyTitleAttribute::.ctor(string) = ( 01 00 24 28 41 68 42 69 59 6F 75 74 29 20 41 68 42 69 43 61 6D 56 69 65 77 65 72 20 4E 61 74 69 76 65 20 43 6F 72 65 00 00 ) 
   .custom instance void [mscorlib]System.Reflection.AssemblyCompanyAttribute::.ctor(string) = ( 01 00 10 41 68 42 69 59 6F 75 74 20 28 43 49 53 4E 45 54 29 00 00 )
-  .custom instance void [mscorlib]System.Reflection.AssemblyVersionAttribute::.ctor(string) = ( 01 00 07 31 2E 34 2E 34 2E 30 00 00 )
+  .custom instance void [mscorlib]System.Reflection.AssemblyVersionAttribute::.ctor(string) = ( 01 00 07 31 2E 34 2E 37 2E 30 00 00 )
   .hash algorithm 0x00008004
-  .ver 1:4:4:0
+  .ver 1:4:7:0
 }
 
-.module ClassroomVisualizerCore.dll
+.module AhBiCamViewerCore.dll
 .corflags 0x00000002
 
-.class public abstract auto ansi sealed beforefieldinit AhBiYout.ClassroomVisualizer.Core.NativeLicense
+.class public abstract auto ansi sealed beforefieldinit AhBiYout.AhBiCamViewer.Core.NativeLicense
        extends [mscorlib]System.Object
 {
   // -------------------------------------------------------------
@@ -56,7 +56,7 @@
       stloc.0
 
       ldloc.0
-      call int32 [ClassroomVisualizerManaged]AhBiYout.ClassroomVisualizer.Core.LicenseCore::ValidateKey(string)
+      call int32 [AhBiCamViewerManaged]AhBiYout.AhBiCamViewer.Core.LicenseCore::ValidateKey(string)
       ret
 
     RetZero:
@@ -92,7 +92,7 @@
       stloc.0
 
       ldloc.0
-      call int32 [ClassroomVisualizerManaged]AhBiYout.ClassroomVisualizer.Core.LicenseCore::IsTrialKey(string)
+      call int32 [AhBiCamViewerManaged]AhBiYout.AhBiCamViewer.Core.LicenseCore::IsTrialKey(string)
       ret
 
     RetZero:
@@ -123,7 +123,7 @@
       ldarg.1
       ldarg.2
       ldloca.s V_0
-      call int32 [ClassroomVisualizerManaged]AhBiYout.ClassroomVisualizer.Core.LicenseCore::VerifyTrialStatusDays(int32, int32, int32, [out] int32&)
+      call int32 [AhBiCamViewerManaged]AhBiYout.AhBiCamViewer.Core.LicenseCore::VerifyTrialStatusDays(int32, int32, int32, [out] int32&)
       stloc.1
 
       ldarg.3
@@ -158,13 +158,13 @@
 
     .try
     {
-      call string [ClassroomVisualizerManaged]AhBiYout.ClassroomVisualizer.Core.LicenseCore::GetMachineFingerprintHex()
+      call string [AhBiCamViewerManaged]AhBiYout.AhBiCamViewer.Core.LicenseCore::GetMachineFingerprintHex()
       stloc.0
 
       ldloc.0
       ldarg.0
       ldarg.1
-      call int32 [ClassroomVisualizerManaged]AhBiYout.ClassroomVisualizer.Core.LicenseCore::CopyStringToAnsiBuffer(string, native int, int32)
+      call int32 [AhBiCamViewerManaged]AhBiYout.AhBiCamViewer.Core.LicenseCore::CopyStringToAnsiBuffer(string, native int, int32)
       ret
     }
     catch [mscorlib]System.Exception
@@ -187,13 +187,13 @@
 
     .try
     {
-      call string [ClassroomVisualizerManaged]AhBiYout.ClassroomVisualizer.Core.LicenseCore::GenerateTrialKey()
+      call string [AhBiCamViewerManaged]AhBiYout.AhBiCamViewer.Core.LicenseCore::GenerateTrialKey()
       stloc.0
 
       ldloc.0
       ldarg.0
       ldarg.1
-      call int32 [ClassroomVisualizerManaged]AhBiYout.ClassroomVisualizer.Core.LicenseCore::CopyStringToAnsiBuffer(string, native int, int32)
+      call int32 [AhBiCamViewerManaged]AhBiYout.AhBiCamViewer.Core.LicenseCore::CopyStringToAnsiBuffer(string, native int, int32)
       ret
     }
     catch [mscorlib]System.Exception
@@ -216,7 +216,7 @@
     .try
     {
       ldarg.0
-      call int32 [ClassroomVisualizerManaged]AhBiYout.ClassroomVisualizer.Core.NativeSystemCore::PreventSleep(int32)
+      call int32 [AhBiCamViewerManaged]AhBiYout.AhBiCamViewer.Core.NativeSystemCore::PreventSleep(int32)
       ret
     }
     catch [mscorlib]System.Exception
@@ -238,7 +238,7 @@
 
     .try
     {
-      call int32 [ClassroomVisualizerManaged]AhBiYout.ClassroomVisualizer.Core.NativeSystemCore::GetMonitorCount()
+      call int32 [AhBiCamViewerManaged]AhBiYout.AhBiCamViewer.Core.NativeSystemCore::GetMonitorCount()
       ret
     }
     catch [mscorlib]System.Exception
@@ -265,7 +265,7 @@
       ldloca.s V_Top
       ldloca.s V_Width
       ldloca.s V_Height
-      call int32 [ClassroomVisualizerManaged]AhBiYout.ClassroomVisualizer.Core.NativeSystemCore::GetVirtualScreenBounds([out] int32&, [out] int32&, [out] int32&, [out] int32&)
+      call int32 [AhBiCamViewerManaged]AhBiYout.AhBiCamViewer.Core.NativeSystemCore::GetVirtualScreenBounds([out] int32&, [out] int32&, [out] int32&, [out] int32&)
       stloc.s V_Res
 
       ldarg.0
@@ -323,7 +323,7 @@
     .try
     {
       ldarg.0
-      call int32 [ClassroomVisualizerManaged]AhBiYout.ClassroomVisualizer.Core.NativeSystemCore::PlayAttentionAlert(int32)
+      call int32 [AhBiCamViewerManaged]AhBiYout.AhBiCamViewer.Core.NativeSystemCore::PlayAttentionAlert(int32)
       ret
     }
     catch [mscorlib]System.Exception
@@ -347,7 +347,7 @@
     {
       ldarg.0
       ldarg.1
-      call int32 [ClassroomVisualizerManaged]AhBiYout.ClassroomVisualizer.Core.NativeSystemCore::PlayCustomTone(int32, int32)
+      call int32 [AhBiCamViewerManaged]AhBiYout.AhBiCamViewer.Core.NativeSystemCore::PlayCustomTone(int32, int32)
       ret
     }
     catch [mscorlib]System.Exception
@@ -386,7 +386,7 @@
     QueryDisk:
       ldloc.0
       ldloca.s V_FreeMB
-      call int32 [ClassroomVisualizerManaged]AhBiYout.ClassroomVisualizer.Core.NativeSystemCore::GetDiskFreeSpaceMB(string, [out] int32&)
+      call int32 [AhBiCamViewerManaged]AhBiYout.AhBiCamViewer.Core.NativeSystemCore::GetDiskFreeSpaceMB(string, [out] int32&)
       stloc.s V_Res
 
       ldarg.1
@@ -423,7 +423,7 @@
     {
       ldloca.s V_DpiX
       ldloca.s V_DpiY
-      call int32 [ClassroomVisualizerManaged]AhBiYout.ClassroomVisualizer.Core.NativeSystemCore::GetDisplayDpi([out] int32&, [out] int32&)
+      call int32 [AhBiCamViewerManaged]AhBiYout.AhBiCamViewer.Core.NativeSystemCore::GetDisplayDpi([out] int32&, [out] int32&)
       stloc.s V_Res
 
       ldarg.0
@@ -468,7 +468,7 @@
     {
       ldarg.0
       ldarg.1
-      call int32 [ClassroomVisualizerManaged]AhBiYout.ClassroomVisualizer.Core.NativeSystemCore::SetWindowTopmost(native int, int32)
+      call int32 [AhBiCamViewerManaged]AhBiYout.AhBiCamViewer.Core.NativeSystemCore::SetWindowTopmost(native int, int32)
       ret
     }
     catch [mscorlib]System.Exception
@@ -490,7 +490,7 @@
 
     .try
     {
-      call int32 [ClassroomVisualizerManaged]AhBiYout.ClassroomVisualizer.Core.NativeSystemCore::GetPerformanceTimeMs()
+      call int32 [AhBiCamViewerManaged]AhBiYout.AhBiCamViewer.Core.NativeSystemCore::GetPerformanceTimeMs()
       ret
     }
     catch [mscorlib]System.Exception

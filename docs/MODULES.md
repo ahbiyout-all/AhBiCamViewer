@@ -91,7 +91,7 @@
     - 녹화 중 메뉴 툴바 자동 수축, `[🔴 REC 00:00]` 인디케이터 배지 표시, 종료 시 타임스탬프 파일 다운로드.
   - `pdfAll()`: 캡처된 스냅샷들을 A4 랜드스케이프 규격의 다중 페이지 PDF 문서로 일괄 컴파일.
 
-### 2.9 NativeSystemAndLicenseModule (`ClassroomVisualizerCore.dll` / `Managed.dll`)
+### 2.9 NativeSystemAndLicenseModule (`AhBiCamViewerCore.dll` / `Managed.dll`)
 - **책임**: C#/IL 하이브리드 Win32 stdcall 네이티브 DLL을 통해 수업 중 디스플레이 절전 방지, 다중 모니터 위상 분석, 무지연 하드웨어 오디오 차임, 저장소 여유 공간 안전 진단, 전자칠판 DPI 스케일링 판별, Always-on-Top 및 오프라인 라이선스 검증 제공.
 - **주요 인터페이스 (15대 Win32 stdcall 네이티브 익스포트)**:
   - `CV_GetVersion()`: DLL 바이너리 버전 반환 (`0x01040400` = v1.4.4).
