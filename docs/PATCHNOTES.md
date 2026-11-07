@@ -12,6 +12,40 @@
 
 ---
 
+### 🎨 교실 수업 편의성 6대 핵심 기능 및 결함 개선 (2026-11-07)
+- **도입 배경 및 사용자 피드백 해결 (Background & User Feedback)**:
+  1. `모니터 1,2 전환시에 허용창뜸`: 모니터 점프 버튼 클릭 시 크로미움 브라우저의 전체 화면 배치 권한 팝업이 노출되던 불편함 해소.
+  2. `전체화면 시에 왼쪽상단에 카메라정보 나오지 않도록합니다. 왼쪽상단에 카메라정보를 on/off 할 수 있도록 합니다`: 전체화면 수업 시 상단 배지가 시야를 가리는 현상을 차단하고, 언제든 자유롭게 켜고 끌 수 있는 토글 지원.
+  3. `수업녹화시에 소리가 녹음되지 않음`: 동영상 수업 녹화 시 캔버스 비디오만 캡처되어 선생님의 설명 목소리가 누락되던 결함 전면 해결.
+  4. `텍스트, 도형 같이 선택이 됨`: 텍스트 도구와 도형 도구가 동시에 활성 상태로 표시되던 상호 배타성 미비 결함 완벽 해결.
+  5. `도형 내부에 색상변경이 되도록 합니다`: 도형 테두리 선 색상에 묶여 있던 내부 채우기 색상을 자유롭게 변경할 수 있도록 독립 팔레트 탑재.
+  6. `왼쪽 판서 메뉴 클릭마다 활성/비활성이 되도록 합니다`: 활성화된 판서 도구를 다시 누르면 즉시 해제되어 일반 마우스 커서로 손쉽게 복귀 가능하도록 토글 메커니즘 전면 적용.
+- **아키텍처 및 상세 구현 내역**:
+  1. **모니터 점프 권한 팝업 원천 차단 (`jumpToNextMonitor`)**:
+     - `window.getScreenDetails()` 무조건 호출을 배제하고, `navigator.permissions.query`를 통해 권한이 이미 'granted'된 경우에만 호출.
+     - 미허용 상태에서는 권한 팝업을 띄우지 않고 `window.screenX/screenLeft`와 `availWidth` 좌표 계산 기반의 순수 윈도우 이동(`window.moveTo`)으로 무팝업 점프 처리.
+     - `tools/launcher.vbs` 격리 프로필 환경 설정(`Preferences`)에 `window_management` 및 `window_placement` 사전 등록 및 실행 플래그(`--enable-features=WindowPlacement,WindowManagement`) 추가.
+  2. **전체화면 카메라 정보 숨김 및 ON/OFF 토글 시스템**:
+     - CSS `:fullscreen .res-badge, body.is-fullscreen .res-badge { display: none !important; }`로 전체화면 시 좌측 상단 카메라 해상도 배지 완전 은폐.
+     - 하단 가로 툴바 카메라 구역 및 상단 헤더에 `ℹ️ 정보 ON / OFF` 토글 버튼 탑재 및 `localStorage(cv_cam_info_visible)` 상태 연동.
+  3. **수업 녹화 마이크 음성 실시간 합성 (`record.onclick`)**:
+     - 녹화 시작 시 `navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } })`로 마이크 음성 스트림 획득.
+     - 캔버스 스트림에 마이크 오디오 트랙을 합성(`recStream.addTrack`)하여 MP4/WebM 녹화 파일에 고음질 음성 동시 기록.
+     - 마이크 미연결 시 무음 영상으로 안전 자동 폴백되며, 녹화 중지 시 마이크 하드웨어 리소스 즉시 해제.
+  4. **텍스트 및 도형 상호 배타적 선택 보장**:
+     - `selectTool('textTool')` 호출 시 도형 마스터 버튼 및 모든 하위 도형의 활성 클래스(`.active`) 즉각 제거.
+     - 도형 도구 선택 시 텍스트 도구의 활성 클래스 즉각 제거.
+     - HTML 마크업 내 `shapeRect`의 `active` 하드코딩 제거.
+  5. **도형 내부 채우기 색상(Fill Color) 독립 선택 시스템**:
+     - 도형 플라이아웃 패널 내 전용 내부 채우기 색상 팔레트(자동/테두리와동일, 화이트, 옐로우, 스카이, 민트, 핑크, 블랙) 및 커스텀 컬러 피커(`#shapeCustomFillPicker`) 신설.
+     - `drawShapeOn`, 실시간 도형 프리뷰, 드로잉 캔버스, 이동식 도형 카드, 캔버스 고정(Bake), 캡처/녹화 캔버스 전역에 `effFillCol` 동기화.
+  6. **좌측 판서 메뉴 클릭 시 활성/비활성(일반 커서) 토글**:
+     - `setupToolWithFlyout` 및 `shapeMasterBtn`에서 활성 상태인 도구를 다시 클릭 시 `selectTool('none')` 호출로 비활성화.
+     - 판서 도구가 해제되면 커서가 `default`로 복귀하고 펜/지우개 커서가 숨겨지며, 카메라 영상 조작 및 일반 마우스 작업이 가능.
+- **영향 파일**: `index.html`, `tools/launcher.vbs`, `docs/PATCHNOTES.md`, `docs/CHANGELOG.md`, `docs/WORK_LOG.md`
+
+---
+
 ### ⚙️ Inno Setup 기존 앱 종료 알림 및 이전 버전 실제 삭제 분기 완비 (2026-11-07)
 - **도입 배경 및 사용자 피드백 해결 (Background & User Feedback)**:
   - "기존 앱 강제 종료-알림 없음": 실행 중인 앱을 사전 예고 없이 무통보 강제 종료하던 문제를 해결하여, 앱 실행 감지 시 사용자 안내 팝업을 먼저 띄우고 종료하도록 개선.

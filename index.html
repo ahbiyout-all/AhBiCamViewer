@@ -247,6 +247,8 @@ select option.pro-option{color:inherit}
 :fullscreen header, :-webkit-full-screen header, body.is-fullscreen header{display:none !important}
 :fullscreen .thumbs, :-webkit-full-screen .thumbs, body.is-fullscreen .thumbs{display:none !important}
 :fullscreen .main-container, :-webkit-full-screen .main-container, body.is-fullscreen .main-container{height:100vh}
+:fullscreen .res-badge, :-webkit-full-screen .res-badge, body.is-fullscreen .res-badge{display:none !important}
+body.cam-info-hidden .res-badge, body.cam-info-hidden #resBadge{display:none !important}
 
 /* 캡처 및 녹화 시 메뉴 UI 화면 배제 스타일 (외부 캡처/녹화 시에도 메뉴 노출 방지) */
 body.capturing .left-toolbar,
@@ -387,6 +389,7 @@ body.recording-clean .shape-annotation-wrap{
 <header>
   <h1>📷 아비캠뷰어 (AhBiCamViewer) <span class="version-badge" id="appVerBadge">v1.4.7</span><span class="pro-tier-badge pro-tier-pro" id="tierBadge" title="모든 Pro 기능이 제약 없이 무료로 개방되어 있습니다">PRO (전체 기능 개방)</span></h1>
   <div class="header-right">
+    <button id="headerCamInfoBtn" class="toggle-cam-info-btn" style="padding:4px 9px;font-size:12px" title="화면 좌측 상단 카메라 해상도 정보 표시 켜기/끄기">ℹ️ 카메라정보 ON</button>
     <button id="aboutBtn" style="padding:4px 9px;font-size:12px">ℹ️ 정보</button>
     <span id="status" class="status">카메라 연결 필요</span>
   </div>
@@ -663,7 +666,7 @@ body.recording-clean .shape-annotation-wrap{
         <div class="flyout-title">📐 도형 도구 (Shift 정형)</div>
         <div class="flyout-grid">
           <button id="shapeLine" class="flyout-item">╱ 직선 (L)</button>
-          <button id="shapeRect" class="flyout-item active">▭ 사각형 (R)</button>
+          <button id="shapeRect" class="flyout-item">▭ 사각형 (R)</button>
           <button id="shapeCircle" class="flyout-item">◯ 원 (C)</button>
           <button id="shapeTriangle" class="flyout-item">△ 삼각형</button>
           <button id="shapeArrow" class="flyout-item">➜ 화살표 (A)</button>
@@ -696,6 +699,19 @@ body.recording-clean .shape-annotation-wrap{
           <button class="size-preset-btn" data-shape-fill="trans25" title="25% 은은한 반투명">25%</button>
           <button class="size-preset-btn" data-shape-fill="trans50" title="50% 선명한 반투명">50%</button>
           <button class="size-preset-btn" data-shape-fill="solid" title="100% 완전 채우기">100%</button>
+        </div>
+
+        <!-- 내부 채우기 색상 -->
+        <div style="font-size:11px;color:#94a3b8;margin:8px 0 4px">🎨 내부 채우기 색상</div>
+        <div class="shape-fill-palette" id="shapeFillPalette" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <button class="color-dot active" data-shape-fill-color="auto" title="테두리 색상과 동일 (기본)" style="background:conic-gradient(#ff4444,#ffbb00,#33cc33,#3399ff,#aa44ff,#ff4444);border:1px solid #fff;width:20px;height:20px;border-radius:50%;cursor:pointer;padding:0"></button>
+          <button class="color-dot" data-shape-fill-color="#ffffff" title="흰색" style="background:#ffffff;border:1px solid #666;width:20px;height:20px;border-radius:50%;cursor:pointer;padding:0"></button>
+          <button class="color-dot" data-shape-fill-color="#fef08a" title="연노랑" style="background:#fef08a;border:none;width:20px;height:20px;border-radius:50%;cursor:pointer;padding:0"></button>
+          <button class="color-dot" data-shape-fill-color="#bae6fd" title="하늘색" style="background:#bae6fd;border:none;width:20px;height:20px;border-radius:50%;cursor:pointer;padding:0"></button>
+          <button class="color-dot" data-shape-fill-color="#bbf7d0" title="연초록" style="background:#bbf7d0;border:none;width:20px;height:20px;border-radius:50%;cursor:pointer;padding:0"></button>
+          <button class="color-dot" data-shape-fill-color="#fbcfe8" title="연분홍" style="background:#fbcfe8;border:none;width:20px;height:20px;border-radius:50%;cursor:pointer;padding:0"></button>
+          <button class="color-dot" data-shape-fill-color="#18181b" title="다크 블랙" style="background:#18181b;border:1px solid #555;width:20px;height:20px;border-radius:50%;cursor:pointer;padding:0"></button>
+          <input type="color" id="shapeCustomFillPicker" value="#fef08a" title="사용자 정의 내부 채우기 색상 선택" style="width:22px;height:22px;padding:0;border:1px solid #475569;border-radius:50%;cursor:pointer;background:transparent">
         </div>
 
         <div class="flyout-divider"></div>
@@ -900,7 +916,7 @@ body.recording-clean .shape-annotation-wrap{
     <button class="b-acc-toggle" id="bAccToggleDevice" title="카메라·화질 구역 접기/펼치기 (Alt+2, Alt+클릭 시 전체)" aria-expanded="true">
       <span class="acc-icon">🎥</span>
       <span class="acc-label">카메라·화질</span>
-      <span class="acc-badge">6</span>
+      <span class="acc-badge">7</span>
       <span class="acc-chevron">◀</span>
       <span class="acc-active-dot" id="accDotDevice"></span>
     </button>
@@ -922,6 +938,7 @@ body.recording-clean .shape-annotation-wrap{
       </select>
       <button id="rescanBtn" class="action-chip" title="카메라 재탐색" style="min-width:auto;padding:4px 6px">🔄</button>
       <button id="camInfoBtn" class="action-chip" title="인식된 카메라 상세정보 보기 (하드웨어 능력치, 실제 해상도, 센서 기능)" style="font-size:11px;padding:4px 6px">🔍 상세<span class="lbl-extra">정보</span></button>
+      <button id="toggleCamInfoBtn" class="action-chip toggle-cam-info-btn" title="화면 좌측 상단 카메라 해상도 정보 표시 켜기/끄기" style="font-size:11px;padding:4px 6px">ℹ️ 정보 ON</button>
     </div>
   </div>
 
@@ -1436,7 +1453,7 @@ function createMovableTextCard(x, y, text, cardStyle, fontSize, color){
 }
 
 // ===== MOVABLE SHAPE ANNOTATIONS =====
-const shapeAnnotations = []; // { el, type, x1, y1, x2, y2, col, lw, filled, shiftKey, strokeStyle, fillMode }
+const shapeAnnotations = []; // { el, type, x1, y1, x2, y2, col, lw, filled, shiftKey, strokeStyle, fillMode, fillColor }
 
 function renderShapeAnnotationsToCanvas(targetCtx, canvasW, canvasH){
   const stW = stage.clientWidth || canvasW;
@@ -1457,7 +1474,8 @@ function renderShapeAnnotationsToCanvas(targetCtx, canvasW, canvasH){
       ann.filled,
       false,
       ann.strokeStyle,
-      ann.fillMode
+      ann.fillMode,
+      ann.fillColor
     );
   });
 }
@@ -1475,7 +1493,7 @@ function clearAllShapeAnnotations(){
   }
 }
 
-function createMovableShapeCard(type, x1, y1, x2, y2, col, lw, filled, shiftKey, strokeStyle, fillMode){
+function createMovableShapeCard(type, x1, y1, x2, y2, col, lw, filled, shiftKey, strokeStyle, fillMode, fillColor){
   const ann = {
     el: null,
     type,
@@ -1485,7 +1503,8 @@ function createMovableShapeCard(type, x1, y1, x2, y2, col, lw, filled, shiftKey,
     filled,
     shiftKey: false,
     strokeStyle: strokeStyle || (typeof shapeStrokeStyle !== 'undefined' ? shapeStrokeStyle : 'solid'),
-    fillMode: fillMode || (typeof shapeFillMode !== 'undefined' ? shapeFillMode : 'none')
+    fillMode: fillMode || (typeof shapeFillMode !== 'undefined' ? shapeFillMode : 'none'),
+    fillColor: fillColor || (typeof shapeFillColor !== 'undefined' ? shapeFillColor : 'auto')
   };
 
   const pad = Math.max(16, Math.ceil(lw * 3) + 8);
@@ -1520,7 +1539,8 @@ function createMovableShapeCard(type, x1, y1, x2, y2, col, lw, filled, shiftKey,
     filled,
     false,
     ann.strokeStyle,
-    ann.fillMode
+    ann.fillMode,
+    ann.fillColor
   );
   wrap.appendChild(cv);
 
@@ -1568,7 +1588,7 @@ function createMovableShapeCard(type, x1, y1, x2, y2, col, lw, filled, shiftKey,
   bakeBtn.addEventListener('click', (ev) => {
     ev.stopPropagation();
     saveState();
-    drawShapeOn(ctx, ann.type, ann.x1, ann.y1, ann.x2, ann.y2, ann.col, ann.lw, ann.filled, false, ann.strokeStyle, ann.fillMode);
+    drawShapeOn(ctx, ann.type, ann.x1, ann.y1, ann.x2, ann.y2, ann.col, ann.lw, ann.filled, false, ann.strokeStyle, ann.fillMode, ann.fillColor);
     removeShapeAnnotation(ann);
   });
 
@@ -2516,7 +2536,24 @@ function getEffectiveLineWidth(pressure){
 // ===== SHAPE CUSTOMIZATION ENGINE =====
 let shapeStrokeStyle = localStorage.getItem('cv_shape_stroke') || 'solid';
 let shapeFillMode = localStorage.getItem('cv_shape_fill') || 'none';
+let shapeFillColor = localStorage.getItem('cv_shape_fill_color') || 'auto';
 let shapeSize = Number(localStorage.getItem('cv_shape_size') || 6);
+
+function setShapeFillColor(c){
+  shapeFillColor = c;
+  try { localStorage.setItem('cv_shape_fill_color', c); } catch(e){}
+  if(shapeFillMode === 'none'){
+    setShapeFill('trans25');
+  }
+  document.querySelectorAll('#shapeFillPalette .color-dot').forEach(dot => {
+    dot.classList.toggle('active', (dot.dataset.shapeFillColor || '').toLowerCase() === c.toLowerCase());
+  });
+  const picker = document.getElementById('shapeCustomFillPicker');
+  if(picker && c !== 'auto'){
+    picker.value = c.startsWith('#') && c.length === 7 ? c : '#fef08a';
+  }
+  renderShapeTipPreview();
+}
 
 function renderShapeTipPreview(){
   const canvas = document.getElementById('shapeTipPreviewCanvas');
@@ -2541,7 +2578,7 @@ function renderShapeTipPreview(){
   if(badge) badge.textContent = toolLabels[curTool] || '▭ 사각형';
 
   const previewLw = Math.min(6, Math.max(2, shapeSize * 0.5));
-  drawShapeOn(sctx, curTool, 16, 5, w - 16, h - 5, curCol, previewLw, false, false);
+  drawShapeOn(sctx, curTool, 16, 5, w - 16, h - 5, curCol, previewLw, isShapeFilled, false, shapeStrokeStyle, shapeFillMode, shapeFillColor);
 }
 
 function setShapeStroke(st){
@@ -2577,7 +2614,7 @@ function setShapeSize(sz){
   renderShapeTipPreview();
 }
 
-function drawShapeOn(context, t, x1, y1, x2, y2, col, lw, filled=false, shiftKey=false, customStroke=null, customFill=null){
+function drawShapeOn(context, t, x1, y1, x2, y2, col, lw, filled=false, shiftKey=false, customStroke=null, customFill=null, customFillCol=null){
   context.save();
   context.strokeStyle = col;
   context.lineWidth = lw;
@@ -2588,6 +2625,10 @@ function drawShapeOn(context, t, x1, y1, x2, y2, col, lw, filled=false, shiftKey
 
   const effStroke = customStroke || shapeStrokeStyle;
   const effFill = customFill || shapeFillMode;
+  let effFillCol = customFillCol || (typeof shapeFillColor !== 'undefined' ? shapeFillColor : 'auto');
+  if(!effFillCol || effFillCol === 'auto'){
+    effFillCol = col;
+  }
 
   // 선 스타일 반영 (solid, dashed, dotted)
   if(effStroke === 'dashed'){
@@ -2620,7 +2661,7 @@ function drawShapeOn(context, t, x1, y1, x2, y2, col, lw, filled=false, shiftKey
   if(effFill === 'trans25') fillAlpha = 0.25;
   else if(effFill === 'trans50') fillAlpha = 0.50;
   else if(effFill === 'solid') fillAlpha = 1.0;
-  context.fillStyle = hexToRgba(col, fillAlpha);
+  context.fillStyle = hexToRgba(effFillCol, fillAlpha);
 
   if(t === 'shapeLine'){
     context.beginPath(); context.moveTo(x1, y1); context.lineTo(x2, y2); context.stroke();
@@ -3459,7 +3500,7 @@ draw.addEventListener('pointermove', e => {
 
   if(isShapeTool(tool) && shapeStart){
     spCtx.clearRect(0, 0, shapePreview.clientWidth, shapePreview.clientHeight);
-    drawShapeOn(spCtx, tool, shapeStart.x, shapeStart.y, p.x, p.y, color.value, shapeSize || +size.value, isShapeFilled, e.shiftKey);
+    drawShapeOn(spCtx, tool, shapeStart.x, shapeStart.y, p.x, p.y, color.value, shapeSize || +size.value, isShapeFilled, e.shiftKey, shapeStrokeStyle, shapeFillMode, shapeFillColor);
     return;
   }
 
@@ -3607,7 +3648,8 @@ draw.addEventListener('pointerup', e => {
         isShapeFilled,
         false,
         shapeStrokeStyle,
-        shapeFillMode
+        shapeFillMode,
+        shapeFillColor
       );
     }
     shapeStart = null;
@@ -3839,7 +3881,7 @@ window.addEventListener('keydown', e => {
   }
 });
 
-setupFlyoutToggle(shapeMasterBtn, shapeFlyoutWrap);
+// setupFlyoutToggle(shapeMasterBtn) replaced by dedicated toggle in shape section
 setupFlyoutToggle(paletteMasterBtn, paletteFlyoutWrap);
 setupFlyoutToggle(presentMasterBtn, presentFlyoutWrap);
 setupFlyoutToggle(adjustMasterBtn, adjustDropdownWrap);
@@ -4104,19 +4146,51 @@ window.addEventListener('keydown', e => {
 loadBottomAccordionState();
 setInterval(updateBottomAccordionIndicators, 1000);
 
+let lastShapeTool = 'shapeRect';
+
 function selectTool(t){
+  // [요구사항 6] 'none' 선택 시 모든 판서 도구 해제 (일반 커서 모드 전환)
+  if(t === 'none'){
+    tool = 'none';
+    allTools.forEach(id => {
+      const b = document.getElementById(id);
+      if(b) b.classList.remove('active');
+    });
+    if(shapeMasterBtn) shapeMasterBtn.classList.remove('active');
+    const tb = document.getElementById('textTool');
+    if(tb) tb.classList.remove('active');
+    eraserCursor.style.display = 'none';
+    if(penCursor) penCursor.style.display = 'none';
+    draw.style.cursor = 'default';
+    setStatus('판서 도구 비활성화 (일반 커서 모드)');
+    if(typeof updatePalettePreview === 'function') updatePalettePreview();
+    return;
+  }
+
   tool = t;
   allTools.forEach(id => {
     const b = document.getElementById(id);
     if(b) b.classList.toggle('active', id === t);
   });
 
+  // [요구사항 4] 텍스트와 도형 상호 배타적 선택 보장
   if(isShapeTool(t)){
+    lastShapeTool = t;
     if(shapeMasterBtn) shapeMasterBtn.classList.add('active');
     if(shapeCurrentIcon && shapeIcons[t]) shapeCurrentIcon.textContent = shapeIcons[t];
     if(shapeFlyoutWrap) shapeFlyoutWrap.classList.remove('open');
+    const tb = document.getElementById('textTool');
+    if(tb) tb.classList.remove('active');
   } else {
     if(shapeMasterBtn) shapeMasterBtn.classList.remove('active');
+  }
+
+  if(t === 'textTool'){
+    if(shapeMasterBtn) shapeMasterBtn.classList.remove('active');
+    shapeTools.forEach(sid => {
+      const sb = document.getElementById(sid);
+      if(sb) sb.classList.remove('active');
+    });
   }
 
   if(t === 'eraser'){
@@ -4250,6 +4324,15 @@ function setupToolWithFlyout(btn, wrap, toolName){
   btn.onclick = (e) => {
     e.stopPropagation();
     const isAlreadyOpen = wrap.classList.contains('open');
+    const isAlreadyActive = (tool === toolName);
+
+    // [요구사항 6] 왼쪽 판서 메뉴 클릭마다 활성/비활성 토글
+    if(isAlreadyActive){
+      selectTool('none');
+      closeAllMenus();
+      return;
+    }
+
     selectTool(toolName);
     closeAllMenus();
     if(!isAlreadyOpen){
@@ -4271,6 +4354,31 @@ setupToolWithFlyout(eraserBtn, eraserFlyoutWrap, 'eraser');
 setupToolWithFlyout(laserTrailBtn, laserFlyoutWrap, 'laserTrail');
 setupToolWithFlyout(textBtn, textFlyoutWrap, 'textTool');
 
+// [요구사항 4 & 6] 도형 마스터 버튼 클릭 이벤트: 활성/비활성 토글 및 텍스트 도구와의 상호 배타성 완벽 보장
+if(shapeMasterBtn){
+  shapeMasterBtn.onclick = (e) => {
+    e.stopPropagation();
+    const isAlreadyOpen = shapeFlyoutWrap && shapeFlyoutWrap.classList.contains('open');
+    const isAlreadyActive = isShapeTool(tool);
+
+    if(isAlreadyActive){
+      selectTool('none');
+      closeAllMenus();
+      return;
+    }
+
+    selectTool(lastShapeTool || 'shapeRect');
+    closeAllMenus();
+    if(shapeFlyoutWrap && !isAlreadyOpen){
+      shapeFlyoutWrap.classList.add('open');
+      adjustFlyoutPanelPosition(shapeFlyoutWrap);
+      const lt = document.getElementById('leftToolbar');
+      if(lt) lt.classList.add('has-open-flyout');
+      if(typeof renderShapeTipPreview === 'function') renderShapeTipPreview();
+    }
+  };
+}
+
 const shapeToolMap = {
   shapeLine: '╱ 직선 도구',
   shapeRect: '▭ 사각형 도구',
@@ -4283,8 +4391,10 @@ const shapeToolMap = {
 Object.keys(shapeToolMap).forEach(id => {
   const el = document.getElementById(id);
   if(el){
-    el.onclick = () => {
+    el.onclick = (e) => {
+      e.stopPropagation();
       if(!proGate(shapeToolMap[id])) return;
+      lastShapeTool = id;
       selectTool(id);
       renderShapeTipPreview();
     };
@@ -4610,6 +4720,20 @@ document.querySelectorAll('#shapeFillSelector .size-preset-btn').forEach(btn => 
   });
 });
 
+// 도형 내부 채우기 색상 이벤트 리스너 바인딩
+document.querySelectorAll('#shapeFillPalette .color-dot').forEach(dot => {
+  dot.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setShapeFillColor(dot.dataset.shapeFillColor);
+  });
+});
+const shapeCustomFillPicker = document.getElementById('shapeCustomFillPicker');
+if(shapeCustomFillPicker){
+  shapeCustomFillPicker.addEventListener('input', e => {
+    setShapeFillColor(e.target.value);
+  });
+}
+
 // 도형 굵기 프리셋 및 슬라이더 바인딩
 document.querySelectorAll('.shape-sizes .size-preset-btn').forEach(btn => {
   btn.addEventListener('click', (e) => {
@@ -4670,6 +4794,7 @@ setLaserLifespan(laserLifespan);
 setLaserSize(laserSize);
 setShapeStroke(shapeStrokeStyle);
 setShapeFill(shapeFillMode);
+setShapeFillColor(shapeFillColor);
 setShapeSize(shapeSize);
 setTextCardStyle(textCardStyle);
 setTextSize(textSize);
@@ -4767,18 +4892,29 @@ const jumpMonitorBtn = document.getElementById('jumpMonitor');
 let currentMonitorIndex = 0;
 
 async function jumpToNextMonitor(){
-  // 1. 최신 Multi-Screen Window Placement API (Chromium / Edge / Chrome)
-  if('getScreenDetails' in window){
+  // 1. Multi-Screen Window Management API (권한이 사전에 허용된 상태에서만 호출하여 브라우저 허용 팝업창 원천 차단)
+  let hasManagementPermission = false;
+  if('getScreenDetails' in window && navigator.permissions && navigator.permissions.query){
+    try {
+      const perm = await (navigator.permissions.query({ name: 'window-management' }).catch(() => null)
+                       || navigator.permissions.query({ name: 'window-placement' }).catch(() => null));
+      if(perm && perm.state === 'granted'){
+        hasManagementPermission = true;
+      }
+    } catch(pErr) {
+      hasManagementPermission = false;
+    }
+  }
+
+  if(hasManagementPermission && 'getScreenDetails' in window){
     try {
       const screenDetails = await window.getScreenDetails();
       const screens = screenDetails.screens;
       if(screens && screens.length > 1){
-        // 현재 창이 위치한 스크린 찾기
         const curScreen = screenDetails.currentScreen;
         let nextIdx = (screens.indexOf(curScreen) + 1) % screens.length;
         const targetScreen = screens[nextIdx];
         
-        // 대상 모니터로 창 위치 이동 및 리사이즈
         const targetLeft = targetScreen.availLeft + 40;
         const targetTop = targetScreen.availTop + 40;
         window.moveTo(targetLeft, targetTop);
@@ -4789,11 +4925,11 @@ async function jumpToNextMonitor(){
         return;
       }
     } catch(e) {
-      console.warn('Screen Details API 오류 또는 권한 거부:', e);
+      console.warn('Screen Details API 오류:', e);
     }
   }
 
-  // 2. Fallback: window.screen 및 screenX 기반 듀얼 모니터 점프 추정
+  // 2. Fallback: window.screen 및 screenX 기반 듀얼 모니터 점프 (허용창 절대 뜨지 않음)
   try {
     const curX = window.screenX !== undefined ? window.screenX : window.screenLeft;
     const curY = window.screenY !== undefined ? window.screenY : window.screenTop;
@@ -4802,22 +4938,20 @@ async function jumpToNextMonitor(){
     // 현재 창이 주 모니터(0 이상 ~ screenWidth 미만)에 있는 경우 보조 모니터로 점프
     let targetX, targetY = curY;
     if(curX >= 0 && curX < screenWidth){
-      // 모니터 1 -> 모니터 2 (우측 모니터로 이동)
       targetX = screenWidth + 50;
       currentMonitorIndex = 1;
     } else {
-      // 모니터 2 -> 모니터 1 (좌측 주 모니터로 귀환)
       targetX = 50;
       currentMonitorIndex = 0;
     }
     
     window.moveTo(targetX, targetY);
     const mNum = currentMonitorIndex + 1;
-    setStatus(`🖥️ 모니터 ${mNum}번으로 이동 시도`);
+    setStatus(`🖥️ 모니터 ${mNum}번으로 이동됨`);
     if(jumpMonitorBtn) jumpMonitorBtn.textContent = `🖥️ 모니터 ${mNum}번`;
   } catch(err) {
-    // 보안 제한으로 window.moveTo가 차단된 일반 탭 브라우저일 경우 가이드 토스트
-    alert('💡 [모니터 이동 단축키 안내]\nWindows에서는 단축키 [Win + Shift + ◀ / ▶ 방향키]를 누르면\n전체화면/창 상관없이 즉시 옆 모니터로 화면이 점프 이동합니다!');
+    // 보안 제한으로 window.moveTo가 차단된 일반 탭 브라우저일 경우 단축키 안내
+    setStatus('💡 팁: Windows 단축키 [Win + Shift + 좌우 방향키]로 즉시 모니터 간 이동 가능');
   }
 }
 
@@ -5718,9 +5852,36 @@ updateResolutionDots(getLastCamera());
       else { alert('이 브라우저에서는 비디오 스트림 캡처를 지원하지 않습니다.'); return; }
     }
 
-    // 오디오 트랙이 있으면 함께 합성 (마이크/카메라 오디오)
+    // [요구사항 3] 수업 녹화 시 마이크 음성(목소리) 캡처 및 오디오 트랙 합성
+    let micStream = null;
     let hasAudio = false;
-    if(stream && stream.getAudioTracks && stream.getAudioTracks().length > 0){
+    try {
+      if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+        micStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          },
+          video: false
+        }).catch(err => {
+          console.warn('마이크 오디오 권한 거부 또는 장치 없음:', err);
+          return null;
+        });
+
+        if(micStream && micStream.getAudioTracks().length > 0){
+          micStream.getAudioTracks().forEach(track => {
+            recStream.addTrack(track);
+            hasAudio = true;
+          });
+        }
+      }
+    } catch(micErr) {
+      console.warn('마이크 오디오 획득 실패 (영상 전용 녹화 진행):', micErr);
+    }
+
+    // 카메라 스트림에 내장 오디오가 있는 경우 추가 합성
+    if(!hasAudio && stream && stream.getAudioTracks && stream.getAudioTracks().length > 0){
       stream.getAudioTracks().forEach(track => {
         recStream.addTrack(track);
         hasAudio = true;
@@ -5740,6 +5901,10 @@ updateResolutionDots(getLastCamera());
         activeRecMime = recorder.mimeType || '';
         activeRecExt = activeRecMime.includes('mp4') ? 'mp4' : 'webm';
       } catch(e2) {
+        if(micStream){
+          try { micStream.getTracks().forEach(t => t.stop()); } catch(e){}
+          micStream = null;
+        }
         alert('이 브라우저에서는 녹화를 지원하지 않습니다: ' + e2.message);
         stopRecLoop();
         return;
@@ -5753,6 +5918,12 @@ updateResolutionDots(getLastCamera());
     };
     
     recorder.onstop = () => {
+      if(micStream){
+        try {
+          micStream.getTracks().forEach(t => t.stop());
+        } catch(e){}
+        micStream = null;
+      }
       stopRecLoop();
       if(recTimerInterval) clearInterval(recTimerInterval);
       recIndicator.style.display = 'none';
@@ -5815,7 +5986,7 @@ updateResolutionDots(getLastCamera());
       const s = String(recSeconds % 60).padStart(2, '0');
       document.getElementById('recTimerText').textContent = `REC [${activeRecExt.toUpperCase()}] ${m}:${s}`;
     }, 1000);
-    setStatus(`🔴 수업 녹화 진행 중 [${activeRecExt.toUpperCase()}] (카메라+판서 전용, 메뉴 제외)`);
+    setStatus(`🔴 수업 녹화 진행 중 [${activeRecExt.toUpperCase()}] ${hasAudio ? '(카메라+판서+🎙️ 마이크 음성)' : '(카메라+판서 전용)'}`);
   };
 })();
 </script>
@@ -6316,6 +6487,36 @@ updateResolutionDots(getLastCamera());
   }
 
   if(camInfoBtn) camInfoBtn.onclick = openCameraDetailsModal;
+
+  // [요구사항 2] 화면 좌측 상단 카메라 정보(해상도/화질 배지) ON/OFF 토글
+  let camInfoVisible = localStorage.getItem('cv_cam_info_visible') !== 'false';
+
+  function updateCamInfoVisibility(){
+    document.body.classList.toggle('cam-info-hidden', !camInfoVisible);
+    document.querySelectorAll('#toggleCamInfoBtn, #headerCamInfoBtn, .toggle-cam-info-btn').forEach(btn => {
+      btn.textContent = camInfoVisible ? 'ℹ️ 정보 ON' : 'ℹ️ 정보 OFF';
+      btn.classList.toggle('active', camInfoVisible);
+    });
+    const rb = document.getElementById('resBadge');
+    if(rb){
+      if(!camInfoVisible){
+        rb.style.display = 'none';
+      } else if(window.video && window.video.srcObject && window.video.videoWidth){
+        rb.style.display = 'inline-flex';
+      }
+    }
+  }
+
+  document.querySelectorAll('#toggleCamInfoBtn, #headerCamInfoBtn, .toggle-cam-info-btn').forEach(btn => {
+    btn.onclick = () => {
+      camInfoVisible = !camInfoVisible;
+      try { localStorage.setItem('cv_cam_info_visible', camInfoVisible ? 'true' : 'false'); } catch(e){}
+      updateCamInfoVisibility();
+      setStatus(camInfoVisible ? '화면 좌측 상단 카메라 정보 표시 켬' : '화면 좌측 상단 카메라 정보 숨김');
+    };
+  });
+  updateCamInfoVisibility();
+  window.updateCamInfoVisibility = updateCamInfoVisibility;
   document.getElementById('closeCamDetailBtn').onclick = () => camDetailModal.classList.remove('show');
   document.getElementById('closeCamDetailTopBtn').onclick = () => camDetailModal.classList.remove('show');
 

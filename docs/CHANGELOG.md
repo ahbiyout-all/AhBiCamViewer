@@ -6,8 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.4.7] - 2026-11-06
+## [1.4.7] - 2026-11-07
+### Added
+- **Multi-Monitor Jump Permission Prompt Bypass**: Avoids browser permission dialog by validating `window-management` permission state and smoothly falling back to screen coordinate moveTo calculation.
+- **Fullscreen Camera Info Auto-Hide & Toggle**: Added CSS to ensure top-left camera info is hidden in fullscreen mode, and added ON/OFF toggle buttons to header and bottom toolbar.
+- **Classroom Audio/Microphone Recording**: Integrated teacher's microphone voice capture into video recording stream with automatic fallback if mic is unavailable.
+- **Shape Interior Fill Color**: Dedicated shape fill color palette and custom color picker with independent stroke/fill color management and real-time preview.
+- **Left Toolbar Active/Inactive Toggle**: Clicking an active drawing tool deactivates it to normal mouse cursor mode.
+
 ### Fixed
+- **Mutual Exclusion between Text and Shape Tools**: Fixed simultaneous active selection of text annotations and shape tools.
+
+### Fixed (Previous)
 - **Presentation Flyout Menu Occlusion**: Fixed the left toolbar's presentation tools flyout menu (`#presentFlyoutPanel`) being hidden/cut off behind the bottom toolbar by anchoring it upwards (`bottom: 0`), implementing real-time boundary collision guard (`adjustFlyoutPanelPosition`), and elevating `.left-toolbar` z-index to 60/65.
 
 ### Changed

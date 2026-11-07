@@ -6,6 +6,25 @@
 
 ## 2026-11-07 (v1.4.7)
 
+### 작업 50: 교실 수업 편의성 6대 핵심 기능 및 결함 개선
+- **요청 사항**:
+  1. 모니터 1,2 전환 시 허용창 뜸 해결
+  2. 전체화면 시 왼쪽 상단 카메라정보 숨김 및 ON/OFF 토글
+  3. 수업 녹화 시 소리 녹음 (마이크 음성) 누락 해결
+  4. 텍스트, 도형 동시 선택 결함 해결
+  5. 도형 내부 색상변경(채우기 색상) 기능 추가
+  6. 왼쪽 판서 메뉴 클릭 시 활성/비활성 토글 기능 추가
+- **수행 내역**:
+  1. `jumpToNextMonitor()`: 권한 미허용 시 API 호출 생략 및 좌표 기반 무팝업 점프, `launcher.vbs`에 권한 사전 등록 및 플래그 추가.
+  2. `:fullscreen .res-badge` 숨김 CSS 및 `#toggleCamInfoBtn`, `#headerCamInfoBtn` 토글 버튼 구현 (`localStorage` 연동).
+  3. `record.onclick`: 마이크 오디오 트랙 획득 후 `recStream`에 합성, 녹화 중지 시 트랙 안전 해제.
+  4. `selectTool()`: 텍스트와 도형 상호 배타적 선택 제어 확립, HTML 내 `shapeRect` `active` 하드코딩 제거.
+  5. 도형 내부 채우기 색상 팔레트 및 `#shapeCustomFillPicker` 추가, `drawShapeOn` 및 `createMovableShapeCard` 전역 연동.
+  6. `setupToolWithFlyout` 및 `shapeMasterBtn`: 이미 활성화된 도구 재클릭 시 `selectTool('none')`으로 일반 커서 모드 토글.
+- **검증**: `node tools/check_syntax.cjs` 통과, `build.bat` 15/15 네이티브 테스트 통과 및 인스톨러 생성 완료.
+
+---
+
 ### 작업 49: Inno Setup 기존 앱 종료 사전 알림 및 이전 버전 실제 삭제 분기 완료
 - **요청 사항**: "기존 앱 강제 종료-알림 없음. 이전 버전 감지 및 분기-실제 실행안됨."
 - **수행 내역**:
