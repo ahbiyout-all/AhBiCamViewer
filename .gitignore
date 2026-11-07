@@ -39,8 +39,8 @@ push.bat
 git_push.bat
 git-push.bat
 git-release.bat
-tools/push*.bat
-tools/*push*.bat
+tools/push*
+tools/*push*
 
 # ------------------------------------------------------------
 # 3. Private Keys, Secrets, Credentials & Personal Environment
