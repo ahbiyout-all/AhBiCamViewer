@@ -80,10 +80,10 @@ sequenceDiagram
     App->>App: 앱 시작 2.5초 후 checkGitHubUpdate(true) 비동기 호출
     App->>GH: GET /repos/AhBiYout-all/AhBiCamViewer/releases/latest
     alt GitHub API 정상 응답
-        GH-->>App: 최신 릴리스 정보 응답 (tag_name: v1.4.7, assets, body)
+        GH-->>App: 최신 릴리스 정보 응답 (tag_name: v1.4.8, assets, body)
     else GitHub API 레이트 리밋 또는 에러
         App->>Raw: GET raw.githubusercontent.com/.../main/version.json
-        Raw-->>App: 최신 버전 정보 응답 (version: 1.4.7)
+        Raw-->>App: 최신 버전 정보 응답 (version: 1.4.8)
     end
     alt 신규 버전 감지 (remoteVersion > localVersion)
         App->>User: 업데이트 알림 팝업 모달창 자동 실행 (#updateNoticeModal)
@@ -95,7 +95,7 @@ sequenceDiagram
 ```
 
 ### 3.2 업데이트 알림 팝업 UI 구성요소
-- **버전 대조 뱃지**: 현재 실행 중인 로컬 버전(`v1.4.7`)과 GitHub에 릴리스된 최신 버전 실시간 비교 표출.
+- **버전 대조 뱃지**: 현재 실행 중인 로컬 버전(`v1.4.8`)과 GitHub에 릴리스된 최신 버전 실시간 비교 표출.
 - **최신 인스톨러 다운로드 버튼**: 클릭 시 최신 공식 설치 파일(`.exe`) 직접 다운로드 지원.
 - **GitHub 릴리즈 바로가기 버튼**: 공식 릴리즈 페이지(`https://github.com/AhBiYout-all/AhBiCamViewer/releases`)로 연결.
 - **릴리즈 변경 노트 뷰**: 최신 패치 및 기능 개선 상세 내역 스크롤 열람.
@@ -113,7 +113,7 @@ GitHub Actions 워크플로는 최신 규격을 엄격히 준수하여 자동화
 1. **Source Checkout**: Git 저장소 소스코드 체크아웃 (`actions/checkout@v4`).
 2. **Setup Node.js 22 LTS**: 최신 LTS Node.js 22 런타임 환경 준비 (`actions/setup-node@v4`).
 3. **코드 구문 및 단일 index.html 무결성 검증**: `check_syntax.cjs`를 통해 소스코드 구문 및 웹 앱 진입점 무결성 사전 검증.
-4. **버전 파싱**: `version.json`에서 현재 타겟 시맨틱 버전(`v1.4.7`) 동적 추출.
+4. **버전 파싱**: `version.json`에서 현재 타겟 시맨틱 버전(`v1.4.8`) 동적 추출.
 5. **순수 창작 Win32 Native DLL 빌드**:
    - .NET C# 컴파일러(`csc.exe`)로 `src/dll/LicenseCore.cs` 및 `NativeSystemCore.cs` 컴파일 (`AhBiCamViewerManaged.dll`).
    - IL Assembler(`ilasm.exe`)로 `src/dll/AhBiCamViewerCore.il` 어셈블하여 VTable Fixup 기반 순수 stdcall DLL 생성 (`AhBiCamViewerCore.dll`).

@@ -1,6 +1,6 @@
 # 🏛️ 시스템 아키텍처 (System Architecture)
 
-본 문서는 **아비캠뷰어 (AhBiCamViewer / Classroom Visualizer v1.4.4)**의 소프트웨어 구조, 기술 스택, 데이터 파이프라인, 네이티브 계층 및 보안 모델을 상세히 기술합니다.
+본 문서는 **아비캠뷰어 (AhBiCamViewer / Classroom Visualizer v1.4.8)**의 소프트웨어 구조, 기술 스택, 데이터 파이프라인, 네이티브 계층 및 보안 모델을 상세히 기술합니다.
 
 ---
 
@@ -13,8 +13,9 @@
 2. **100% Offline Resilience (오프라인 완결성)**: 외부 서버 및 CDN 의존성 없는 100% 로컬 독립 실행 (인터넷 차단 폐쇄망 교실 완벽 동작).
 3. **Hardware Direct Access & Clean Control**: W3C Media Capture / Image Capture API를 통해 UVC 하드웨어를 직접 제어하며, `track.applyConstraints`로 권한 팝업을 원천 배제.
 4. **Anti-Feedback & Virtual Device Shield**: DirectShow 가상 캡처 필터를 감지하여 화면 무한 자가 복제(Droste Effect)를 원천 차단.
-5. **Clean Viewport & Non-Intrusive UI**: 전체화면 및 캡처/녹화 시 메뉴 UI를 100% 배제(Clean Composite Canvas)하여 수업 몰입감과 결과물 무결성 보장.
+5. **Clean Viewport & Non-Intrusive UI**: 전체화면 및 캡처/녹화 시 메뉴 UI를 100% 배제(Clean Composite Canvas)하며, 전체화면 시 좌측 상단 카메라 정보 자동 은폐 지원.
 6. **Pure Native Acceleration (순수 창작 Win32 DLL)**: C#/IL 하이브리드 VTable Fixup 기반 15대 네이티브 Win32 stdcall API 탑재 및 예외 쉴드로 호스트 크래시 0% 달성.
+7. **Single Source of Truth**: 완전 단일화된 단일 배포 파일(`index.html`) 아키텍처 채택.
 
 ---
 
@@ -22,19 +23,19 @@
 
 | 계층 | 기술 요소 | 사용 목적 및 특징 |
 | :--- | :--- | :--- |
-| **코어 런타임** | HTML5 / Modern JavaScript (ES2022) | 단일 파일(SPA) 반응형 애플리케이션 (4개 HTML 100% 동기화) |
+| **코어 런타임** | HTML5 / Modern JavaScript (ES2022) | 단일 배포 파일(`index.html`) 반응형 고성능 웹 애플리케이션 |
 | **비디오 스트림** | W3C `navigator.mediaDevices.getUserMedia` | UVC 표준 카메라 스트림 획득 (4K UHD / 8MP / FHD / HD) |
-| **장치 진단 및 제어** | W3C ImageCapture API (`applyConstraints`) | 플래시(Torch), 탭 오토포커스, 센서 노출 및 인플레이스 해상도 가변 제어 |
+| **장치 진단 및 제어** | W3C ImageCapture API (`applyConstraints`) | 플래시(Torch), 탭 오토포커스, 센서 노출 및 인플레이스 해상도 가변 제어, 정보 배지 토글 |
 | **가상 카메라 차단** | `isVirtualCamera` 필터링 엔진 | OBS Virtual Cam, screen-recorder-device 등 가상 카메라 무한 복제 원천 차단 |
-| **디스플레이 제어** | Multi-Screen Window Placement API (`getScreenDetails`) | 듀얼 모니터 원클릭 점프 이동 (`#jumpMonitor`) |
-| **판서 & 렌더링** | HTML5 2D Canvas Context API | 베지어 곡선 보간, 감압 필압, 4대 촉(둥근/캘리/사각/형광) 디자인, 도형 및 텍스트 주석 |
+| **디스플레이 제어** | Multi-Screen Window Management API + 좌표 이동 | 브라우저 권한 팝업 없는 듀얼 모니터 원클릭 무팝업 점프 이동 (`#jumpMonitor`) |
+| **판서 & 렌더링** | HTML5 2D Canvas Context API | 베지어 곡선 보간, 감압 필압, 4대 촉, 기하 도형 내부 독립 채우기 색상, 판서 도구 활성/비활성 토글 |
 | **수업 보조 렌더러** | Composite Canvas Renderer (`requestAnimationFrame`) | 돋보기(확대경) 영상+판서 동시 확대, 스포트라이트, 잔상 레이저 |
-| **영상 녹화 엔진** | Offscreen Canvas `captureStream(30)` + `MediaRecorder` | 메뉴 제외 순수 영상+판서 30 FPS MP4/WebM 실시간 합성 녹화 (0KB 버그 해결) |
+| **영상 녹화 엔진** | Offscreen Canvas `captureStream(30)` + 🎙️ 마이크 음성 실시간 합성 | 메뉴 제외 영상+판서+선생님 설명 목소리 30 FPS MP4/WebM 실시간 합성 녹화 |
 | **문서 컴파일러** | 내장 경량 jsPDF 엔진 | 캡처 이미지 A4 랜드스케이프 규격 다중 페이지 PDF 변환 |
 | **오디오 엔진** | Web Audio API + Win32 `kernel32!Beep` (`CV_PlayCustomTone`) | 신시사이저 차임음 및 하드웨어 스피커 직결 무지연 타이머 톤 송출 |
-| **순수 창작 네이티브 코어** | Pure C#/IL Hybrid Win32 DLL (`AhBiCamViewerCore.dll`) | VTable Fixup 기반 15대 unmanaged stdcall 함수 수출 및 예외 쉴드 |
+| **순수 창작 네이티브 코어** | Pure C#/IL Hybrid Win32 DLL (`AhBiCamViewerCore.dll`) | VTable Fixup 기반 15대 unmanaged stdcall 함수 수출 및 예외 쉴드 (v1.4.8) |
 | **단독 실행 런처** | VBScript + Windows Script Host (`launcher.vbs`) | `--app="file:///..."` 및 격리 프로필을 통한 무팝업 단독 창 모드 구동 |
-| **패키징 & 배포** | Inno Setup 6 | 언팩형 다중 파일(Unpacked Multi-File) 인스톨러, 방화벽 규칙 사전 등록, 무인 설치 |
+| **패키징 & 배포** | Inno Setup 6 | 언팩형 다중 파일 인스톨러, 6단계 설치 시퀀스(실행 중 앱 종료, 삭제/덮어쓰기 분기, 라이선스 선언) |
 
 ---
 

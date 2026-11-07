@@ -1,4 +1,4 @@
-# 📢 구글 블로거(Blogger) 공식 포스팅 원고 (AhBiCamViewer v1.4.7)
+# 📢 구글 블로거(Blogger) 공식 포스팅 원고 (AhBiCamViewer v1.4.8)
 
 본 문서는 구글 블로그([ahbiyoutvibe.blogspot.com](https://ahbiyoutvibe.blogspot.com/))에 즉시 게시할 수 있도록 규격화된 공식 포스팅 원고입니다.  
 사용자의 편집 편의를 위해 **1. [작성 모드 (서식 있는 텍스트)]**와 **2. [HTML 편집 모드]**를 모두 제공합니다.
@@ -9,7 +9,7 @@
 > *구글 블로거 글쓰기 화면 좌측 상단의 연필 아이콘 `[작성 모드(Compose View)]`에서 그대로 복사하여 붙여넣으실 수 있는 서식입니다.*
 
 ## 제목
-[무료] 스마트 교실과 원격 강의를 위한 최고의 실물화상기 - 아비캠뷰어(AhBiCamViewer) v1.4.7 대규모 업데이트 배포
+[무료] 스마트 교실과 원격 강의를 위한 최고의 실물화상기 - 아비캠뷰어(AhBiCamViewer) v1.4.8 대규모 업데이트 배포
 
 ## 본문
 선생님, 강사, 발표자를 위한 교실 및 원격 수업 필수 소프트웨어!  
@@ -17,10 +17,10 @@
 
 수업과 발표에만 100% 집중할 수 있도록 깔끔하고 직관적인 인터페이스를 갖추었으며, 지능형 접이식 아코디언 메뉴, 고성능 실시간 판서(4대 맞춤 펜 촉, 형광펜, 지우개, 기하 도형, 텍스트 주석), 그리고 수업 집중 보조 도구(타이머, 스톱워치, 확대경, 돋보기, 스포트라이트, 가림막, 2분할 비교 화면, PDF 일괄 컴파일)를 모두 무료로 제공합니다.
 
-특히 이번 **v1.4.7 대규모 업데이트**에서는 텍스트에 이어 **7대 기하 도형(직선, 사각형, 원, 삼각형, 화살표, 양방향 화살표, 별표)을 화면 원하는 곳 어디든 자유롭게 끌어다 놓고(Movable Shapes), 핀(📌)으로 캔버스에 영구 고정하거나 삭제할 수 있는 자유 이동식 도형 엔진**이 전격 탑재되었습니다! 캡처, MP4 녹화, PDF 묶기, 돋보기 화면에서도 깨짐 없이 완벽한 무손실 벡터로 자동 합성됩니다.  
+특히 이번 **v1.4.8 대규모 업데이트**에서는 텍스트에 이어 **7대 기하 도형(직선, 사각형, 원, 삼각형, 화살표, 양방향 화살표, 별표)을 화면 원하는 곳 어디든 자유롭게 끌어다 놓고(Movable Shapes), 핀(📌)으로 캔버스에 영구 고정하거나 삭제할 수 있는 자유 이동식 도형 엔진**이 전격 탑재되었습니다! 캡처, MP4 녹화, PDF 묶기, 돋보기 화면에서도 깨짐 없이 완벽한 무손실 벡터로 자동 합성됩니다.  
 또한 **구역별 접이식 가로 아코디언 메뉴**, **앱 구동 시 자동 업데이트 알림 팝업 시스템**, **인스톨러 자동 구버전 삭제 및 클린 설치 파이프라인**이 함께 적용되어 완성도가 한층 높아졌습니다.
 
-## 업데이트 (v1.4.7 핵심 개선 내역)
+## 업데이트 (v1.4.8 핵심 개선 내역)
 - **📐 7대 기하 도형 자유 이동(Movable Shapes) 및 캔버스 융합(Bake) 시스템 탑재**:
   - 직선, 사각형, 원, 삼각형, 화살표, 양방향 화살표, 별표 등 모든 기하 도형을 그리기 완료 즉시 인터랙티브 카드로 생성.
   - 마우스/터치 드래그로 화면 원하는 곳 어디든 자유롭게 이동 (Pointer Capture Drag Engine).
@@ -41,7 +41,7 @@
   - 앱 실행 2.5초 후 GitHub Releases를 실시간 조회하여 최신 버전 발견 시 안내 팝업창 자동 실행.
   - 최신 버전 뱃지, 패치 내역 스크롤 뷰, 원클릭 인스톨러 다운로드 버튼 완비.
   - GitHub API 레이트 리밋 대비 Raw `version.json` 이중 폴백 안전망 구축.
-- **⚡ 순수 창작 Native DLL 15대 Win32 API 완성 (`AhBiCamViewerCore.dll`, v1.4.7)**:
+- **⚡ 순수 창작 Native DLL 15대 Win32 API 완성 (`AhBiCamViewerCore.dll`, v1.4.8)**:
   - 하드웨어 비프 톤(수업 집중벨), 디스크 용량 진단, 모니터 DPI 자동 감지, 항상 위 고정, 마이크로초 고정밀 타이머 등 15개 순수 Win32 API 100% 검증 완료.
 - **🛡️ 가상 카메라 무한 복제(Droste Effect) 원천 차단**:
   - OBS Virtual Camera 등 가상 카메라 자동 연결을 배제하고 안정적인 대기 화면 유지.
@@ -57,12 +57,12 @@
 ## 다운로드
 공식 GitHub Releases에서 최신 윈도우 정식 설치 파일을 100% 무료로 다운로드하실 수 있습니다:
 
-- 🚀 **윈도우 정식 설치 프로그램**: [AhBiCamViewer_Setup_v1.4.7.exe 다운로드](https://github.com/AhBiYout-all/AhBiCamViewer/releases/latest)
+- 🚀 **윈도우 정식 설치 프로그램**: [AhBiCamViewer_Setup_v1.4.8.exe 다운로드](https://github.com/AhBiYout-all/AhBiCamViewer/releases/latest)
 - 🌐 **GitHub 릴리스 전체 목록**: [https://github.com/AhBiYout-all/AhBiCamViewer/releases](https://github.com/AhBiYout-all/AhBiCamViewer/releases)
 
 ## 버전정보
 - **소프트웨어 명칭**: 아비캠뷰어 (AhBiCamViewer)
-- **현재 배포 버전**: v1.4.7
+- **현재 배포 버전**: v1.4.8
 - **배포일**: 2026-11-07
 - **버전 관리 규격**: Semantic Versioning 2.0.0
 - **라이선스**: MIT License (학교, 학원, 관공서, 기업, 개인 누구나 100% 무료 자유 사용)
@@ -80,7 +80,7 @@
 - **앱 저장소**: https://github.com/AhBiYout-all/AhBiCamViewer
 
 ## 전체 업데이트 (패치노트 기반 기능 개선 기록)
-- **v1.4.7 (2026-11-07)**:
+- **v1.4.8 (2026-11-07)**:
   - 7대 기하 도형(Movable Geometric Shapes) 자유 이동/배치, 핀 고정(Bake), 삭제 기능 탑재.
   - 캡처, MP4 녹화, PDF 묶기, 돋보기 4중 무손실 벡터 합성 엔진(`renderShapeAnnotationsToCanvas`) 탑재.
   - 하단 메뉴 구역별 접이식 가로 아코디언(Horizontal Accordion) 시스템 도입 (촬영·제어, 카메라·화질, 영상조절·수업도구).
@@ -138,7 +138,7 @@
   <!-- 1. 제목 -->
   <div style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #38bdf8 100%); color: #ffffff; padding: 36px 28px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.3); text-align: center; margin-bottom: 30px;">
     <span style="display: inline-block; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(8px); padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 12px;">공식 릴리즈 안내</span>
-    <h1 style="margin: 0 0 12px 0; font-size: 26px; font-weight: 800; line-height: 1.35; color: #ffffff;">[무료] 스마트 교실과 원격 강의를 위한 최고의 실물화상기<br><span style="color: #fde047;">아비캠뷰어 (AhBiCamViewer) v1.4.7</span> 대규모 업데이트</h1>
+    <h1 style="margin: 0 0 12px 0; font-size: 26px; font-weight: 800; line-height: 1.35; color: #ffffff;">[무료] 스마트 교실과 원격 강의를 위한 최고의 실물화상기<br><span style="color: #fde047;">아비캠뷰어 (AhBiCamViewer) v1.4.8</span> 대규모 업데이트</h1>
     <p style="margin: 0; font-size: 15px; opacity: 0.92;">복잡한 드라이버 없이 USB 웹캠 연결 즉시 4K UHD 고화질 수업 판서 및 녹화 가능</p>
   </div>
 
@@ -152,14 +152,14 @@
       선생님과 발표자가 수업에만 온전히 집중할 수 있도록 깔끔한 UI, 지능형 접이식 아코디언 메뉴, 고성능 실시간 판서(4대 맞춤 펜 촉, 형광펜, 지우개, 기하 도형, 텍스트 주석), 그리고 수업 집중 보조 도구(타이머, 스톱워치, 확대경, 돋보기, 스포트라이트, 가림막, 2분할 비교 화면, PDF 일괄 컴파일)를 누구나 제약 없이 <strong>100% 무료</strong>로 이용하실 수 있습니다.
     </p>
     <p style="font-size: 15px; color: #334155; margin-bottom: 0;">
-      특히 이번 <strong>v1.4.7</strong>에서는 텍스트에 이어 <strong>7대 기하 도형(직선, 사각형, 원, 삼각형, 화살표, 별표 등)을 화면 어디로든 끌어다 놓고(Movable Shapes), 핀(📌)으로 캔버스에 영구 고정하거나 삭제할 수 있는 자유 이동식 도형 엔진</strong>이 전격 탑재되었습니다. 캡처, MP4 녹화, PDF 묶기, 돋보기 확대 뷰에서도 왜곡 없이 무손실 벡터로 자동 합성됩니다!
+      특히 이번 <strong>v1.4.8</strong>에서는 텍스트에 이어 <strong>7대 기하 도형(직선, 사각형, 원, 삼각형, 화살표, 별표 등)을 화면 어디로든 끌어다 놓고(Movable Shapes), 핀(📌)으로 캔버스에 영구 고정하거나 삭제할 수 있는 자유 이동식 도형 엔진</strong>이 전격 탑재되었습니다. 캡처, MP4 녹화, PDF 묶기, 돋보기 확대 뷰에서도 왜곡 없이 무손실 벡터로 자동 합성됩니다!
     </p>
   </div>
 
   <!-- 3. 업데이트 -->
   <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-left: 6px solid #2563eb; border-radius: 12px; padding: 22px; margin-bottom: 24px;">
     <h2 style="margin-top: 0; font-size: 20px; color: #1e40af; display: flex; align-items: center; gap: 8px;">
-      🚀 최신 업데이트 내역 (v1.4.7 핵심 개선)
+      🚀 최신 업데이트 내역 (v1.4.8 핵심 개선)
     </h2>
     <ul style="margin: 0; padding-left: 20px; font-size: 14.5px; color: #334155; line-height: 1.8;">
       <li><strong>📐 7대 기하 도형 자유 이동(Movable Shapes) 및 캔버스 융합(Bake) 탑재</strong>: 직선, 사각형, 원, 삼각형, 화살표, 별표 등을 그리기 즉시 인터랙티브 카드로 생성하여 마우스/터치 드래그 이동, 핀 고정(📌), 원클릭 삭제(✕) 지원.</li>
@@ -214,7 +214,7 @@
       <h3 style="margin-top: 0; font-size: 17px; color: #1e40af; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">📋 버전 정보</h3>
       <table style="width: 100%; font-size: 13.5px; border-collapse: collapse; color: #334155;">
         <tr><td style="padding: 6px 0; font-weight: 600; width: 100px;">소프트웨어</td><td>아비캠뷰어 (AhBiCamViewer)</td></tr>
-        <tr><td style="padding: 6px 0; font-weight: 600;">현재 버전</td><td><span style="background: #2563eb; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 12px;">v1.4.7</span></td></tr>
+        <tr><td style="padding: 6px 0; font-weight: 600;">현재 버전</td><td><span style="background: #2563eb; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 12px;">v1.4.8</span></td></tr>
         <tr><td style="padding: 6px 0; font-weight: 600;">배포일자</td><td>2026-11-07</td></tr>
         <tr><td style="padding: 6px 0; font-weight: 600;">라이선스</td><td>MIT License (완전 무료)</td></tr>
       </table>
@@ -246,7 +246,7 @@
   <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 22px; margin-bottom: 24px;">
     <h3 style="margin-top: 0; font-size: 18px; color: #1e40af; border-bottom: 2px solid #3b82f6; padding-bottom: 8px;">📜 전체 업데이트 (기능 개선 히스토리)</h3>
     <div style="max-height: 380px; overflow-y: auto; font-size: 13.5px; color: #334155; line-height: 1.8; padding-right: 8px;">
-      <p style="margin: 6px 0 2px 0;"><strong>v1.4.7 (2026-11-07)</strong></p>
+      <p style="margin: 6px 0 2px 0;"><strong>v1.4.8 (2026-11-07)</strong></p>
       <ul style="margin: 0 0 10px 0; padding-left: 20px;">
         <li>7대 기하 도형 자유 이동(Movable Shapes) 및 캔버스 핀 고정(Bake), 삭제 기능 탑재.</li>
         <li>스틸 캡처, MP4 녹화, PDF 묶기, 돋보기 4중 무손실 벡터 합성 엔진(`renderShapeAnnotationsToCanvas`) 탑재.</li>

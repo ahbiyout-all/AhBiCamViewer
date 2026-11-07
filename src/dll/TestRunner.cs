@@ -69,17 +69,17 @@ namespace AhBiYout.AhBiCamViewer.Testing
             int passed = 0;
             int total = 15;
 
-            // TEST 1: CV_GetVersion (0x01040700 for v1.4.7)
+            // TEST 1: CV_GetVersion (0x01040800 for v1.4.8)
             int ver = CV_GetVersion();
             Console.WriteLine("[TEST 1] CV_GetVersion: 0x{0:X8}", ver);
-            if (ver == 0x01040700)
+            if (ver == 0x01040800)
             {
-                Console.WriteLine("         PASS: Version matches v1.4.7.0 (0x01040700)");
+                Console.WriteLine("         PASS: Version matches v1.4.8.0 (0x01040800)");
                 passed++;
             }
             else
             {
-                Console.WriteLine("         FAIL: Expected 0x01040700");
+                Console.WriteLine("         FAIL: Expected 0x01040800");
             }
 
             // TEST 2: CV_ValidateKeyA
