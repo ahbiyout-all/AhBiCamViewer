@@ -12,6 +12,33 @@
 
 ---
 
+---
+
+### 🚀 인스톨러 사전 작업 강화: 실행 중인 기존 앱 자동 종료 및 이전 버전 완전 무인 삭제 파이프라인 탑재 (2026-11-07)
+- **도입 배경 및 사용자 니즈 (Background & User Need)**:
+  - 사용자의 요청: "인스톨 파일을 시작하면 기존 앱 종료 후 이전 버전 앱 삭제 진행뒤에 새파일을 설치 합니다."
+  - 기존 인스톨러는 이전 버전이 설치되어 있을 때 단순 확인 팝업만 띄우고 기존 앱을 덮어쓰기 방식으로 설치하였음. 이로 인해 다음 문제들이 발생할 수 있었음:
+    1. 브라우저 창(Edge/Chrome 앱 모드)이나 런처 프로세스가 실행 중인 경우 파일 잠금(Lock)으로 인해 파일 복사 실패 및 충돌 위험 발생.
+    2. 이전 버전이 구 설치 경로(`C:\Program Files\ClassroomVisualizer\`)에 존재할 경우, 새 버전(`AhBiCamViewer`) 설치 후에도 구 버전 파일 및 구 바탕화면/시작메뉴 바로가기가 잔존하여 혼란 초래.
+- **아키텍처 및 구현 내역**:
+  1. **실행 중인 기존 앱 프로세스 자동 감지 및 강제 종료 (`TerminateExistingApp`)**:
+     - `msedge.exe`, `chrome.exe` 프로세스 중 창 제목에 `아비캠뷰어`, `AhBiCamViewer`, `ClassroomVisualizer`, `실물화상기`가 포함된 앱 전용 윈도우를 정밀 식별하여 종료 (`taskkill /F /IM ... /FI "WINDOWTITLE eq ..."`).
+     - 인스톨러 자체(`Setup.exe`, `is-*.tmp`)는 프로세스 이미지 이름 필터를 통해 절대 종료되지 않도록 안전 가드 완비.
+     - 활성화된 배치 창 및 VBS 스크립트 런처 잔여 프로세스도 안전하게 동시 정리 후 500ms 유예 시간을 두어 파일 핸들 완전 해제 보장.
+     - 인스톨러 실행 초기(`InitializeSetup`) 및 파일 추출 직전(`PrepareToInstall`) 2중 호출로 완벽한 무결성 확보.
+  2. **레지스트리 기반 이전 버전 탐색 및 무인 삭제 (`GetPreviousUninstaller`, `UninstallPreviousVersion`)**:
+     - `AppId={{E68A9F21-7A39-4E61-9A3F-470295BCA120}}`를 기반으로 `HKLM`, `HKLM64`, `HKLM32`, `HKCU` 레지스트리를 순차 조회하여 `UninstallString` 및 `InstallLocation` 경로 획득.
+     - 이전 버전의 `unins000.exe`를 완전 무인 모드(`/VERYSILENT /NORESTART /SUPPRESSMSGBOXES`)로 실행하고 종료 시까지 대기(`ewWaitUntilTerminated`).
+     - 이전 버전 언인스톨러가 완료되어 `unins000.exe` 파일이 디스크에서 완전히 삭제될 때까지 상태를 폴링 감시.
+  3. **구버전 잔여 디렉터리 클린업 및 경로 표준화**:
+     - 이전 설치 디렉터리(`OldInstallDir`)가 신규 설치 경로(`{autopf}\AhBiCamViewer`)와 다른 경우(예: 구 `C:\Program Files\ClassroomVisualizer\`), 언인스톨 후 남은 잔여 폴더를 `DelTree`로 완전 파쇄 제거.
+     - `UsePreviousAppDir=no` 지시문을 명시하여 구버전 경로로의 강제 덮어쓰기를 원천 방지하고 표준화된 `{autopf}\AhBiCamViewer`로 설치 보장.
+     - `CloseApplications=yes`, `RestartApplications=no` 지시문을 통해 Windows Restart Manager 연계 지원.
+  4. **무인(Silent) 및 대화형(GUI) 설치 환경 동시 지원**:
+     - 대화형 GUI 설치 시: 사용자에게 기존 앱 종료 및 이전 버전 삭제 후 최신 버전 새로 설치 안내 메시지 제공.
+     - 무인 Silent 설치 시: 사용자 질의 없이 자동 종료 → 무인 삭제 → 클린 신규 설치 전 과정이 100% 자동 완결.
+- **영향 파일**: `installer.iss`
+
 ### 📂 하단 메뉴 구역별 접이식 가로 아코디언(Horizontal Accordion) 시스템 도입 (2026-11-06)
 - **도입 배경 및 사용자 니즈 (Background & User Need)**:
   - 하단 가로 툴바에 카메라 시작/정지, 캡처, 포맷 변환, 수업 녹화, 모니터 점프, 해상도 선택, 상세정보, 영상 조절, 수업 도구 등 많은 기능이 밀집되어 있어 작은 해상도(노트북, 저해상도 모니터, 태블릿)에서 가로 스크롤이 발생하거나 시각적 복잡도가 높아지는 문제가 있었음.

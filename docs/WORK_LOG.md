@@ -4,6 +4,25 @@
 
 ---
 
+## 2026-11-07 (v1.4.7)
+
+### 작업 41: 인스톨러 기존 앱 자동 종료 및 이전 버전 완전 무인 삭제 파이프라인 탑재
+- **요청 사항**: "인스톨 파일을 시작하면 기존 앱 종료 후 이전 버전 앱 삭제 진행뒤에 새파일을 설치 합니다."
+- **설계 및 구현 내역**:
+  1. **실행 중인 기존 앱 프로세스 자동 강제 종료 (`TerminateExistingApp`)**:
+     - 인스톨러 실행 초기(`InitializeSetup`) 및 파일 복사 직전(`PrepareToInstall`)에서 `msedge.exe` / `chrome.exe` 중 창 제목에 아비캠뷰어/AhBiCamViewer/ClassroomVisualizer가 포함된 웹앱 프로세스를 `taskkill`로 안전하게 자동 종료.
+     - 인스톨러 자체(`Setup.exe`, `is-*.tmp`)는 대상에서 원천 배제.
+  2. **레지스트리 기반 이전 버전 탐색 및 무인 삭제 (`GetPreviousUninstaller`, `UninstallPreviousVersion`)**:
+     - `AppId={{E68A9F21-7A39-4E61-9A3F-470295BCA120}}`의 언인스톨 레지스트리를 HKLM, HKLM64, HKLM32, HKCU에서 조회.
+     - 이전 버전 `unins000.exe`를 `/VERYSILENT /NORESTART /SUPPRESSMSGBOXES` 플래그로 무인 실행하고 삭제 완료 대기.
+     - 구버전 설치 디렉터리(`C:\Program Files\ClassroomVisualizer\`)가 존재할 경우 잔여 파일 및 폴더를 `DelTree`로 완전 정리.
+  3. **인스톨러 설정 최적화**:
+     - `UsePreviousAppDir=no`로 설정하여 구버전 디렉터리로의 강제 덮어쓰기 방지 및 `{autopf}\AhBiCamViewer` 정규화.
+     - `CloseApplications=yes`, `RestartApplications=no` 적용.
+- **검증**: `build.bat`를 통한 Inno Setup 인스톨러 컴파일 및 패키징 완료, 15/15 네이티브 DLL 테스트 전원 통과.
+
+---
+
 ## 2026-11-06 (v1.4.7)
 
 ### 작업 40: 하단 메뉴 구역별 접이식 가로 아코디언(Horizontal Accordion) 시스템 도입
