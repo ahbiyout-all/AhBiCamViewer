@@ -108,6 +108,31 @@ function CV_GetDiskFreeSpaceMB(drivePath: PAnsiChar; var freeMB: Integer): Integ
 function CV_GetDisplayDpi(var dpiX, dpiY: Integer): Integer;
   external 'CV_GetDisplayDpi@{tmp}\AhBiCamViewerCore.dll stdcall delayload';
 
+// Check if the application or launcher is currently running
+function IsExistingAppRunning(): Boolean;
+var
+  ResultCode: Integer;
+begin
+  Result := False;
+
+  // 1. Check window titles via tasklist
+  Exec('cmd.exe', '/c tasklist /FI "WINDOWTITLE eq 아비캠뷰어*" 2>nul | find /i ".exe" >nul', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  if ResultCode = 0 then begin Result := True; Exit; end;
+
+  Exec('cmd.exe', '/c tasklist /FI "WINDOWTITLE eq AhBiCamViewer*" 2>nul | find /i ".exe" >nul', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  if ResultCode = 0 then begin Result := True; Exit; end;
+
+  Exec('cmd.exe', '/c tasklist /FI "WINDOWTITLE eq ClassroomVisualizer*" 2>nul | find /i ".exe" >nul', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  if ResultCode = 0 then begin Result := True; Exit; end;
+
+  Exec('cmd.exe', '/c tasklist /FI "WINDOWTITLE eq 실물화상기*" 2>nul | find /i ".exe" >nul', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  if ResultCode = 0 then begin Result := True; Exit; end;
+
+  // 2. Check PowerShell WMI for app isolated profile
+  Exec('powershell.exe', '-NoProfile -ExecutionPolicy Bypass -Command "& { if (Get-CimInstance Win32_Process | Where-Object { ($_.Name -eq ''msedge.exe'' -or $_.Name -eq ''chrome.exe'') -and ($_.CommandLine -like ''*AhBiCamViewer_AppProfile*'' -or $_.CommandLine -like ''*AhBiCamViewer*'') }) { exit 0 } else { exit 1 } }"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  if ResultCode = 0 then begin Result := True; Exit; end;
+end;
+
 // Terminate running application instances (Edge/Chrome app mode, launchers, batch)
 procedure TerminateExistingApp();
 var
@@ -149,10 +174,9 @@ begin
   UninstallerPath := '';
   OldInstallDir := '';
   OldVersion := '';
-  // Note: Registry key uses exact AppId with single brace
   AppKey := 'Software\Microsoft\Windows\CurrentVersion\Uninstall\' + '{E68A9F21-7A39-4E61-9A3F-470295BCA120}_is1';
 
-  // 1. Check HKEY_LOCAL_MACHINE (default 64/32 view)
+  // 1. Check HKEY_LOCAL_MACHINE (default view)
   if RegQueryStringValue(HKEY_LOCAL_MACHINE, AppKey, 'UninstallString', RawString) then
   begin
     UninstallerPath := RemoveQuotes(RawString);
@@ -214,7 +238,7 @@ begin
   end;
 end;
 
-// Silently execute previous uninstaller and remove legacy install directory if needed
+// Silently execute previous uninstaller and completely remove previous installation directory
 function UninstallPreviousVersion(): Boolean;
 var
   UninstallerPath: String;
@@ -227,30 +251,31 @@ begin
   if GetPreviousUninstaller(UninstallerPath, OldInstallDir, OldVersion) then
   begin
     Log(Format('Previous installation found: %s. Executing silent uninstaller: %s', [OldInstallDir, UninstallerPath]));
-    // Execute silent uninstaller and wait for completion
-    if Exec(UninstallerPath, '/VERYSILENT /NORESTART /SUPPRESSMSGBOXES', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+    
+    // 1. Execute unins000.exe silently
+    Exec(UninstallerPath, '/VERYSILENT /NORESTART /SUPPRESSMSGBOXES', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    
+    // 2. Wait up to 5 seconds for uninstaller process to complete
+    WaitCount := 0;
+    while FileExists(UninstallerPath) and (WaitCount < 10) do
     begin
-      Log(Format('Previous uninstaller executed. Exit code: %d', [ResultCode]));
-      WaitCount := 0;
-      while FileExists(UninstallerPath) and (WaitCount < 20) do
-      begin
-        Sleep(500);
-        WaitCount := WaitCount + 1;
-      end;
       Sleep(500);
-
-      // Clean up legacy directory if different from current target and it still exists
-      if (OldInstallDir <> '') and (CompareText(OldInstallDir, ExpandConstant('{app}')) <> 0) and DirExists(OldInstallDir) then
-      begin
-        Log(Format('Removing lingering previous installation directory: %s', [OldInstallDir]));
-        DelTree(OldInstallDir, True, True, True);
-      end;
-    end
-    else
-    begin
-      Log(Format('Failed to launch previous uninstaller: %s (ResultCode: %d)', [UninstallerPath, ResultCode]));
-      Result := False;
+      WaitCount := WaitCount + 1;
     end;
+    Sleep(500);
+
+    // 3. Completely delete previous files and directory in OldInstallDir
+    if (OldInstallDir <> '') and DirExists(OldInstallDir) then
+    begin
+      Log(Format('Completely deleting previous files from: %s', [OldInstallDir]));
+      DelTree(OldInstallDir, True, True, True);
+    end;
+
+    // 4. Clean up registry uninstaller keys
+    RegDeleteKeyIncludingSubkeys(HKEY_LOCAL_MACHINE, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\' + '{E68A9F21-7A39-4E61-9A3F-470295BCA120}_is1');
+    if IsWin64 then
+      RegDeleteKeyIncludingSubkeys(HKLM64, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\' + '{E68A9F21-7A39-4E61-9A3F-470295BCA120}_is1');
+    RegDeleteKeyIncludingSubkeys(HKEY_CURRENT_USER, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\' + '{E68A9F21-7A39-4E61-9A3F-470295BCA120}_is1');
   end
   else
   begin
@@ -258,10 +283,7 @@ begin
   end;
 end;
 
-var
-  ShouldUninstallOld: Boolean;
-
-// Detect existing installation, verify DLL integrity and terminate running app
+// Detect existing installation, handle app termination, and handle user choice
 function InitializeSetup(): Boolean;
 var
   PrevUninstaller: String;
@@ -269,33 +291,25 @@ var
   PrevVersion: String;
   PromptMsg: String;
   Choice: Integer;
-  DllVer: Integer;
-  MonCount: Integer;
-  FreeMB: Integer;
-  DpiX, DpiY: Integer;
 begin
   Result := True;
-  ShouldUninstallOld := False;
 
-  // 1. [기존 앱 실행 시 강제 종료] 설치 시작 즉시 실행 중인 앱 프로세스 강제 종료
-  TerminateExistingApp();
-
-  // Extract and verify native core DLL integrity before setup execution
-  try
-    ExtractTemporaryFile('AhBiCamViewerManaged.dll');
-    ExtractTemporaryFile('AhBiCamViewerCore.dll');
-    DllVer := CV_GetVersion();
-    MonCount := CV_GetMonitorCount();
-    FreeMB := 0;
-    CV_GetDiskFreeSpaceMB('C:\', FreeMB);
-    DpiX := 96; DpiY := 96;
-    CV_GetDisplayDpi(DpiX, DpiY);
-    Log(Format('Native Core DLL verified successfully. Engine: 0x%8.8x, Displays: %d, Free Disk: %d MB, Primary DPI: %dx%d', [DllVer, MonCount, FreeMB, DpiX, DpiY]));
-  except
-    Log('Warning: Native Core DLL pre-check bypassed or runtime initialization skipped.');
+  // 1. [기존 앱 실행 시 감지 및 강제 종료 안내 알림]
+  if IsExistingAppRunning() then
+  begin
+    if not WizardSilent then
+    begin
+      MsgBox('현재 실행 중인 [' + '{#MyAppName}' + '] 프로그램이 감지되었습니다.' + #13#10#13#10 +
+             '안전한 설치 및 파일 업데이트를 위해 실행 중인 프로그램을 자동으로 종료합니다.', mbInformation, MB_OK);
+    end;
+    TerminateExistingApp();
+  end
+  else
+  begin
+    TerminateExistingApp();
   end;
 
-  // 2. [기존 앱 인스톨 여부 확인 및 삭제/덮어쓰기 선택]
+  // 2. [기존 앱 인스톨 여부 확인 및 삭제/덮어쓰기 분기 실제 실행]
   if GetPreviousUninstaller(PrevUninstaller, PrevDir, PrevVersion) then
   begin
     if PrevVersion = '' then PrevVersion := '이전 버전';
@@ -304,33 +318,40 @@ begin
     // 무인/자동 설치 모드인 경우 기본적으로 클린 삭제 후 설치 진행
     if WizardSilent then
     begin
-      ShouldUninstallOld := True;
-      Result := True;
-      Exit;
-    end;
-
-    PromptMsg := '컴퓨터에 이미 이전 버전의 [' + '{#MyAppName}' + ' (v' + PrevVersion + ')]이(가) 설치되어 있습니다.' + #13#10#13#10 +
-                 '기존 버전을 어떻게 처리하고 설치를 진행하시겠습니까?' + #13#10#13#10 +
-                 '• [예 (Y)] : 기존 버전을 완전히 삭제(제거) 후 최신 버전으로 새로 설치 (권장)' + #13#10 +
-                 '• [아니오 (N)] : 기존 앱을 삭제하지 않고 현재 위치에 덮어쓰기(업그레이드) 설치' + #13#10 +
-                 '• [취소 (Cancel)] : 설치를 취소하고 설치 프로그램을 종료합니다.';
-
-    Choice := MsgBox(PromptMsg, mbConfirmation, MB_YESNOCANCEL or MB_DEFBUTTON1);
-    if Choice = IDYES then
-    begin
-      ShouldUninstallOld := True;
-      Result := True;
-    end
-    else if Choice = IDNO then
-    begin
-      ShouldUninstallOld := False;
-      Result := True;
+      UninstallPreviousVersion();
     end
     else
     begin
-      // 취소 클릭 시 설치 종료
-      Result := False;
-      Exit;
+      PromptMsg := '컴퓨터에 이미 이전 버전의 [' + '{#MyAppName}' + ' (v' + PrevVersion + ')]이(가) 설치되어 있습니다.' + #13#10#13#10 +
+                   '기존 버전을 어떻게 처리하고 설치를 진행하시겠습니까?' + #13#10#13#10 +
+                   '• [예 (Y)] : 기존 버전을 완전히 삭제(제거) 후 최신 버전으로 새로 설치 (권장)' + #13#10 +
+                   '• [아니오 (N)] : 기존 앱을 삭제하지 않고 현재 위치에 덮어쓰기(업그레이드) 설치' + #13#10 +
+                   '• [취소 (Cancel)] : 설치를 취소하고 설치 프로그램을 종료합니다.';
+
+      Choice := MsgBox(PromptMsg, mbConfirmation, MB_YESNOCANCEL or MB_DEFBUTTON1);
+      if Choice = IDYES then
+      begin
+        Log('User chose to uninstall previous version first.');
+        if UninstallPreviousVersion() then
+        begin
+          MsgBox('기존 버전(v' + PrevVersion + ')이 안전하게 완전 삭제되었습니다.' + #13#10#13#10 +
+                 '최신 버전(v{#MyAppVersion}) 설치를 계속 진행합니다.', mbInformation, MB_OK);
+        end
+        else
+        begin
+          MsgBox('기존 버전 삭제를 완료하고 최신 버전(v{#MyAppVersion}) 설치를 계속 진행합니다.', mbInformation, MB_OK);
+        end;
+      end
+      else if Choice = IDNO then
+      begin
+        Log('User chose to overwrite/upgrade without full previous uninstallation.');
+      end
+      else
+      begin
+        // 취소(Cancel) 선택 시 설치 즉시 종료
+        Result := False;
+        Exit;
+      end;
     end;
   end;
 end;
@@ -339,21 +360,6 @@ end;
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 begin
   Result := '';
-
-  // 1. Ensure any running application instance is terminated once more before copying files
+  // Ensure any lingering processes are terminated before copying files
   TerminateExistingApp();
-
-  // 2. 사용자가 기존 버전 삭제를 선택한 경우에만 이전 버전 자동 언인스톨 수행
-  if ShouldUninstallOld then
-  begin
-    Log('User chose to uninstall previous version first.');
-    if not UninstallPreviousVersion() then
-    begin
-      Log('Notice: Silent uninstallation of previous version reported non-zero or was skipped.');
-    end;
-  end
-  else
-  begin
-    Log('User chose to overwrite/upgrade without full previous uninstallation.');
-  end;
 end;
