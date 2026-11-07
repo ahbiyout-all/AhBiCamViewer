@@ -12,6 +12,17 @@
 
 ---
 
+### ⚙️ Inno Setup 6단계 설치 시퀀스 결함 완전 해결 및 검증 (2026-11-07)
+- **원인 분석 및 미적용 결함 해결 (Root Cause Resolution)**:
+  1. **레지스트리 이중 중괄호(Double-Brace) 버그 수정**: Inno Setup 전처리기에서 `{#SetupSetting("AppId")}` 참조 시 스크립트에 이스케이프된 `{{...`가 그대로 전달되어 `{{E68A9F21..._is1`이라는 잘못된 경로를 조회함에 따라 기존 설치본을 감지하지 못하고 삭제/덮어쓰기 안내창이 생략되던 결함 원천 해결. 정규 GUID 키(`{E68A9F21-7A39-4E61-9A3F-470295BCA120}_is1`)로 직접 매핑.
+  2. **프로세스 강제 종료 필터 문법 오류 수정**: `taskkill /FI "WINDOWTITLE eq *아비캠뷰어*"`에서 선행 와일드카드(`*`) 사용 시 윈도우가 "검색 필터를 인식할 수 없습니다" 에러를 반환하던 문제를 접미사 와일드카드(`아비캠뷰어*`)로 수정하고, 격리 프로필(`AhBiCamViewer_AppProfile`) 백그라운드 WMI 강제 종료 연동.
+  3. **라이선스 화면 인코딩 최적화**: 마크다운 파일 대신 UTF-8 BOM(`\uFEFF`)이 포함된 전용 텍스트(`assets/LICENSE.txt`)를 `LicenseFile`로 지정하여 한글 깨짐 없이 선명하게 표출.
+  4. **바탕화면 바로가기 기본 체크 유지**: `UsePreviousTasks=no` 및 `Flags: checkedonce`를 동시 적용하여 과거 실행 이력과 무관하게 항상 기본 체크되도록 보장.
+- **검증 완료**: `reg query`를 통한 실제 시스템 레지스트리 키 정합성 대조 확인 및 Inno Setup `build.bat` 컴파일 완료.
+- **영향 파일**: `installer.iss`, `assets/LICENSE.txt`, `docs/PATCHNOTES.md`, `docs/CHANGELOG.md`, `docs/WORK_LOG.md`
+
+---
+
 ### ⚙️ Inno Setup 설치 마법사 전체 시퀀스 및 사용자 대화형 업그레이드 체계화 (2026-11-07)
 - **도입 배경 및 사용자 니즈 (Background & User Need)**:
   - 인스톨러 구동 시 기존에 열려 있는 앱과의 파일 잠금 충돌을 방지하고, 사용자에게 기존 버전 '완전 삭제 후 설치' 또는 '덮어쓰기' 선택권을 부여.

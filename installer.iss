@@ -32,7 +32,8 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppEnglishName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
-LicenseFile=docs\LICENSE.ko.md
+DisableWelcomePage=no
+LicenseFile=assets\LICENSE.txt
 OutputDir=dist
 OutputBaseFilename={#MyAppName}_Setup_v{#MyAppVersion}
 SetupIconFile=assets\app.ico
@@ -45,6 +46,7 @@ UninstallDisplayIcon={app}\assets\app.ico
 CloseApplications=yes
 RestartApplications=no
 UsePreviousAppDir=no
+UsePreviousTasks=no
 
 [Languages]
 Name: "korean"; MessagesFile: "compiler:Languages\Korean.isl"
@@ -113,22 +115,32 @@ var
 begin
   Log('Terminating running AhBiCamViewer/ClassroomVisualizer instances...');
   // Terminate browser windows hosting the app (Edge/Chrome app mode)
-  Exec('cmd.exe', '/c taskkill /F /IM msedge.exe /FI "WINDOWTITLE eq *아비캠뷰어*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  Exec('cmd.exe', '/c taskkill /F /IM msedge.exe /FI "WINDOWTITLE eq *AhBiCamViewer*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  Exec('cmd.exe', '/c taskkill /F /IM msedge.exe /FI "WINDOWTITLE eq *ClassroomVisualizer*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  Exec('cmd.exe', '/c taskkill /F /IM msedge.exe /FI "WINDOWTITLE eq *실물화상기*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  Exec('cmd.exe', '/c taskkill /F /IM chrome.exe /FI "WINDOWTITLE eq *아비캠뷰어*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  Exec('cmd.exe', '/c taskkill /F /IM chrome.exe /FI "WINDOWTITLE eq *AhBiCamViewer*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  Exec('cmd.exe', '/c taskkill /F /IM chrome.exe /FI "WINDOWTITLE eq *ClassroomVisualizer*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  Exec('cmd.exe', '/c taskkill /F /IM chrome.exe /FI "WINDOWTITLE eq *실물화상기*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  // Note: Windows taskkill /FI only accepts trailing wildcard (e.g. title*), not leading (*title)
+  Exec('cmd.exe', '/c taskkill /F /IM msedge.exe /FI "WINDOWTITLE eq 아비캠뷰어*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('cmd.exe', '/c taskkill /F /IM msedge.exe /FI "WINDOWTITLE eq AhBiCamViewer*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('cmd.exe', '/c taskkill /F /IM msedge.exe /FI "WINDOWTITLE eq ClassroomVisualizer*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('cmd.exe', '/c taskkill /F /IM msedge.exe /FI "WINDOWTITLE eq 교실용*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('cmd.exe', '/c taskkill /F /IM msedge.exe /FI "WINDOWTITLE eq 실물화상기*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+
+  Exec('cmd.exe', '/c taskkill /F /IM chrome.exe /FI "WINDOWTITLE eq 아비캠뷰어*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('cmd.exe', '/c taskkill /F /IM chrome.exe /FI "WINDOWTITLE eq AhBiCamViewer*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('cmd.exe', '/c taskkill /F /IM chrome.exe /FI "WINDOWTITLE eq ClassroomVisualizer*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('cmd.exe', '/c taskkill /F /IM chrome.exe /FI "WINDOWTITLE eq 교실용*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('cmd.exe', '/c taskkill /F /IM chrome.exe /FI "WINDOWTITLE eq 실물화상기*" /T >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+
   // Terminate batch launcher if active
-  Exec('cmd.exe', '/c taskkill /F /IM cmd.exe /FI "WINDOWTITLE eq *AhBiCamViewer*" >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  Exec('cmd.exe', '/c taskkill /F /IM cmd.exe /FI "WINDOWTITLE eq *ClassroomVisualizer*" >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('cmd.exe', '/c taskkill /F /IM cmd.exe /FI "WINDOWTITLE eq AhBiCamViewer*" >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('cmd.exe', '/c taskkill /F /IM cmd.exe /FI "WINDOWTITLE eq ClassroomVisualizer*" >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec('cmd.exe', '/c taskkill /F /IM cmd.exe /FI "WINDOWTITLE eq 아비캠뷰어*" >nul 2>&1', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+
+  // Terminate any browser instance using the app profile
+  Exec('powershell.exe', '-NoProfile -ExecutionPolicy Bypass -Command "& { Get-CimInstance Win32_Process | Where-Object { ($_.Name -eq ''msedge.exe'' -or $_.Name -eq ''chrome.exe'') -and ($_.CommandLine -like ''*AhBiCamViewer_AppProfile*'' -or $_.CommandLine -like ''*AhBiCamViewer*'') } | Stop-Process -Force -ErrorAction SilentlyContinue }"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+
   Sleep(500);
 end;
 
-// Retrieve previous uninstaller executable path and installation location from registry
-function GetPreviousUninstaller(var UninstallerPath, OldInstallDir: String): Boolean;
+// Retrieve previous uninstaller executable path, install dir, and version from registry
+function GetPreviousUninstaller(var UninstallerPath, OldInstallDir, OldVersion: String): Boolean;
 var
   AppKey: String;
   RawString: String;
@@ -136,13 +148,16 @@ begin
   Result := False;
   UninstallerPath := '';
   OldInstallDir := '';
-  AppKey := 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#SetupSetting("AppId")}_is1';
+  OldVersion := '';
+  // Note: Registry key uses exact AppId with single brace
+  AppKey := 'Software\Microsoft\Windows\CurrentVersion\Uninstall\' + '{E68A9F21-7A39-4E61-9A3F-470295BCA120}_is1';
 
-  // 1. Check HKEY_LOCAL_MACHINE (default view)
+  // 1. Check HKEY_LOCAL_MACHINE (default 64/32 view)
   if RegQueryStringValue(HKEY_LOCAL_MACHINE, AppKey, 'UninstallString', RawString) then
   begin
     UninstallerPath := RemoveQuotes(RawString);
     RegQueryStringValue(HKEY_LOCAL_MACHINE, AppKey, 'InstallLocation', OldInstallDir);
+    RegQueryStringValue(HKEY_LOCAL_MACHINE, AppKey, 'DisplayVersion', OldVersion);
     if FileExists(UninstallerPath) then
     begin
       Result := True;
@@ -157,6 +172,7 @@ begin
     begin
       UninstallerPath := RemoveQuotes(RawString);
       RegQueryStringValue(HKLM64, AppKey, 'InstallLocation', OldInstallDir);
+      RegQueryStringValue(HKLM64, AppKey, 'DisplayVersion', OldVersion);
       if FileExists(UninstallerPath) then
       begin
         Result := True;
@@ -172,6 +188,7 @@ begin
     begin
       UninstallerPath := RemoveQuotes(RawString);
       RegQueryStringValue(HKLM32, AppKey, 'InstallLocation', OldInstallDir);
+      RegQueryStringValue(HKLM32, AppKey, 'DisplayVersion', OldVersion);
       if FileExists(UninstallerPath) then
       begin
         Result := True;
@@ -187,6 +204,7 @@ begin
     begin
       UninstallerPath := RemoveQuotes(RawString);
       RegQueryStringValue(HKEY_CURRENT_USER, AppKey, 'InstallLocation', OldInstallDir);
+      RegQueryStringValue(HKEY_CURRENT_USER, AppKey, 'DisplayVersion', OldVersion);
       if FileExists(UninstallerPath) then
       begin
         Result := True;
@@ -201,11 +219,12 @@ function UninstallPreviousVersion(): Boolean;
 var
   UninstallerPath: String;
   OldInstallDir: String;
+  OldVersion: String;
   ResultCode: Integer;
   WaitCount: Integer;
 begin
   Result := True;
-  if GetPreviousUninstaller(UninstallerPath, OldInstallDir) then
+  if GetPreviousUninstaller(UninstallerPath, OldInstallDir, OldVersion) then
   begin
     Log(Format('Previous installation found: %s. Executing silent uninstaller: %s', [OldInstallDir, UninstallerPath]));
     // Execute silent uninstaller and wait for completion
@@ -245,14 +264,15 @@ var
 // Detect existing installation, verify DLL integrity and terminate running app
 function InitializeSetup(): Boolean;
 var
-  InstalledVersion: String;
+  PrevUninstaller: String;
+  PrevDir: String;
+  PrevVersion: String;
   PromptMsg: String;
   Choice: Integer;
   DllVer: Integer;
   MonCount: Integer;
   FreeMB: Integer;
   DpiX, DpiY: Integer;
-  HasPrev: Boolean;
 begin
   Result := True;
   ShouldUninstallOld := False;
@@ -276,18 +296,11 @@ begin
   end;
 
   // 2. [기존 앱 인스톨 여부 확인 및 삭제/덮어쓰기 선택]
-  HasPrev := False;
-  if RegQueryStringValue(HKEY_LOCAL_MACHINE, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#SetupSetting("AppId")}_is1', 'DisplayVersion', InstalledVersion) then
-    HasPrev := True
-  else if IsWin64 and RegQueryStringValue(HKLM64, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#SetupSetting("AppId")}_is1', 'DisplayVersion', InstalledVersion) then
-    HasPrev := True
-  else if RegQueryStringValue(HKLM32, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#SetupSetting("AppId")}_is1', 'DisplayVersion', InstalledVersion) then
-    HasPrev := True
-  else if RegQueryStringValue(HKEY_CURRENT_USER, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#SetupSetting("AppId")}_is1', 'DisplayVersion', InstalledVersion) then
-    HasPrev := True;
-
-  if HasPrev then
+  if GetPreviousUninstaller(PrevUninstaller, PrevDir, PrevVersion) then
   begin
+    if PrevVersion = '' then PrevVersion := '이전 버전';
+    Log(Format('Existing installation detected. Version: %s, Location: %s, Uninstaller: %s', [PrevVersion, PrevDir, PrevUninstaller]));
+
     // 무인/자동 설치 모드인 경우 기본적으로 클린 삭제 후 설치 진행
     if WizardSilent then
     begin
@@ -296,11 +309,11 @@ begin
       Exit;
     end;
 
-    PromptMsg := '컴퓨터에 이미 이전 버전의 [' + '{#MyAppName}' + ' (v' + InstalledVersion + ')]이(가) 설치되어 있습니다.' + #13#10#13#10 +
+    PromptMsg := '컴퓨터에 이미 이전 버전의 [' + '{#MyAppName}' + ' (v' + PrevVersion + ')]이(가) 설치되어 있습니다.' + #13#10#13#10 +
                  '기존 버전을 어떻게 처리하고 설치를 진행하시겠습니까?' + #13#10#13#10 +
                  '• [예 (Y)] : 기존 버전을 완전히 삭제(제거) 후 최신 버전으로 새로 설치 (권장)' + #13#10 +
                  '• [아니오 (N)] : 기존 앱을 삭제하지 않고 현재 위치에 덮어쓰기(업그레이드) 설치' + #13#10 +
-                 '• [취소] : 설치를 취소하고 설치 프로그램을 종료합니다.';
+                 '• [취소 (Cancel)] : 설치를 취소하고 설치 프로그램을 종료합니다.';
 
     Choice := MsgBox(PromptMsg, mbConfirmation, MB_YESNOCANCEL or MB_DEFBUTTON1);
     if Choice = IDYES then
