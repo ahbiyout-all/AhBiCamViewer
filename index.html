@@ -5948,8 +5948,8 @@ updateResolutionDots(getLastCamera());
   const GITHUB_REPO = "AhBiYout-all/AhBiCamViewer";
   const GITHUB_USER = "AhBiYout";
   const GITHUB_URL = "https://github.com/AhBiYout-all";
+  const REPO_URL = "https://github.com/AhBiYout-all/AhBiCamViewer";
   const BLOG_URL = "https://ahbiyoutvibe.blogspot.com/";
-  const CISNET_URL = "https://www.cisnet.co.kr";
 
   const modalHtml = `
   <div class="app-modal" id="appInfoModal">
@@ -5959,8 +5959,8 @@ updateResolutionDots(getLastCamera());
       <div class="meta-links">
         <div>👤 <b>개발자:</b> ${GITHUB_USER}</div>
         <div>🐙 <b>GitHub:</b> <a href="${GITHUB_URL}" target="_blank" rel="noreferrer">${GITHUB_URL}</a></div>
+        <div>📦 <b>저장소:</b> <a href="${REPO_URL}" target="_blank" rel="noreferrer">${REPO_URL}</a></div>
         <div>📝 <b>공식 블로그:</b> <a href="${BLOG_URL}" target="_blank" rel="noreferrer">${BLOG_URL}</a></div>
-        <div>🏢 <b>소속:</b> <a href="${CISNET_URL}" target="_blank" rel="noreferrer">${CISNET_URL}</a></div>
         <div style="margin-top:6px;padding-top:6px;border-top:1px dashed #334155">
           🔑 <b>라이선스:</b> <span id="infoTierText" style="font-weight:bold;color:#22c55e">Pro 에디션 (모든 기능 제약 없이 완전 개방)</span>
         </div>
@@ -5974,16 +5974,18 @@ updateResolutionDots(getLastCamera());
   </div>
 
   <div class="app-modal" id="updateNoticeModal">
-    <div class="box" style="border-color:#2563eb">
-      <h2 style="color:#60a5fa">🎉 새로운 업데이트가 있습니다!</h2>
-      <p id="newVerTitle">최신 버전 발견</p>
-      <div id="newVerNotes" style="font-size:12px;color:#cbd5e1;background:#141518;padding:10px;border-radius:8px;max-height:140px;overflow-y:auto;white-space:pre-wrap;margin:10px 0"></div>
-      <div class="meta-links">
-        <div>📦 <b>저장소:</b> <a id="releaseRepoLink" href="https://github.com/${GITHUB_REPO}" target="_blank" rel="noreferrer">https://github.com/${GITHUB_REPO}</a></div>
+    <div class="box" style="border-color:#2563eb;max-width:520px">
+      <h2 style="color:#60a5fa;display:flex;align-items:center;gap:8px">🎉 새로운 업데이트가 있습니다!</h2>
+      <div id="newVerTitle" style="margin:8px 0;font-size:14px;background:#1e293b;padding:8px 12px;border-radius:8px">최신 버전 발견</div>
+      <div id="newVerNotes" style="font-size:12px;color:#cbd5e1;background:#141518;padding:10px;border-radius:8px;max-height:150px;overflow-y:auto;white-space:pre-wrap;margin:10px 0;line-height:1.5"></div>
+      <div class="meta-links" style="font-size:12px;margin:8px 0">
+        <div>📦 <b>GitHub 릴리즈:</b> <a id="releaseRepoLink" href="${REPO_URL}/releases" target="_blank" rel="noreferrer">${REPO_URL}/releases</a></div>
+        <div>📝 <b>공식 블로그:</b> <a href="${BLOG_URL}" target="_blank" rel="noreferrer">${BLOG_URL}</a></div>
       </div>
-      <div class="actions">
-        <button id="downloadUpdateBtn" style="background:#16a34a;border-color:#16a34a;color:#fff;font-weight:bold">⬇️ 최신 버전 다운로드</button>
-        <button id="ignoreUpdateBtn">나중에 하기</button>
+      <div class="actions" style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+        <button id="downloadUpdateBtn" style="background:#16a34a;border-color:#16a34a;color:#fff;font-weight:bold;padding:7px 14px">⬇️ 최신 인스톨러 다운로드</button>
+        <button id="viewReleasePageBtn" style="background:#2563eb;border-color:#2563eb;color:#fff;padding:7px 12px">🌐 릴리즈 보기</button>
+        <button id="ignoreUpdateBtn" style="padding:7px 12px">나중에 하기</button>
       </div>
     </div>
   </div>
@@ -6009,8 +6011,8 @@ updateResolutionDots(getLastCamera());
   document.getElementById('ignoreUpdateBtn').onclick = () => updateModal.classList.remove('show');
 
   function compareSemver(vA, vB){
-    const pa = vA.replace(/^v/,'').split('.').map(Number);
-    const pb = vB.replace(/^v/,'').split('.').map(Number);
+    const pa = String(vA||"").replace(/^v/,'').split('.').map(Number);
+    const pb = String(vB||"").replace(/^v/,'').split('.').map(Number);
     for(let i=0; i<3; i++){
       const a = pa[i]||0, b = pb[i]||0;
       if(a > b) return 1;
@@ -6022,24 +6024,59 @@ updateResolutionDots(getLastCamera());
   async function checkGitHubUpdate(auto=true){
     try{
       if(!auto) updateStatus.textContent = "GitHub Releases 최신 버전 확인 중...";
-      const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`, {cache:'no-cache'});
-      if(!res.ok){
-        if(!auto) updateStatus.textContent = "최신 버전 확인 실패 (저장소 공개 후 정상 연동됩니다)";
+      let latestVer = null;
+      let releaseNotes = "";
+      let directDownloadUrl = null;
+      let releasePageUrl = `${REPO_URL}/releases/latest`;
+
+      // 1. Primary: GitHub Releases Latest API
+      try{
+        const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`, {cache:'no-cache'});
+        if(res.ok){
+          const data = await res.json();
+          const tag = data.tag_name || data.name || "";
+          latestVer = tag.replace(/^v/,'');
+          releaseNotes = data.body || "";
+          releasePageUrl = data.html_url || `${REPO_URL}/releases/latest`;
+          const exeAsset = Array.isArray(data.assets) ? data.assets.find(a => a.name && a.name.endsWith('.exe')) : null;
+          if(exeAsset && exeAsset.browser_download_url) {
+            directDownloadUrl = exeAsset.browser_download_url;
+          }
+        }
+      }catch(e){
+        console.warn("GitHub API fetch bypassed, attempting fallback:", e);
+      }
+
+      // 2. Fallback: Raw version.json check if API was rate-limited or unavailable
+      if(!latestVer){
+        try{
+          const rawRes = await fetch(`https://raw.githubusercontent.com/${GITHUB_REPO}/main/version.json`, {cache:'no-cache'});
+          if(rawRes.ok){
+            const rawData = await rawRes.json();
+            if(rawData && rawData.version){
+              latestVer = String(rawData.version).replace(/^v/,'');
+              releaseNotes = `새로운 버전 v${latestVer}이 배포되었습니다. GitHub Releases에서 최신 인스톨러를 내려받으실 수 있습니다.`;
+            }
+          }
+        }catch(e){
+          console.warn("Raw version.json fallback failed:", e);
+        }
+      }
+
+      if(!latestVer){
+        if(!auto) updateStatus.textContent = "최신 버전 확인 실패 (네트워크 또는 저장소 확인 필요)";
         return;
       }
-      const data = await res.json();
-      const latestTag = data.tag_name || data.name || "";
-      const latestVer = latestTag.replace(/^v/,'');
+
       if(compareSemver(latestVer, APP_VERSION) > 0){
-        // New version available!
+        // New version available! Display automated update notification popup
         document.getElementById('newVerTitle').innerHTML = `현재 버전: <b>v${APP_VERSION}</b> ➡️ 최신 버전: <b style="color:#22c55e">v${latestVer}</b>`;
-        document.getElementById('newVerNotes').textContent = data.body || "새로운 패치 및 개선 사항이 적용되었습니다.";
-        const exeAsset = Array.isArray(data.assets) ? data.assets.find(a => a.name && a.name.endsWith('.exe')) : null;
-        const releaseUrl = exeAsset ? exeAsset.browser_download_url : (data.html_url || `https://github.com/${GITHUB_REPO}/releases/latest`);
-        const repoReleaseUrl = data.html_url || `https://github.com/${GITHUB_REPO}/releases/latest`;
-        document.getElementById('downloadUpdateBtn').onclick = () => window.open(releaseUrl, '_blank');
-        document.getElementById('releaseRepoLink').href = repoReleaseUrl;
-        document.getElementById('releaseRepoLink').textContent = repoReleaseUrl;
+        document.getElementById('newVerNotes').textContent = releaseNotes || "새로운 기능 및 버그 수정 패치가 적용되었습니다.";
+        const finalDownloadUrl = directDownloadUrl || releasePageUrl;
+        document.getElementById('downloadUpdateBtn').onclick = () => window.open(finalDownloadUrl, '_blank');
+        document.getElementById('viewReleasePageBtn').onclick = () => window.open(releasePageUrl, '_blank');
+        document.getElementById('releaseRepoLink').href = releasePageUrl;
+        document.getElementById('releaseRepoLink').textContent = releasePageUrl;
         updateModal.classList.add('show');
         if(!auto) updateStatus.textContent = `신규 버전 v${latestVer} 발견!`;
       } else {
@@ -6055,8 +6092,8 @@ updateResolutionDots(getLastCamera());
   // Pro 티어 UI 상태 적용
   if(typeof applyTierUI === 'function') applyTierUI();
 
-  // Auto check update 3 seconds after start
-  setTimeout(() => checkGitHubUpdate(true), 3000);
+  // Auto check update 2.5 seconds after application startup
+  setTimeout(() => checkGitHubUpdate(true), 2500);
 
   // ===== 8. CAMERA DETAILS MODAL SYSTEM =====
   const camDetailModalHtml = `

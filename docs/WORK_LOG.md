@@ -6,6 +6,25 @@
 
 ## 2026-11-07 (v1.4.7)
 
+### 작업 42: GitHub Releases 실시간 자동 업데이트 시스템 고도화 및 깃허브 배포 규칙 정비
+- **요청 사항**:
+  - 개발자 `AhBiYout`, GitHub `AhBiYout-all`, 저장소 `AhBiCamViewer`, 공식 블로그 일원화.
+  - GitHub Releases 기반 실시간 자동 업데이트 시스템 및 알림 팝업창 구성.
+  - 개인정보 및 개인 이메일 업로드 원천 금지, 불필요한 파일 제외 `.gitignore` 전면 개편.
+  - 깃허브용 자동 푸시 스크립트(`push_to_github.bat`) 생성 (업로드에서 제외).
+  - GitHub Actions 워크플로 정비 (PC 전용 인스톨러만 릴리즈 자산 첨부, 미지원 APK/iOS 제거).
+- **수행 내역**:
+  1. `index.html` 및 4대 배포 HTML 파일 내 실시간 업데이트 팝업 및 이중 폴백(API + Raw version.json) 탑재.
+  2. 제작자 및 공식 채널 정보 정리 (불필요한 외부 소속 명칭 완전 제거).
+  3. `.gitignore` 전면 개편 (바이너리, 빌드 출력물, 로컬 푸시 스크립트 철저 격리).
+  4. `push_to_github.bat` 자동 푸시 스크립트 작성 및 로컬 배치 격리 검증.
+  5. `.github/workflows/build-and-release.yml` 정비: Node 22 LTS, 인스톨러 전용 릴리즈 자산 업로드 구성.
+- **검증**: `check_syntax.cjs` 통과, `sync_html.cjs` 4대 파일 SHA-256 일치, `build.bat` 15/15 네이티브 테스트 및 인스톨러 컴파일 성공.
+
+---
+
+## 2026-11-07 (v1.4.7)
+
 ### 작업 41: 인스톨러 기존 앱 자동 종료 및 이전 버전 완전 무인 삭제 파이프라인 탑재
 - **요청 사항**: "인스톨 파일을 시작하면 기존 앱 종료 후 이전 버전 앱 삭제 진행뒤에 새파일을 설치 합니다."
 - **설계 및 구현 내역**:
@@ -887,7 +906,7 @@
     - `docs/BUILD.md`: Windows Inno Setup 6 자동 빌드 매뉴얼.
     - `docs/INSTALL.md`: GUI 및 무인 자동 설치(`/VERYSILENT`) 가이드.
     - `docs/CHANGELOG.md`: Keep-a-Changelog 기반 시맨틱 변경 내역.
-    - `docs/LICENSE.ko.md` & `docs/LICENSE.en.md`: 공식 저작자(AhBiYout, CISNet) 라이선스 문서.
+    - `docs/LICENSE.ko.md` & `docs/LICENSE.en.md`: 공식 저작자(AhBiYout) 라이선스 문서.
 
 ### 작업 5: 빌드 파이프라인 및 패키징 실제 검증
 - **명령 실행**: Inno Setup 컴파일러 실행 (`ISCC.exe /DMyAppVersion="1.3.1" "installer.iss"`)
@@ -1125,7 +1144,7 @@
 ### 1. 작업 개요 및 요청 분석
 - **자동 패치노트 기록 및 버전관리**: 코드 수정에 특이점(신규 기능, 결함 해결, 구조 개편) 도출 시 자동으로 패치노트(PATCHNOTES.md)에 기록하고 버전을 동기화 관리.
 - **docs 폴더 전체 문서 최신 내용 업데이트**: README.md, docs/README.md, BUILD.md, INSTALL.md, ARCHITECTURE.md, SECURITY.md, CHANGELOG.md, ROADMAP.md 전면 갱신.
-- **문서 폴더 내 깃허브용 문서 갱신**: 개발자(AhBiYout), 깃허브(AhBiYout-all), 공식 구글 블로그, 소속(CISNet) 및 15대 Native API, 멀티파일 인스톨러, 방화벽 사전 등록 반영.
+- **문서 폴더 내 깃허브용 문서 갱신**: 개발자(AhBiYout), 깃허브(AhBiYout-all), 공식 구글 블로그 및 15대 Native API, 멀티파일 인스톨러, 방화벽 사전 등록 반영.
 - **구글 블로거(Blogger) 공식 포스팅 문서 생성 (docs/BLOG_POST.md)**:
   - [작성 모드 (서식 있는 텍스트)] 및 [HTML 편집 모드] 2종 포맷 완벽 제공.
   - 규정된 10단계 순서 엄격 준수: 제목 - 본문 - 업데이트 - 앱 그림 - 다운로드 - 버전정보 - 시스템 요구 사항 - 제작자 및 공식 채널 안내 - 전체 업데이트 (역대 기능 개선 전수 기록) - 추천 태그.
@@ -1135,10 +1154,10 @@
 - **[작성 모드]**: 블로그 에디터의 서식 있는 텍스트 모드에 즉시 복사하여 붙여넣을 수 있는 정돈된 마크다운 구조.
 - **[HTML 편집 모드]**: 인라인 스타일(모던 그라디언트 헤더, 카드 레이아웃, 컬러 뱃지, 반응형 그리드, 다운로드 버튼)이 포함된 시맨틱 HTML5 원고 제공.
 - **전체 업데이트**: v1.0.0 최초 릴리즈부터 v1.4.4 최신 버전까지 역대 11회차 개선 내역 중 '기능 개선'에 해당하는 항목만 선별하여 일목요연하게 정리.
-- **추천 태그**: 아비캠뷰어,실물화상기,웹캠뷰어,수업도구,교실화상기,전자칠판,화상수업,무료소프트웨어,AhBiCamViewer,ClassroomVisualizer,WebcamViewer,Visualizer,DocumentCamera,EdTech,ScreenCapture,WindowsApp,CISNet,AhBiYout (18개 태그, 166자).
+- **추천 태그**: 아비캠뷰어,실물화상기,웹캠뷰어,수업도구,교실화상기,전자칠판,화상수업,무료소프트웨어,AhBiCamViewer,ClassroomVisualizer,WebcamViewer,Visualizer,DocumentCamera,EdTech,ScreenCapture,WindowsApp,AhBiYout (18개 태그, 166자).
 
 ### 3. 기술 문서 전면 동기화
-- README.md & docs/README.md: v1.4.4 최신 뱃지, 공식 채널(GitHub, 블로그, CISNet), 15대 Win32 Native API, 가상 카메라 무한 복제 차단, 인스톨러 방화벽 사전 등록.
+- README.md & docs/README.md: v1.4.4 최신 뱃지, 공식 채널(GitHub, 블로그), 15대 Win32 Native API, 가상 카메라 무한 복제 차단, 인스톨러 방화벽 사전 등록.
 - docs/CHANGELOG.md: [1.4.4] - 2026-11-01 Keep a Changelog 표준 섹션 추가.
 - docs/BUILD.md: Node.js 22 LTS, .NET C# 5.0 + ilasm 15 Native API 컴파일, Inno Setup 6 멀티파일 파이프라인 반영.
 - docs/INSTALL.md: Unpacked Multi-File 구조, 무인 설치 스위치, 윈도우 방화벽 사전 자동 등록.
@@ -1150,7 +1169,7 @@
 ## [2026-11-03] GitHub 공식 운영/배포 가이드(GITHUB.md) 신규 제정 및 CI/CD 워크플로 정비
 
 ### 1. 작업 개요
-- **GitHub 운영 가이드 문서화**: docs/GITHUB.md를 생성하여 제작자 정보(AhBiYout, AhBiYout-all, CISNet, 블로그), 엄격한 .gitignore 규칙, 실시간 업데이트 팝업 시스템 아키텍처, Node 22 LTS CI/CD 워크플로, 인스톨러 방화벽 등록 사양 및 릴리즈 절차를 종합 문서화.
+- **GitHub 운영 가이드 문서화**: docs/GITHUB.md를 생성하여 제작자 정보(AhBiYout, AhBiYout-all, 블로그), 엄격한 .gitignore 규칙, 실시간 업데이트 팝업 시스템 아키텍처, Node 22 LTS CI/CD 워크플로, 인스톨러 방화벽 등록 사양 및 릴리즈 절차를 종합 문서화.
 - **CI/CD 워크플로(.github/workflows/build-and-release.yml) 정밀화**: 네이티브 컴파일 단계의 소스 파일 지정(LicenseCore.cs, NativeSystemCore.cs) 및 x86 플랫폼 타겟팅을 로컬 빌드 스크립트(uild_dll.bat)와 100% 일치시켜 클라우드 빌드 무결성 확보.
 - **자동 패치노트 기록 및 버전관리 원칙 강화**: docs/PATCHNOTES.md 상단에 코드 수정 특이점 발생 시 자동 기록 및 버전 상향 원칙을 명시하여 향후 개발 과정의 일관성 보장.
 - **전체 기술 문서 교차 링크 갱신**: README.md, docs/README.md, installer.iss에 docs/GITHUB.md 반영.

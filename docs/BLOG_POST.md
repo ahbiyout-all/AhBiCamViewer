@@ -88,7 +88,6 @@
 - **개발자**: AhBiYout
 - **GitHub 저장소**: https://github.com/AhBiYout-all
 - **공식 구글 블로그**: https://ahbiyoutvibe.blogspot.com/
-- **소속**: https://www.cisnet.co.kr
 
 ---
 
@@ -151,7 +150,7 @@
 ---
 
 ## 10. 추천 태그
-아비캠뷰어,실물화상기,웹캠뷰어,수업도구,교실화상기,전자칠판,화상수업,무료소프트웨어,AhBiCamViewer,WebcamViewer,Visualizer,DocumentCamera,EdTech,ScreenCapture,WindowsApp,CISNet,AhBiYout
+아비캠뷰어,실물화상기,웹캠뷰어,수업도구,교실화상기,전자칠판,화상수업,무료소프트웨어,AhBiCamViewer,WebcamViewer,Visualizer,DocumentCamera,EdTech,ScreenCapture,WindowsApp,AhBiYout
 
 *(한글/영어 혼합 18개 태그, 공백/쉼표 포함 182자 - 20개 이하 및 200자 이내 준수)*
 
@@ -263,8 +262,7 @@
       <li style="padding: 8px 0; border-bottom: 1px dashed #e2e8f0;">👨‍💻 <strong>개발자</strong>: AhBiYout (AhBiYout-all)</li>
       <li style="padding: 8px 0; border-bottom: 1px dashed #e2e8f0;">🐙 <strong>GitHub 저장소</strong>: <a href="https://github.com/AhBiYout-all" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline;">https://github.com/AhBiYout-all</a></li>
       <li style="padding: 8px 0; border-bottom: 1px dashed #e2e8f0;">✍️ <strong>공식 구글 블로그</strong>: <a href="https://ahbiyoutvibe.blogspot.com/" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline;">https://ahbiyoutvibe.blogspot.com/</a></li>
-      <li style="padding: 8px 0;">🏢 <strong>소속</strong>: <a href="https://www.cisnet.co.kr" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline;">https://www.cisnet.co.kr</a></li>
-    </ul>
+          </ul>
   </section>
 
   <!-- 9. 전체 업데이트 (기능 개선 히스토리) -->
@@ -304,7 +302,7 @@
   <!-- 10. 추천 태그 -->
   <footer style="background: #f1f5f9; border-radius: 12px; padding: 18px 22px; font-size: 13px; color: #475569;">
     <strong style="color: #0f172a; display: block; margin-bottom: 6px;">🏷️ 추천 태그 (복사하여 태그 입력란에 넣으세요):</strong>
-    <code style="display: block; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; word-break: break-all; color: #0f766e;">아비캠뷰어,실물화상기,웹캠뷰어,수업도구,교실화상기,전자칠판,화상수업,무료소프트웨어,AhBiCamViewer,WebcamViewer,Visualizer,DocumentCamera,EdTech,ScreenCapture,WindowsApp,CISNet,AhBiYout</code>
+    <code style="display: block; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; word-break: break-all; color: #0f766e;">아비캠뷰어,실물화상기,웹캠뷰어,수업도구,교실화상기,전자칠판,화상수업,무료소프트웨어,AhBiCamViewer,WebcamViewer,Visualizer,DocumentCamera,EdTech,ScreenCapture,WindowsApp,AhBiYout</code>
   </footer>
 
 </div>

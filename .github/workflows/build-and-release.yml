@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build-and-release:
-    name: Build Native DLLs, Setup Installer and Publish Release
+    name: Build Windows Native DLLs, Setup Installer and Publish Release
     runs-on: windows-latest
 
     steps:
@@ -21,15 +21,25 @@ jobs:
           fetch-depth: 0
 
       # ----------------------------------------------------
-      # Node.js Runtime Specification
-      # NOTE: Node.js 20 has reached End-of-Life (EOL 2026-04).
-      # Modern GitHub Actions runners strictly require Node.js 22 LTS or Node.js 24.
+      # Node.js Runtime Specification (Node.js 22 LTS)
       # ----------------------------------------------------
-      - name: Setup Modern Node.js 22 LTS Runtime
+      - name: Setup Node.js 22 LTS Runtime
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           check-latest: true
+
+      - name: Verify Code Syntax and HTML Distribution Sync
+        shell: pwsh
+        run: |
+          Write-Host "[1/2] Verifying JavaScript and HTML syntax integrity..."
+          node tools/check_syntax.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Syntax check failed" }
+          
+          Write-Host "[2/2] Verifying byte-identical 4 HTML distribution synchronization..."
+          node tools/sync_html.cjs
+          if ($LASTEXITCODE -ne 0) { throw "HTML distribution sync failed" }
+          Write-Host "[SUCCESS] All code syntax and HTML distribution verified!"
 
       - name: Extract Semantic Version from version.json
         id: get_version
@@ -70,7 +80,7 @@ jobs:
 
           & "bin\TestRunner.exe"
           if ($LASTEXITCODE -ne 0) { throw "Native DLL verification tests failed" }
-          Write-Host "[SUCCESS] All native verification tests passed!"
+          Write-Host "[SUCCESS] All native verification tests passed (15/15 PASS)!"
 
       - name: Install Inno Setup Compiler
         shell: pwsh
@@ -91,7 +101,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Inno Setup compilation failed" }
           
           Write-Host "[SUCCESS] Installer generated:"
-          Get-ChildItem "dist"
+          Get-ChildItem "dist\*_Setup_v*.exe"
 
       - name: Generate Release Notes
         id: release_notes
@@ -101,16 +111,16 @@ jobs:
           $body = ""
           if (Test-Path $notesPath) {
             $content = Get-Content -Raw $notesPath
-            $match = [regex]::Match($content, "(## v$($env:APP_VERSION).*?)(?=## v|\Z)", [System.Text.RegularExpressions.RegexOptions]::Singleline)
+            $match = [regex]::Match($content, "(### .*?\(2026-.*?\).*?)(?=### |\Z)", [System.Text.RegularExpressions.RegexOptions]::Singleline)
             if ($match.Success) {
               $body = $match.Groups[1].Value.Trim()
             } else {
-              $body = "Release v$($env:APP_VERSION) of Classroom Visualizer."
+              $body = "Release v$($env:APP_VERSION) of AhBiCamViewer."
             }
           } else {
-            $body = "Release v$($env:APP_VERSION) of Classroom Visualizer."
+            $body = "Release v$($env:APP_VERSION) of AhBiCamViewer."
           }
-          $body += "`r`n`r`n---`r`n### 👤 제작자 및 공식 채널`r`n- 개발자: AhBiYout`r`n- GitHub: https://github.com/AhBiYout-all`r`n- 저장소: https://github.com/AhBiYout-all/AhBiCamViewer`r`n- 공식 블로그: https://ahbiyoutvibe.blogspot.com/`r`n- 공식 소속: https://www.cisnet.co.kr"
+          $body += "`r`n`r`n---`r`n### 👤 [제작자 및 공식 채널 안내]`r`n- 개발자: AhBiYout`r`n- GitHub 저장소: https://github.com/AhBiYout-all`r`n- 공식 구글 블로그: https://ahbiyoutvibe.blogspot.com/`r`n- 앱 저장소: https://github.com/AhBiYout-all/AhBiCamViewer"
           [System.IO.File]::WriteAllText("release_body.md", $body, [System.Text.Encoding]::UTF8)
 
       - name: Publish GitHub Release (Installer Only)

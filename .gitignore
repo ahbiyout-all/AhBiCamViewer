@@ -1,29 +1,50 @@
 # ============================================================
-# Classroom Visualizer / AhBiCamViewer .gitignore
-# Developer: AhBiYout (AhBiYout-all)
+# AhBiCamViewer .gitignore (Strict Core Repository Filter)
+# Developer: AhBiYout
+# GitHub Account: AhBiYout-all
 # Repository: https://github.com/AhBiYout-all/AhBiCamViewer
+# Official Blog: https://ahbiyoutvibe.blogspot.com/
 # ============================================================
 
-# 1. Build and distribution outputs (Strict exclusion)
+# ------------------------------------------------------------
+# 1. Build Artifacts, Compiled Binaries & Release Outputs
+# ------------------------------------------------------------
 dist/
 build/
+bin/
+out/
 output/
-bin/*.dll
-bin/*.exe
-bin/*.pdb
-bin/*.obj
+release/
+release_body.md
+*.exe
+*.dll
+*.pdb
+*.obj
+*.lib
+*.exp
+*.ilk
+*.msi
 *.zip
 *.tar.gz
 *.7z
+*.rar
 *.exe.log
 
-# 2. Local Git Release & Push Automation Scripts (Excluded from remote repo)
+# ------------------------------------------------------------
+# 2. Local Git Release & Push Automation Scripts (Strictly Local)
+# ------------------------------------------------------------
+push_to_github.bat
 push_github.bat
-git-release.bat
+push.bat
 git_push.bat
 git-push.bat
+git-release.bat
+tools/push*.bat
+tools/*push*.bat
 
-# 3. Private keys, secrets, credentials & environment files
+# ------------------------------------------------------------
+# 3. Private Keys, Secrets, Credentials & Personal Environment
+# ------------------------------------------------------------
 .env
 .env.*
 *.pem
@@ -35,11 +56,17 @@ credentials/
 auth/
 id_rsa*
 *.secret
+*.token
 
-# 4. Logs, caches and temporary runtime files
+# ------------------------------------------------------------
+# 4. Logs, Caches, Scratches & Temporary Files
+# ------------------------------------------------------------
 *.log
 *.tmp
 *.bak
+*.swp
+*.swo
+*~
 npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
@@ -51,8 +78,11 @@ tools/inspect_*
 tools/test_*
 tools/apply_*
 tools/list_*
+update_*.cjs
 
-# 5. Operating System artifacts
+# ------------------------------------------------------------
+# 5. Operating System Artifacts
+# ------------------------------------------------------------
 Thumbs.db
 Thumbs.db:encryptable
 ehthumbs.db
@@ -64,7 +94,9 @@ $RECYCLE.BIN/
 .AppleDouble
 .LSOverride
 
-# 6. IDE and Editor configurations
+# ------------------------------------------------------------
+# 6. IDE, Editors & Development Workspaces
+# ------------------------------------------------------------
 .vscode/
 .idea/
 *.sublime-project
@@ -73,4 +105,3 @@ $RECYCLE.BIN/
 *.user
 *.userosscache
 *.sln.docstates
-src/dll/*.dll

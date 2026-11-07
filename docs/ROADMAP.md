@@ -177,7 +177,7 @@
   - `docs/LICENSE.en.md`
 - **Implementation Plan**:
   1. 각 영역별 실측 기반의 구체적 기술 정보 작성.
-  2. 제작자(AhBiYout, AhBiYout-all, CISNet) 및 공식 채널 링크 일원화.
+  2. 제작자(AhBiYout, AhBiYout-all) 및 공식 채널 링크 일원화.
 - **Acceptance Criteria**:
   - 모든 필수 문서가 `docs/`에 유효하게 생성되고 교차 링크 검증 완료.
 - **Validation Procedure**: 파일 존재 여부 및 마크다운 링크 정합성 확인.

@@ -7,7 +7,7 @@
 [![Native Core](https://img.shields.io/badge/native%20APIs-15%20Exports%20(100%25%20Pass)-purple.svg)](NATIVE_DLL_ARCHITECTURE.md)
 
 > **공용 및 교실 환경을 위한 강력한 무설치 웹 & 데스크톱 실물화상기 소프트웨어**  
-> 현재 버전: **v1.4.7** | 개발자: **AhBiYout** | 깃허브: **AhBiYout-all** | 소속: **CISNet**
+> 현재 버전: **v1.4.7** | 개발자: **AhBiYout** | 깃허브: **AhBiYout-all**
 
 ---
 
@@ -50,11 +50,10 @@
 
 ---
 
-## 🔗 제작자 및 공식 채널 안내
+## 🔗 [제작자 및 공식 채널 안내]
 
 - **개발자**: AhBiYout
-- **GitHub 저장소**: [https://github.com/AhBiYout-all/AhBiCamViewer](https://github.com/AhBiYout-all/AhBiCamViewer)
-- **GitHub 조직**: [https://github.com/AhBiYout-all](https://github.com/AhBiYout-all)
-- **공식 구글 블로그**: [https://ahbiyoutvibe.blogspot.com/](https://ahbiyoutvibe.blogspot.com/)
-- **소속**: [CISNet (https://www.cisnet.co.kr)](https://www.cisnet.co.kr)
+- **GitHub 저장소**: https://github.com/AhBiYout-all
+- **공식 구글 블로그**: https://ahbiyoutvibe.blogspot.com/
+- **앱 저장소**: https://github.com/AhBiYout-all/AhBiCamViewer
 - **라이선스**: MIT License

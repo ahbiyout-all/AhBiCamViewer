@@ -96,4 +96,3 @@ AhBiCamViewer_Portable_v1.4.4/
 - **개발자**: AhBiYout (AhBiYout-all)
 - **GitHub 저장소**: https://github.com/AhBiYout-all/AhBiCamViewer
 - **공식 구글 블로그**: https://ahbiyoutvibe.blogspot.com/
-- **소속**: https://www.cisnet.co.kr

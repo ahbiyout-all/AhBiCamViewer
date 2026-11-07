@@ -1,9 +1,8 @@
 # MIT License
 
-Copyright (c) 2026 AhBiYout (CISNet)  
+Copyright (c) 2026 AhBiYout  
 Official Repository: https://github.com/AhBiYout-all/AhBiCamViewer  
 Official Blog: https://ahbiyoutvibe.blogspot.com/  
-Company: CISNet (http://www.cisnet.co.kr/)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -4,13 +4,12 @@
 
 ---
 
-## 1. 👤 제작자 및 공식 채널 안내
+## 1. 👤 [제작자 및 공식 채널 안내]
 
 - **개발자 (Developer)**: `AhBiYout`
-- **GitHub 공식 계정/조직**: [`AhBiYout-all`](https://github.com/AhBiYout-all)
-- **GitHub 공식 저장소**: [`https://github.com/AhBiYout-all/AhBiCamViewer`](https://github.com/AhBiYout-all/AhBiCamViewer)
+- **GitHub 저장소**: [`https://github.com/AhBiYout-all`](https://github.com/AhBiYout-all)
 - **공식 구글 블로그**: [`https://ahbiyoutvibe.blogspot.com/`](https://ahbiyoutvibe.blogspot.com/)
-- **공식 소속**: [`CISNet (https://www.cisnet.co.kr)`](https://www.cisnet.co.kr)
+- **앱 저장소**: [`https://github.com/AhBiYout-all/AhBiCamViewer`](https://github.com/AhBiYout-all/AhBiCamViewer)
 
 > **저장소 명명 규칙**: 저장소 이름은 앱 이름(`AhBiCamViewer`)으로 기본 생성되어 관리됩니다.
 

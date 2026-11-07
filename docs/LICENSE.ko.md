@@ -1,9 +1,8 @@
 # MIT 라이선스 (MIT License - 한국어 참고용)
 
-Copyright (c) 2026 AhBiYout (CISNet)  
+Copyright (c) 2026 AhBiYout  
 공식 저장소: https://github.com/AhBiYout-all/AhBiCamViewer  
 공식 블로그: https://ahbiyoutvibe.blogspot.com/  
-소속 회사: CISNet (http://www.cisnet.co.kr/)
 
 본 소프트웨어 및 관련 문서 파일(이하 "소프트웨어")의 복사본을 취득하는 모든 사람에게, 소프트웨어를 제한 없이 다룰 수 있는 권한이 무상으로 부여됩니다. 여기에는 소프트웨어의 복사본을 사용, 복사, 수정, 병합, 게시, 배포, 서브라이선스 부여 및/또는 판매할 수 있는 권한과 소프트웨어를 제공받은 사람에게 이를 허용하는 권한이 포함되며, 다음 조건을 따라야 합니다.
 

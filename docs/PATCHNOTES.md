@@ -12,6 +12,34 @@
 
 ---
 
+### 🐙 GitHub Releases 기반 실시간 자동 업데이트 시스템 고도화 및 깃허브 배포·보안 규칙 전면 개편 (2026-11-07)
+- **도입 배경 및 사용자 니즈 (Background & User Need)**:
+  - 깃허브 규칙 확립: 개발자명 `AhBiYout`, GitHub 계정명 `AhBiYout-all`, 저장소 `AhBiCamViewer`, 공식 블로그 `https://ahbiyoutvibe.blogspot.com/` 체계 일원화.
+  - "GitHub Releases 기반 실시간 자동 업데이트 시스템"을 구성하여 신규 패치/릴리즈 발생 시 앱 실행 2.5초 후 자동 알림 팝업창을 즉각 표출.
+  - 업데이트 알림 팝업창에 최신 버전 정보, 릴리즈 노트, 깃허브 저장소 경로, 원클릭 인스톨러 다운로드 버튼 배치.
+  - 불필요한 빌드 산출물, 바이너리, 개인정보 및 개인 이메일 업로드를 방지하도록 `.gitignore` 전면 개편.
+  - GitHub Actions 워크플로에서 PC 전용 인스톨러(`dist/*_Setup_v*.exe`)만 릴리즈 자산으로 첨부하고, 미지원 플랫폼(APK/iOS) 완전 제거.
+  - 로컬 전용 깃허브 자동 푸시 스크립트(`push_to_github.bat`)를 제공하되, 원격 저장소 업로드에서 제외.
+- **아키텍처 및 구현 내역**:
+  1. **실시간 자동 업데이트 감지 및 팝업 시스템 고도화**:
+     - 주 경로: GitHub REST API (`https://api.github.com/repos/AhBiYout-all/AhBiCamViewer/releases/latest`) 실시간 조회.
+     - 폴백(Fallback) 안전망: API 레이트 리밋(Rate-limit) 발생 시 `raw.githubusercontent.com`의 `version.json`으로 2차 무결성 검증.
+     - 팝업창 UI: `현재 버전: v1.4.7 ➡️ 최신 버전: vX.X.X` 대조 뱃지, 릴리즈 변경점 스크롤 뷰, `⬇️ 최신 인스톨러 다운로드`, `🌐 릴리즈 보기`, `나중에 하기` 버튼 완비.
+  2. **핵심 파일 선별 및 .gitignore 규칙 전면 정비**:
+     - 바이너리/산출물 제외: `dist/`, `build/`, `bin/`, `out/`, `output/`, `release_body.md`, `*.dll`, `*.exe`, `*.zip`.
+     - 보안 및 비밀키 격리: `.env*`, `*.key`, `*.pem`, `credentials/`, `secrets/`.
+     - 로컬 전용 배치 제외: `push_to_github.bat`, `push_github.bat`, `push*.bat`.
+  3. **GitHub Actions 릴리즈 파이프라인 정비 (`.github/workflows/build-and-release.yml`)**:
+     - Node.js 22 LTS 구동, 코드 구문 검사 및 4대 HTML 동기화 검증 선행.
+     - .NET Framework 도구로 `AhBiCamViewerCore.dll` 및 `AhBiCamViewerManaged.dll` 컴파일 및 15/15 단위 테스트 전수 검증.
+     - Inno Setup 6을 통한 인스톨러(`아비캠뷰어 (AhBiCamViewer)_Setup_v1.4.7.exe`) 빌드.
+     - 릴리즈 자산(Assets)에는 순수 윈도우 인스톨러 파일만 첨부(미지원 APK/iOS 제거 원칙 준수).
+  4. **로컬 자동 푸시 스크립트 (`push_to_github.bat`) 구현**:
+     - Git 작성자 이메일을 `AhBiYout-all@users.noreply.github.com`으로 자동 설정하여 개인 이메일 노출 원천 차단.
+     - 코드 구문 검사 및 HTML 동기화 자동 검증 후 커밋/푸시 및 선택적 릴리즈 태그 푸시 지원.
+     - `.gitignore`에 의해 원격 저장소 업로드에서 자동 배제.
+- **영향 파일**: `index.html`, 4대 배포 HTML 파일, `.gitignore`, `.github/workflows/build-and-release.yml`, `push_to_github.bat`, `README.md`, `docs/GITHUB.md`, `version.json`
+
 ---
 
 ### 🚀 인스톨러 사전 작업 강화: 실행 중인 기존 앱 자동 종료 및 이전 버전 완전 무인 삭제 파이프라인 탑재 (2026-11-07)
