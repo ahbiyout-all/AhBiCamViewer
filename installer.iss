@@ -32,6 +32,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppEnglishName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
+LicenseFile=docs\LICENSE.ko.md
 OutputDir=dist
 OutputBaseFilename={#MyAppName}_Setup_v{#MyAppVersion}
 SetupIconFile=assets\app.ico
@@ -50,7 +51,7 @@ Name: "korean"; MessagesFile: "compiler:Languages\Korean.isl"
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: checkedonce
 
 [Files]
 ; Unpacked multi-file installation (unified single index.html)
@@ -238,17 +239,26 @@ begin
   end;
 end;
 
+var
+  ShouldUninstallOld: Boolean;
+
 // Detect existing installation, verify DLL integrity and terminate running app
 function InitializeSetup(): Boolean;
 var
   InstalledVersion: String;
   PromptMsg: String;
+  Choice: Integer;
   DllVer: Integer;
   MonCount: Integer;
   FreeMB: Integer;
   DpiX, DpiY: Integer;
+  HasPrev: Boolean;
 begin
   Result := True;
+  ShouldUninstallOld := False;
+
+  // 1. [기존 앱 실행 시 강제 종료] 설치 시작 즉시 실행 중인 앱 프로세스 강제 종료
+  TerminateExistingApp();
 
   // Extract and verify native core DLL integrity before setup execution
   try
@@ -265,30 +275,49 @@ begin
     Log('Warning: Native Core DLL pre-check bypassed or runtime initialization skipped.');
   end;
 
-  // Terminate any running app instance immediately when installer starts
-  TerminateExistingApp();
-
-  // Check registry for previous installation
+  // 2. [기존 앱 인스톨 여부 확인 및 삭제/덮어쓰기 선택]
+  HasPrev := False;
   if RegQueryStringValue(HKEY_LOCAL_MACHINE, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#SetupSetting("AppId")}_is1', 'DisplayVersion', InstalledVersion) then
+    HasPrev := True
+  else if IsWin64 and RegQueryStringValue(HKLM64, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#SetupSetting("AppId")}_is1', 'DisplayVersion', InstalledVersion) then
+    HasPrev := True
+  else if RegQueryStringValue(HKLM32, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#SetupSetting("AppId")}_is1', 'DisplayVersion', InstalledVersion) then
+    HasPrev := True
+  else if RegQueryStringValue(HKEY_CURRENT_USER, 'Software\Microsoft\Windows\CurrentVersion\Uninstall\{#SetupSetting("AppId")}_is1', 'DisplayVersion', InstalledVersion) then
+    HasPrev := True;
+
+  if HasPrev then
   begin
-    // If running in unattended / silent mode, proceed automatically with upgrade
+    // 무인/자동 설치 모드인 경우 기본적으로 클린 삭제 후 설치 진행
     if WizardSilent then
     begin
+      ShouldUninstallOld := True;
       Result := True;
       Exit;
     end;
 
     PromptMsg := '컴퓨터에 이미 이전 버전의 [' + '{#MyAppName}' + ' (v' + InstalledVersion + ')]이(가) 설치되어 있습니다.' + #13#10#13#10 +
-                 '설치를 계속하면 실행 중인 기존 앱을 종료하고 이전 버전을 완전히 삭제한 후 최신 버전(v{#MyAppVersion})으로 새로 설치합니다.' + #13#10#13#10 +
-                 '계속 진행하시겠습니까?';
-                 
-    if MsgBox(PromptMsg, mbConfirmation, MB_YESNO or MB_DEFBUTTON1) = IDYES then
+                 '기존 버전을 어떻게 처리하고 설치를 진행하시겠습니까?' + #13#10#13#10 +
+                 '• [예 (Y)] : 기존 버전을 완전히 삭제(제거) 후 최신 버전으로 새로 설치 (권장)' + #13#10 +
+                 '• [아니오 (N)] : 기존 앱을 삭제하지 않고 현재 위치에 덮어쓰기(업그레이드) 설치' + #13#10 +
+                 '• [취소] : 설치를 취소하고 설치 프로그램을 종료합니다.';
+
+    Choice := MsgBox(PromptMsg, mbConfirmation, MB_YESNOCANCEL or MB_DEFBUTTON1);
+    if Choice = IDYES then
     begin
+      ShouldUninstallOld := True;
+      Result := True;
+    end
+    else if Choice = IDNO then
+    begin
+      ShouldUninstallOld := False;
       Result := True;
     end
     else
     begin
+      // 취소 클릭 시 설치 종료
       Result := False;
+      Exit;
     end;
   end;
 end;
@@ -298,12 +327,20 @@ function PrepareToInstall(var NeedsRestart: Boolean): String;
 begin
   Result := '';
 
-  // 1. Ensure any running application instance is terminated
+  // 1. Ensure any running application instance is terminated once more before copying files
   TerminateExistingApp();
 
-  // 2. Silently uninstall previous version and remove obsolete files
-  if not UninstallPreviousVersion() then
+  // 2. 사용자가 기존 버전 삭제를 선택한 경우에만 이전 버전 자동 언인스톨 수행
+  if ShouldUninstallOld then
   begin
-    Log('Notice: Silent uninstallation of previous version reported non-zero or was skipped.');
+    Log('User chose to uninstall previous version first.');
+    if not UninstallPreviousVersion() then
+    begin
+      Log('Notice: Silent uninstallation of previous version reported non-zero or was skipped.');
+    end;
+  end
+  else
+  begin
+    Log('User chose to overwrite/upgrade without full previous uninstallation.');
   end;
 end;

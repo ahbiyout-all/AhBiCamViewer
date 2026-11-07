@@ -15,12 +15,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed 3 redundant legacy HTML files (`아비캠뷰어_(AhBiCamViewer).html`, `교실용_실물화상기.html`, `(AhBiYout)_공용_실물화상기_보기.html`) and retired `tools/sync_html.cjs`.
   - Streamlined `launcher.vbs`, `tools/AhBiCamViewer.bat`, and Inno Setup `installer.iss` to package and launch directly from standard `index.html`.
   - Reduced repository and installer footprint while eliminating multi-file synchronization overhead.
-- **Installer Clean Upgrade Pipeline**:
-  - Automatically detect and terminate running app processes (`msedge.exe`, `chrome.exe`, batch, and launcher processes) before installation to prevent file locking.
-  - Query registry for previous version uninstaller (`unins000.exe`) and execute silent uninstallation (`/VERYSILENT /NORESTART /SUPPRESSMSGBOXES`) in `PrepareToInstall`.
-  - Automatically remove lingering legacy installation folders (e.g. `C:\Program Files\ClassroomVisualizer\`) to ensure a completely clean directory structure.
-  - Set `UsePreviousAppDir=no` so new installations standardize on `{autopf}\AhBiCamViewer`.
-  - Added `CloseApplications=yes` and `RestartApplications=no` for Windows Restart Manager integration.
+- **Installer Guided Setup Workflow**:
+  - Immediately detect and terminate running app processes (`msedge.exe`, `chrome.exe`, batch, and launcher processes) on installer launch to eliminate file locks.
+  - Detect existing installations across HKLM/HKCU registry keys and display an interactive 3-way dialog:
+    - `[예 (Y)]`: Clean uninstall of previous version before new install (recommended).
+    - `[아니오 (N)]`: Overwrite and upgrade in-place without removing existing data.
+    - `[취소 (Cancel)]`: Safely abort and exit the setup program.
+  - Added official Korean MIT License declaration screen (`LicenseFile=docs\LICENSE.ko.md`).
+  - Desktop shortcut task checkbox enabled and checked by default (`Flags: checkedonce`).
+  - Post-installation execution option configured via `{app}\launcher.vbs`.
 - **Pure Native & Managed DLL Rename**:
   - Renamed `ClassroomVisualizerCore.dll` → `AhBiCamViewerCore.dll` and `ClassroomVisualizerManaged.dll` → `AhBiCamViewerManaged.dll` to prevent naming collision with existing external web applications.
   - Renamed IL source `src/dll/ClassroomVisualizerCore.il` → `src/dll/AhBiCamViewerCore.il`.
