@@ -182,7 +182,12 @@ namespace AhBiYout.AhBiCamViewer.Core
                 if (frequency > 32767) frequency = 32767;
                 if (durationMs <= 0) durationMs = 100;
                 if (durationMs > 10000) durationMs = 10000;
-                return Beep((uint)frequency, (uint)durationMs) ? 1 : 0;
+                if (Beep((uint)frequency, (uint)durationMs))
+                {
+                    return 1;
+                }
+                // Fallback for headless environments, cloud CI runners (GitHub Actions/Azure), or systems without physical PC speakers
+                return MessageBeep(0xFFFFFFFF) ? 1 : 0;
             }
             catch
             {
