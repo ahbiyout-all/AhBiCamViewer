@@ -166,20 +166,24 @@ select option.pro-option{color:inherit}
 .b-divider{width:1px;height:20px;background:#31343d;margin:0 2px;flex-shrink:0}
 
 /* Horizontal Collapsible Accordion Sections in Bottom Toolbar */
-.b-acc-section{display:inline-flex;align-items:center;gap:3px;flex-shrink:0;transition:all .25s ease}
-.b-acc-toggle{display:inline-flex;align-items:center;gap:4px;background:#202228;color:#94a3b8;border:1px solid #383c46;border-radius:7px;padding:3px 7px;font-size:11px;font-weight:600;cursor:pointer;user-select:none;transition:all .15s ease;white-space:nowrap;flex-shrink:0;height:26px}
-.b-acc-toggle:hover{background:#2b2e37;color:#f1f5f9;border-color:#4f5666}
-.b-acc-toggle.collapsed{background:#1a1c22;color:#64748b;border-color:#2e323b}
-.b-acc-toggle.collapsed:hover{background:#262933;color:#cbd5e1;border-color:#475569}
+.b-acc-section{display:inline-flex;align-items:center;gap:3px;flex-shrink:0;transition:all .25s ease;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:2px 4px}
+.b-acc-section.collapsed{background:transparent;border-color:transparent;padding:0}
+.b-acc-toggle{display:inline-flex;align-items:center;gap:4px;background:#202228;color:#94a3b8;border:1px solid #383c46;border-radius:7px;padding:2px 7px;font-size:11px;font-weight:600;cursor:pointer;user-select:none;transition:all .18s ease;white-space:nowrap;flex-shrink:0;height:26px}
+.b-acc-toggle:hover{background:#2b2e37;color:#f1f5f9;border-color:#60a5fa;box-shadow:0 0 8px rgba(96,165,250,0.2)}
+.b-acc-toggle.collapsed{background:#181a20;color:#64748b;border-color:#2e323b}
+.b-acc-toggle.collapsed:hover{background:#242832;color:#cbd5e1;border-color:#475569}
 .b-acc-toggle .acc-icon{font-size:12px;line-height:1}
 .b-acc-toggle .acc-label{font-size:10.5px;letter-spacing:-0.2px}
-.b-acc-toggle .acc-chevron{font-size:9px;color:#64748b;transition:transform .2s ease;display:inline-block;line-height:1}
-.b-acc-section.collapsed .b-acc-toggle .acc-chevron{transform:rotate(180deg);color:#94a3b8}
+.b-acc-toggle .acc-badge{font-size:9.5px;line-height:1;padding:1px 5px;border-radius:9px;background:rgba(255,255,255,0.08);color:#94a3b8;font-weight:600;letter-spacing:-0.2px;transition:all .2s ease}
+.b-acc-toggle.collapsed .acc-badge{background:rgba(59,130,246,0.18);color:#60a5fa;border:1px solid rgba(59,130,246,0.3)}
+.b-acc-toggle .acc-chevron{font-size:8px;color:#64748b;transition:transform .24s cubic-bezier(0.4, 0, 0.2, 1);display:inline-block;line-height:1}
+.b-acc-section.collapsed .b-acc-toggle .acc-chevron{transform:rotate(180deg);color:#60a5fa}
 .b-acc-toggle .acc-active-dot{display:none;width:6px;height:6px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e;margin-left:1px}
 .b-acc-toggle.has-active .acc-active-dot{display:inline-block}
 .b-acc-toggle.has-recording .acc-active-dot{display:inline-block;background:#ef4444;box-shadow:0 0 6px #ef4444;animation:recPulse 1.2s infinite ease-in-out}
-.b-acc-content{display:inline-flex;align-items:center;gap:3px;flex-shrink:0;max-width:900px;opacity:1;overflow:hidden;transition:max-width .28s cubic-bezier(0.4, 0, 0.2, 1), opacity .2s ease}
+.b-acc-content{display:inline-flex;align-items:center;gap:3px;flex-shrink:0;max-width:950px;opacity:1;overflow:hidden;transition:max-width .28s cubic-bezier(0.4, 0, 0.2, 1), opacity .2s ease}
 .b-acc-section.collapsed .b-acc-content{max-width:0 !important;opacity:0 !important;padding:0 !important;margin:0 !important;pointer-events:none !important;gap:0 !important}
+.b-acc-section.collapsed + .b-divider{opacity:.35}
 .b-fixed-controls{margin-left:auto;display:inline-flex;align-items:center;gap:3px;flex-shrink:0}
 .action-chip{font:inherit;background:#262830;color:#eee;border:1px solid #444852;border-radius:7px;padding:4px 7px;font-size:11px;cursor:pointer;display:inline-flex;align-items:center;gap:3px;transition:all .12s ease;white-space:nowrap;flex-shrink:0}
 .action-chip:hover{background:#32353e;border-color:#666}
@@ -235,6 +239,7 @@ select option.pro-option{color:inherit}
 }
 @media(max-width:960px){
   .b-acc-toggle .acc-label{display:none}
+  .b-acc-toggle .acc-badge{display:none}
   .b-acc-toggle{padding:3px 5px}
 }
 
@@ -866,10 +871,11 @@ body.recording-clean .shape-annotation-wrap{
 <div class="bottom-toolbar" id="bottomToolbar">
   <!-- [구역 1] 촬영 & 화면 제어 아코디언 -->
   <div class="b-acc-section" id="bAccSectionCapture" data-zone="capture">
-    <button class="b-acc-toggle" id="bAccToggleCapture" title="촬영·제어 구역 접기/펼치기 (Alt+클릭 시 전체 접기/펼치기)" aria-expanded="true">
+    <button class="b-acc-toggle" id="bAccToggleCapture" title="촬영·제어 구역 접기/펼치기 (Alt+1, Alt+클릭 시 전체)" aria-expanded="true">
       <span class="acc-icon">🎬</span>
       <span class="acc-label">촬영·제어</span>
-      <span class="acc-chevron">◂</span>
+      <span class="acc-badge">11</span>
+      <span class="acc-chevron">◀</span>
       <span class="acc-active-dot" id="accDotCapture"></span>
     </button>
     <div class="b-acc-content" id="bAccContentCapture">
@@ -891,10 +897,11 @@ body.recording-clean .shape-annotation-wrap{
 
   <!-- [구역 2] 카메라 & 화질 아코디언 -->
   <div class="b-acc-section" id="bAccSectionDevice" data-zone="device">
-    <button class="b-acc-toggle" id="bAccToggleDevice" title="카메라·화질 구역 접기/펼치기 (Alt+클릭 시 전체 접기/펼치기)" aria-expanded="true">
+    <button class="b-acc-toggle" id="bAccToggleDevice" title="카메라·화질 구역 접기/펼치기 (Alt+2, Alt+클릭 시 전체)" aria-expanded="true">
       <span class="acc-icon">🎥</span>
       <span class="acc-label">카메라·화질</span>
-      <span class="acc-chevron">◂</span>
+      <span class="acc-badge">6</span>
+      <span class="acc-chevron">◀</span>
       <span class="acc-active-dot" id="accDotDevice"></span>
     </button>
     <div class="b-acc-content" id="bAccContentDevice">
@@ -922,10 +929,11 @@ body.recording-clean .shape-annotation-wrap{
 
   <!-- [구역 3] 영상 조절 & 수업 도구 아코디언 -->
   <div class="b-acc-section" id="bAccSectionTools" data-zone="tools">
-    <button class="b-acc-toggle" id="bAccToggleTools" title="영상조절·수업도구 구역 접기/펼치기 (Alt+클릭 시 전체 접기/펼치기)" aria-expanded="true">
+    <button class="b-acc-toggle" id="bAccToggleTools" title="영상조절·수업도구 구역 접기/펼치기 (Alt+3, Alt+클릭 시 전체)" aria-expanded="true">
       <span class="acc-icon">🧰</span>
       <span class="acc-label">조절·도구</span>
-      <span class="acc-chevron">◂</span>
+      <span class="acc-badge">2</span>
+      <span class="acc-chevron">◀</span>
       <span class="acc-active-dot" id="accDotTools"></span>
     </button>
     <div class="b-acc-content" id="bAccContentTools">
@@ -1007,8 +1015,9 @@ body.recording-clean .shape-annotation-wrap{
 
   <div class="b-divider"></div>
 
-  <!-- [고정 컨트롤] 캡처 갤러리 토글 & 하단 메뉴 고정 핀 -->
+  <!-- [고정 컨트롤] 마스터 아코디언 토글 & 캡처 갤러리 토글 & 하단 메뉴 고정 핀 -->
   <div class="b-group b-fixed-controls">
+    <button class="action-chip" id="bAccToggleMaster" title="하단 메뉴 전체 접기/펼치기 (Alt+0)"><span id="bAccMasterIcon">🗂️</span> <span id="bAccMasterLabel" class="lbl-extra">전체 접기</span></button>
     <button class="action-chip" id="toggleThumbsBtn" title="하단 캡처 갤러리 접기/펼치기">🖼 캡처<span class="lbl-extra"> 목록</span> ▾</button>
     <button class="pin-btn" id="pinBottomBtn" title="하단 메뉴 고정/해제 (고정 해제 시 아코디언식 자동 수축)" style="margin-left:4px">📌</button>
   </div>
@@ -3941,23 +3950,52 @@ function toggleBottomAccordion(zoneKey, forceExpanded = null){
     if(toggle){
       toggle.classList.remove('collapsed');
       toggle.setAttribute('aria-expanded', 'true');
-      const chev = toggle.querySelector('.acc-chevron');
-      if(chev) chev.textContent = '◂';
     }
   } else {
     section.classList.add('collapsed');
     if(toggle){
       toggle.classList.add('collapsed');
       toggle.setAttribute('aria-expanded', 'false');
-      const chev = toggle.querySelector('.acc-chevron');
-      if(chev) chev.textContent = '▸';
     }
     // Close any open dropdown inside this section
     section.querySelectorAll('.b-dropdown-wrap.open').forEach(el => el.classList.remove('open'));
   }
 
+  updateMasterAccordionButton();
   saveBottomAccordionState();
   setTimeout(updateOpenDropdownPositions, 300);
+}
+
+function toggleAllBottomAccordions(forceExpanded = null){
+  const sections = Array.from(document.querySelectorAll('.b-acc-section'));
+  const anyExpanded = sections.some(s => !s.classList.contains('collapsed'));
+  const shouldExpand = forceExpanded !== null ? !!forceExpanded : !anyExpanded;
+
+  sections.forEach(s => {
+    const zone = s.getAttribute('data-zone');
+    if(zone) toggleBottomAccordion(zone, shouldExpand);
+  });
+}
+
+function updateMasterAccordionButton(){
+  const masterBtn = document.getElementById('bAccToggleMaster');
+  if(!masterBtn) return;
+  const sections = Array.from(document.querySelectorAll('.b-acc-section'));
+  const allCollapsed = sections.length > 0 && sections.every(s => s.classList.contains('collapsed'));
+  const iconSpan = document.getElementById('bAccMasterIcon');
+  const labelSpan = document.getElementById('bAccMasterLabel');
+
+  if(allCollapsed){
+    if(iconSpan) iconSpan.textContent = '📂';
+    if(labelSpan) labelSpan.textContent = '전체 펼치기';
+    masterBtn.title = '하단 메뉴 전체 펼치기 (Alt+0)';
+    masterBtn.classList.remove('active');
+  } else {
+    if(iconSpan) iconSpan.textContent = '🗂️';
+    if(labelSpan) labelSpan.textContent = '전체 접기';
+    masterBtn.title = '하단 메뉴 전체 접기 (Alt+0)';
+    masterBtn.classList.add('active');
+  }
 }
 
 function saveBottomAccordionState(){
@@ -3974,14 +4012,16 @@ function saveBottomAccordionState(){
 function loadBottomAccordionState(){
   try {
     const raw = localStorage.getItem(LS_KEY_BOTTOM_ACCORDION);
-    if(!raw) return;
-    const state = JSON.parse(raw);
-    Object.keys(state).forEach(zone => {
-      if(state[zone]){
-        toggleBottomAccordion(zone, false); // collapse
-      }
-    });
+    if(raw){
+      const state = JSON.parse(raw);
+      Object.keys(state).forEach(zone => {
+        if(state[zone]){
+          toggleBottomAccordion(zone, false); // collapse
+        }
+      });
+    }
   } catch(e){}
+  updateMasterAccordionButton();
 }
 
 function updateBottomAccordionIndicators(){
@@ -4013,6 +4053,15 @@ function updateBottomAccordionIndicators(){
   }
 }
 
+// Master accordion button click event
+const masterAccBtn = document.getElementById('bAccToggleMaster');
+if(masterAccBtn){
+  masterAccBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    toggleAllBottomAccordions();
+  });
+}
+
 // Bind click events on all accordion toggles
 document.querySelectorAll('.b-acc-section').forEach(sec => {
   const toggle = sec.querySelector('.b-acc-toggle');
@@ -4023,14 +4072,32 @@ document.querySelectorAll('.b-acc-section').forEach(sec => {
     e.stopPropagation();
     if(e.altKey){
       // Alt+Click: Toggle all sections together
-      const anyExpanded = Array.from(document.querySelectorAll('.b-acc-section')).some(s => !s.classList.contains('collapsed'));
-      document.querySelectorAll('.b-acc-section').forEach(s => {
-        toggleBottomAccordion(s.getAttribute('data-zone'), !anyExpanded);
-      });
+      toggleAllBottomAccordions();
     } else {
       toggleBottomAccordion(zone);
     }
   });
+});
+
+// Dedicated Keyboard Shortcuts for Accordion: Alt+1, Alt+2, Alt+3, Alt+0
+window.addEventListener('keydown', e => {
+  if(!e.altKey) return;
+  const tag = (e.target.tagName || '').toLowerCase();
+  if(tag === 'input' || tag === 'textarea' || tag === 'select') return;
+
+  if(e.key === '1'){
+    e.preventDefault();
+    toggleBottomAccordion('capture');
+  } else if(e.key === '2'){
+    e.preventDefault();
+    toggleBottomAccordion('device');
+  } else if(e.key === '3'){
+    e.preventDefault();
+    toggleBottomAccordion('tools');
+  } else if(e.key === '0'){
+    e.preventDefault();
+    toggleAllBottomAccordions();
+  }
 });
 
 // Restore saved accordion state and start indicator loop

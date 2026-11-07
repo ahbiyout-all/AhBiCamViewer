@@ -31,12 +31,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Installer Update**: `installer.iss` now references `AhBiCamViewer.bat` as the app executable name.
 
 ### Added
-- **Horizontal Collapsible Accordion Sections in Bottom Toolbar**:
-  - Structured the bottom toolbar into 3 collapsible functional zones:
-    1. 🎬 **Capture & Screen Control** (`capture`): Camera start/stop, freeze, snap, format switch, record, effects, fullscreen, dual-monitor jump, mirror, rotate.
-    2. 🎥 **Camera Device & Quality** (`device`): Device picker, resolution picker with support indicator dot, facing switch, device rescan, and hardware spec modal.
-    3. 🧰 **Video Adjust & Teaching Tools** (`tools`): Zoom slider, presets, document contrast, AF, torch, brightness/contrast/exposure sliders, and classroom utility grid.
-  - Smooth horizontal collapse/expand animations (`max-width: 900px` ↔ `0px`) using CSS cubic-bezier transitions.
+- **High-Performance Horizontal Collapsible Accordion System in Bottom Toolbar**:
+  - Structured the bottom toolbar into 3 collapsible functional zones with individual toggle headers:
+    1. 🎬 **Capture & Screen Control** (`capture`): Camera start/stop, freeze, snap, format switch, record, effects, fullscreen, dual-monitor jump, mirror, rotate (11 tools).
+    2. 🎥 **Camera Device & Quality** (`device`): Device picker, resolution picker with support indicator dot, facing switch, device rescan, and hardware spec modal (6 tools).
+    3. 🧰 **Video Adjust & Teaching Tools** (`tools`): Zoom slider, presets, document contrast, AF, torch, brightness/contrast/exposure sliders, and classroom utility grid (2 tool dropdowns).
+  - **Tool Count Badges**: Added live item count indicators (`[11]`, `[6]`, `[2]`) to provide clear visual feedback on collapsed sections.
+  - **Master Accordion Toggle Button**: Added a dedicated master button (`#bAccToggleMaster`) in fixed controls displaying `[🗂️ 전체 접기]` / `[📂 전체 펼치기]` with live state reflection.
+  - **Classroom Presentation Hotkeys**: Added global keyboard shortcuts for fast, distraction-free projector operation:
+    - `Alt+1`: Toggle Zone 1 (Capture & Screen Control)
+    - `Alt+2`: Toggle Zone 2 (Camera Device & Quality)
+    - `Alt+3`: Toggle Zone 3 (Video Adjust & Tools)
+    - `Alt+0`: Master toggle all zones simultaneously
+  - **Smooth CSS Chevron Rotation**: Eliminated double-inversion bug by retaining constant `◀` glyph and letting CSS rotate `0deg` (expanded) ↔ `180deg` (collapsed `▶`).
+  - **Aesthetic Zone Boundary Styling**: Grouped each section in subtle semi-transparent pill container (`rgba(255,255,255,0.02)`) with border highlight on hover and dimmed dividers on collapse.
   - State persistence in `localStorage` (`cv_bottom_accordion_zones`) across reloads.
   - Active feature indicator dots on collapsed toggle pills (recording pulse red dot, active green dot, tool blue dot).
   - Alt+Click shortcut to toggle all accordion sections at once.
