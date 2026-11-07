@@ -6,6 +6,19 @@
 
 ## 2026-11-07 (v1.4.7)
 
+### 작업 44: 배포 파일 구조 최적화 및 단일 index.html 완전 일원화 (방안 1 적용)
+- **요청 사항**: "방안 1 (가장 추천 - index.html 1개로 완전 단일화)"
+- **수행 내역**:
+  1. 과거 하위 호환용 중복 HTML 3종(`아비캠뷰어_(AhBiCamViewer).html`, `교실용_실물화상기.html`, `(AhBiYout)_공용_실물화상기_보기.html`) 및 동기화 도구(`tools/sync_html.cjs`) 영구 삭제.
+  2. `launcher.vbs`, `tools/AhBiCamViewer.bat`, `installer.iss`, `build.bat` 내 경로를 `index.html` 단일 진입점으로 정규화.
+  3. GitHub Actions 워크플로 및 `tools/push_to_github.cjs`에서 `sync_html.cjs` 단계를 제거하고 `tools/check_syntax.cjs` 검증으로 단순화.
+  4. `docs/BUILD.md`, `docs/INSTALL.md`, `docs/GITHUB.md`, `docs/ROADMAP.md`, `README.md` 등 관련 문서 동기화 완료.
+- **검증**: `build.bat` 컴파일 성공 (Inno Setup 인스톨러 & 경량 포터블 ZIP 생성), 15/15 네이티브 API 테스트 전원 통과.
+
+---
+
+## 2026-11-07 (v1.4.7)
+
 ### 작업 43: 구글 블로그 및 깃허브 공식 문서 체계화
 - **요청 사항**: 구글 블로거용 문서(docs/BLOG_POST.md) 및 깃허브용 문서(docs/GITHUB.md) 생성 ([작성 모드] 및 [HTML 편집 모드] 동시 지원, 10대 지정 섹션 순서 준수, 추천 태그 한/영 20개 이하 200자 이내).
 - **수행 내역**:

@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Presentation Flyout Menu Occlusion**: Fixed the left toolbar's presentation tools flyout menu (`#presentFlyoutPanel`) being hidden/cut off behind the bottom toolbar by anchoring it upwards (`bottom: 0`), implementing real-time boundary collision guard (`adjustFlyoutPanelPosition`), and elevating `.left-toolbar` z-index to 60/65.
 
 ### Changed
+- **Unified Distribution to Single index.html**:
+  - Removed 3 redundant legacy HTML files (`아비캠뷰어_(AhBiCamViewer).html`, `교실용_실물화상기.html`, `(AhBiYout)_공용_실물화상기_보기.html`) and retired `tools/sync_html.cjs`.
+  - Streamlined `launcher.vbs`, `tools/AhBiCamViewer.bat`, and Inno Setup `installer.iss` to package and launch directly from standard `index.html`.
+  - Reduced repository and installer footprint while eliminating multi-file synchronization overhead.
 - **Installer Clean Upgrade Pipeline**:
   - Automatically detect and terminate running app processes (`msedge.exe`, `chrome.exe`, batch, and launcher processes) before installation to prevent file locking.
   - Query registry for previous version uninstaller (`unins000.exe`) and execute silent uninstallation (`/VERYSILENT /NORESTART /SUPPRESSMSGBOXES`) in `PrepareToInstall`.

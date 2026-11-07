@@ -78,7 +78,7 @@ REM Step 4: Create Cross-Platform Portable ZIP Package
 REM ------------------------------------------------------------
 echo [*] Building Portable ZIP Package...
 set "PORTABLE_ZIP=dist\AhBiCamViewer_Portable_v%APP_VERSION%.zip"
-powershell -NoProfile -ExecutionPolicy Bypass -Command "Compress-Archive -Path 'index.html', '아비캠뷰어_(AhBiCamViewer).html', '(AhBiYout)_공용_실물화상기_보기.html', '교실용_실물화상기.html', 'launcher.vbs', 'version.json', 'assets', 'docs', 'tools', 'bin' -DestinationPath '%PORTABLE_ZIP%' -Force"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "Compress-Archive -Path 'index.html', 'launcher.vbs', 'version.json', 'assets', 'docs', 'tools', 'bin' -DestinationPath '%PORTABLE_ZIP%' -Force"
 
 if exist "%PORTABLE_ZIP%" (
     echo [*] Verified portable package: %PORTABLE_ZIP%

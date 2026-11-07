@@ -3,11 +3,6 @@ setlocal
 cd /d "%~dp0\.."
 
 set "HTML_FILE=%~dp0..\index.html"
-if exist "%~dp0..\아비캠뷰어_(AhBiCamViewer).html" (
-    set "HTML_FILE=%~dp0..\아비캠뷰어_(AhBiCamViewer).html"
-) else if exist "%~dp0..\(AhBiYout)_공용_실물화상기_보기.html" (
-    set "HTML_FILE=%~dp0..\(AhBiYout)_공용_실물화상기_보기.html"
-)
 
 rem Normalize to forward slashes for file URI
 set "FILE_URI=file:///%HTML_FILE:\=/%"

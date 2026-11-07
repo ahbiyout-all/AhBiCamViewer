@@ -112,7 +112,7 @@ GitHub Actions 워크플로는 최신 규격을 엄격히 준수하여 자동화
 ### 4.2 CI/CD 단계별 파이프라인
 1. **Source Checkout**: Git 저장소 소스코드 체크아웃 (`actions/checkout@v4`).
 2. **Setup Node.js 22 LTS**: 최신 LTS Node.js 22 런타임 환경 준비 (`actions/setup-node@v4`).
-3. **코드 구문 및 HTML 동기화 검증**: `check_syntax.cjs` 및 `sync_html.cjs`를 통해 4대 배포 파일 무결성 사전 검증.
+3. **코드 구문 및 단일 index.html 무결성 검증**: `check_syntax.cjs`를 통해 소스코드 구문 및 웹 앱 진입점 무결성 사전 검증.
 4. **버전 파싱**: `version.json`에서 현재 타겟 시맨틱 버전(`v1.4.7`) 동적 추출.
 5. **순수 창작 Win32 Native DLL 빌드**:
    - .NET C# 컴파일러(`csc.exe`)로 `src/dll/LicenseCore.cs` 및 `NativeSystemCore.cs` 컴파일 (`AhBiCamViewerManaged.dll`).
@@ -151,7 +151,7 @@ GitHub Actions 워크플로는 최신 규격을 엄격히 준수하여 자동화
   1. `version.json`의 시맨틱 버전 갱신.
   2. `docs/PATCHNOTES.md` 및 `docs/CHANGELOG.md`에 변경 내역 기록.
   3. `docs/WORK_LOG.md`에 기술 검증 로그 추가.
-  4. `tools/sync_html.cjs`를 통해 4대 배포용 HTML 파일 100% 바이너리 동기화.
+  4. `tools/check_syntax.cjs`를 통해 소스코드 구문 및 웹 앱 무결성 검증.
 
 ### 6.2 GitHub 푸시 및 릴리즈 배포 실행
 로컬 전용 푸시 스크립트를 통해 안전하게 원격 저장소로 배포합니다:
@@ -161,4 +161,4 @@ GitHub Actions 워크플로는 최신 규격을 엄격히 준수하여 자동화
 push_to_github.bat
 ```
 
-스크립트 실행 시 자동으로 코드 구문 검사, HTML 배포 동기화 확인, 이메일 노출 방지 처리 후 커밋 및 태그 푸시를 진행하며, **GitHub Actions가 자동으로 실행되어 DLL 빌드, 15대 테스트, 인스톨러 생성 및 GitHub Releases 등록을 100% 전자동으로 완료**합니다.
+스크립트 실행 시 자동으로 코드 구문 검사, 이메일 노출 방지 처리 후 커밋 및 태그 푸시를 진행하며, **GitHub Actions가 자동으로 실행되어 DLL 빌드, 15대 테스트, 인스톨러 생성 및 GitHub Releases 등록을 100% 전자동으로 완료**합니다.

@@ -53,11 +53,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-; Unpacked multi-file installation (individual files only, no portable zip)
-Source: "(AhBiYout)_공용_실물화상기_보기.html"; DestDir: "{app}"; Flags: ignoreversion
-Source: "아비캠뷰어_(AhBiCamViewer).html"; DestDir: "{app}"; Flags: ignoreversion
+; Unpacked multi-file installation (unified single index.html)
 Source: "index.html"; DestDir: "{app}"; Flags: ignoreversion
-Source: "교실용_실물화상기.html"; DestDir: "{app}"; Flags: ignoreversion
 Source: "version.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "assets\*"; DestDir: "{app}\assets"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "docs\*"; DestDir: "{app}\docs"; Excludes: "*SYSTEM.txt"; Flags: ignoreversion recursesubdirs createallsubdirs

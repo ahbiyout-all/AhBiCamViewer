@@ -8,7 +8,24 @@
 > 1. **신규 핵심 기능 추가 및 API 증설**: 순수 창작 DLL 신규 Win32 API 증설, 맞춤 펜 촉 디자인, 신규 수업 지원 도구 탑재 등.
 > 2. **치명적 결함 및 버그 해결**: 동영상 0KB 비정상 저장 결함, 가상 카메라 무한 복제(Droste Effect) 루프 방어 등.
 > 3. **아키텍처 및 보안/배포 정책 변경**: Inno Setup 멀티파일 인스톨러 방화벽 사전 등록, GitHub Actions Node.js 22 LTS 전환, 권한 팝업 차단 격리 프로필 적용 등.
-> 4. **버전 동기화 (Single Source of Truth)**: `version.json`을 기준으로 4대 HTML 배포 파일, `installer.iss`, 네이티브 DLL, 전체 기술 문서를 즉시 100% 동기화합니다.
+> 4. **버전 동기화 (Single Source of Truth)**: `version.json`을 기준으로 단일 index.html 배포 파일, `installer.iss`, 네이티브 DLL, 전체 기술 문서를 즉시 100% 동기화합니다.
+
+---
+
+### 📦 배포 파일 구조 최적화: 중복 HTML 3종 정리 및 단일 index.html 완전 일원화 (2026-11-07)
+- **도입 배경 및 사용자 니즈 (Background & User Need)**:
+  - 과거 버전에서 하위 호환성 유지를 위해 중복 유지하던 3종의 HTML 파일(`아비캠뷰어_(AhBiCamViewer).html`, `교실용_실물화상기.html`, `(AhBiYout)_공용_실물화상기_보기.html`)의 필요성 검토.
+  - 정식 런처(`launcher.vbs`) 및 인스톨러(`Setup.exe`)가 표준화된 현시점에서 중복 파일 유지에 따른 저장 공간 낭비(~1MB)와 동기화 복잡도를 해소하기 위해 사용자 승인에 따라 **[방안 1: index.html 1개로 완전 단일화]**를 전격 적용.
+- **아키텍처 및 구현 내역**:
+  1. **중복 배포 HTML 파일 3종 및 동기화 스크립트 제거**:
+     - `아비캠뷰어_(AhBiCamViewer).html`, `교실용_실물화상기.html`, `(AhBiYout)_공용_실물화상기_보기.html` 삭제.
+     - 4대 파일 복제 도구였던 `tools/sync_html.cjs`를 완전 제거하고 단일 `index.html` 체계로 전환.
+  2. **런처 및 빌드 파이프라인 단일화**:
+     - `launcher.vbs`, `tools/launcher.vbs`, `tools/AhBiCamViewer.bat`: 경로 탐색 루프를 단일화하여 `index.html`을 직접 고속 로드하도록 간소화.
+     - `installer.iss`: [Files] 섹션에서 중복 3종 소스 선언을 제거하고 오직 `index.html`만 패키징하도록 정비.
+     - `build.bat`: 포터블 ZIP 압축 대상에서 삭제된 3종 파일을 제거하여 아카이브 경량화 달성.
+     - `.github/workflows/build-and-release.yml` & `tools/push_to_github.cjs`: `sync_html.cjs` 스텝을 제거하고 `tools/check_syntax.cjs` 단일 검증으로 빌드 속도 향상.
+- **영향 파일**: `index.html`, `installer.iss`, `build.bat`, `launcher.vbs`, `tools/launcher.vbs`, `tools/AhBiCamViewer.bat`, `tools/push_to_github.cjs`, `.github/workflows/build-and-release.yml`
 
 ---
 

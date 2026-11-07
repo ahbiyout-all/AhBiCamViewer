@@ -9,21 +9,14 @@ Set objFSO = CreateObject("Scripting.FileSystemObject")
 
 strScriptPath = objFSO.GetParentFolderName(WScript.ScriptFullName)
 
-' Check if HTML files exist in same folder as script or in parent folder
-If objFSO.FileExists(strScriptPath & "\아비캠뷰어_(AhBiCamViewer).html") Or objFSO.FileExists(strScriptPath & "\index.html") Then
+' Check if index.html exists in same folder as script or in parent folder
+If objFSO.FileExists(strScriptPath & "\index.html") Then
     strAppRoot = strScriptPath
 Else
     strAppRoot = objFSO.GetParentFolderName(strScriptPath)
 End If
 
 strHtmlPath = strAppRoot & "\index.html"
-If objFSO.FileExists(strAppRoot & "\아비캠뷰어_(AhBiCamViewer).html") Then
-    strHtmlPath = strAppRoot & "\아비캠뷰어_(AhBiCamViewer).html"
-ElseIf objFSO.FileExists(strAppRoot & "\(AhBiYout)_공용_실물화상기_보기.html") Then
-    strHtmlPath = strAppRoot & "\(AhBiYout)_공용_실물화상기_보기.html"
-ElseIf objFSO.FileExists(strAppRoot & "\교실용_실물화상기.html") Then
-    strHtmlPath = strAppRoot & "\교실용_실물화상기.html"
-End If
 
 ' Convert Windows file path to file:/// URL format
 strAppUrl = "file:///" & Replace(strHtmlPath, "\", "/")

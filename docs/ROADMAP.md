@@ -34,7 +34,7 @@
 - **Priority**: `P1`
 - **Dependencies**: 없음
 - **Target Files**:
-  - `교실용_실물화상기.html`
+  - `index.html`
   - `index.html`
 - **Implementation Plan**:
   1. `navigator.mediaDevices.enumerateDevices()`를 통해 사용 가능한 영상 입력 장치(`videoinput`) 목록 파싱.
@@ -55,7 +55,7 @@
 - **Priority**: `P1`
 - **Dependencies**: `TASK-001`
 - **Target Files**:
-  - `교실용_실물화상기.html`
+  - `index.html`
   - `index.html`
 - **Implementation Plan**:
   1. 2D Canvas 컨텍스트를 활용한 펜, 형광펜, 지우개, 기하 도형(직선, 사각형, 원, 화살표) 렌더러 구현.
@@ -76,7 +76,7 @@
 - **Priority**: `P1`
 - **Dependencies**: `TASK-001`
 - **Target Files**:
-  - `교실용_실물화상기.html`
+  - `index.html`
   - `index.html`
 - **Implementation Plan**:
   1. `videoTrack.getCapabilities()`로 `torch`, `focusMode`, `exposureCompensation` 지원 여부 실시간 조회.
@@ -98,7 +98,7 @@
 - **Priority**: `P0`
 - **Dependencies**: 없음
 - **Target Files**:
-  - `교실용_실물화상기.html`
+  - `index.html`
   - `index.html`
   - `installer.iss`
 - **Implementation Plan**:

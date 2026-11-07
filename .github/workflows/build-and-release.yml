@@ -29,17 +29,13 @@ jobs:
           node-version: '22'
           check-latest: true
 
-      - name: Verify Code Syntax and HTML Distribution Sync
+      - name: Verify Code Syntax and index.html Integrity
         shell: pwsh
         run: |
-          Write-Host "[1/2] Verifying JavaScript and HTML syntax integrity..."
+          Write-Host "Verifying JavaScript and index.html syntax integrity..."
           node tools/check_syntax.cjs
           if ($LASTEXITCODE -ne 0) { throw "Syntax check failed" }
-          
-          Write-Host "[2/2] Verifying byte-identical 4 HTML distribution synchronization..."
-          node tools/sync_html.cjs
-          if ($LASTEXITCODE -ne 0) { throw "HTML distribution sync failed" }
-          Write-Host "[SUCCESS] All code syntax and HTML distribution verified!"
+          Write-Host "[SUCCESS] index.html syntax and structure verified!"
 
       - name: Extract Semantic Version from version.json
         id: get_version
