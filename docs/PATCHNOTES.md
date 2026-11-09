@@ -12,6 +12,29 @@
 
 ---
 
+### 📦 원본 소스코드 백업 보관 자동화 스크립트 (`소스압축.bat`) 구축 (2026-11-09)
+- **개발 배경 및 목표**:
+  - 개발자가 언제든 원본 소스코드만을 정갈하게 백업·보관할 수 있도록 원클릭 소스 압축 파이프라인 구축.
+  - 대용량 .git 디렉터리, 컴파일된 바이너리(.dll, .exe, TestRunner.exe), 빌드 산출물(dist/, bin/), 로컬 GitHub 푸시 스크립트, 임시/캐시 파일을 완벽 배제하고 순수 원본 소스와 공식 문서만 엄선 압축.
+- **주요 기능 및 아키텍처**:
+  1. **시맨틱 버전 및 고정밀 타임스탬프 기반 파일명 생성**:
+     - `version.json` 파싱 및 `YYYYMMDD_HHMMSS` 타임스탬프를 조합하여 고유한 백업 파일명(`backup/AhBiCamViewer_Source_v{VERSION}_{TIMESTAMP}.zip`) 생성.
+     - 배포 및 참조 편의를 위해 `dist/AhBiCamViewer_Source_v{VERSION}.zip` 최신 사본 동시 저장.
+  2. **순수 원본 소스 엄선 스테이징 (Clean Staging)**:
+     - 루트 핵심 소스: `index.html`, `version.json`, `launcher.vbs`, `installer.iss`, `build.bat`, `소스압축.bat`, `README.md`, `.gitignore`
+     - CI/CD 워크플로: `.github/workflows/build-and-release.yml`
+     - 공식 에셋: `assets/app.ico`, `icon.png`, `icon.svg`, `LICENSE.txt`
+     - 공식 기술 문서: `docs/` 하위 15개 전체 마크다운 문서
+     - 순수 네이티브 소스: `src/dll/` C#/IL 원본 소스 4종 (바이너리 제외)
+     - 유틸리티 도구: `tools/` 필수 런타임 및 빌드 도구 (로컬 푸시/임시 스크립트 제외)
+  3. **완벽한 불필요 파일 제외 (Zero Bloat)**:
+     - `.git/`, `dist/`, `bin/`, `backup/`, 모든 `*.dll`, `*.exe`, `*.pdb`, `*.zip`, `*push*`, `*release*`, `*.tmp`, `*.log` 완전 배제 (약 260KB 초경량 압축 달성).
+  4. **완료 후 탐색기 자동 선택**:
+     - 생성 완료 시 파일 크기/경로 요약 출력 및 Windows 탐색기 자동 호출(`explorer.exe /select`).
+- **영향 파일**: `소스압축.bat`, `.gitignore`, `docs/PATCHNOTES.md`, `docs/WORK_LOG.md`
+
+---
+
 ### 🛡️ GitHub 저장소 보안·경량화 및 .gitignore 필터 전면 개편 / 로컬 푸시 파이프라인 정비 (2026-11-09)
 - **점검 배경 및 개선 목표**:
   - GitHub 원격 저장소에 꼭 필요한 핵심 소스코드, 공식 문서, 설정 파일 및 CI 빌드 스크립트만 선별하여 푸시되도록 .gitignore 제외 규칙을 전면 개편.
