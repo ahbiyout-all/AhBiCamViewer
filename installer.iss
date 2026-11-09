@@ -56,15 +56,13 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: checkedonce
 
 [Files]
-; Unpacked multi-file installation (unified single index.html)
+; Unpacked multi-file installation (clean production files only)
 Source: "index.html"; DestDir: "{app}"; Flags: ignoreversion
 Source: "version.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "assets\*"; DestDir: "{app}\assets"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "docs\*"; DestDir: "{app}\docs"; Excludes: "*SYSTEM.txt"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "tools\launcher.vbs"; DestDir: "{app}"; Flags: ignoreversion
-Source: "tools\launcher.vbs"; DestDir: "{app}\tools"; Flags: ignoreversion
+Source: "docs\*"; DestDir: "{app}\docs"; Excludes: "*SYSTEM.txt,WORK_LOG.md,BLOG_POST.md,BUILD.md,GITHUB.md,ARCHITECTURE.md,NATIVE_DLL_ARCHITECTURE.md,MODULES.md,ROADMAP.md,SECURITY.md"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "launcher.vbs"; DestDir: "{app}"; Flags: ignoreversion
 Source: "tools\AhBiCamViewer.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "tools\AhBiCamViewer.bat"; DestDir: "{app}\tools"; Flags: ignoreversion
 Source: "bin\*.dll"; DestDir: "{app}\bin"; Flags: ignoreversion
 ; Files required during setup execution
 Source: "bin\AhBiCamViewerCore.dll"; Flags: dontcopy

@@ -74,11 +74,32 @@ echo [INFO] Skipping Inno Setup installer compilation.
 
 :CREATE_PORTABLE
 REM ------------------------------------------------------------
-REM Step 4: Create Cross-Platform Portable ZIP Package
+REM Step 4: Create Clean Production Portable ZIP Package
 REM ------------------------------------------------------------
-echo [*] Building Portable ZIP Package...
+echo [*] Building Clean Production Portable ZIP Package...
 set "PORTABLE_ZIP=dist\AhBiCamViewer_Portable_v%APP_VERSION%.zip"
-powershell -NoProfile -ExecutionPolicy Bypass -Command "Compress-Archive -Path 'index.html', 'launcher.vbs', 'version.json', 'assets', 'docs', 'tools', 'bin' -DestinationPath '%PORTABLE_ZIP%' -Force"
+set "STAGE_DIR=dist\_stage_portable"
+
+if exist "%STAGE_DIR%" rd /s /q "%STAGE_DIR%"
+mkdir "%STAGE_DIR%"
+mkdir "%STAGE_DIR%\assets"
+mkdir "%STAGE_DIR%\bin"
+mkdir "%STAGE_DIR%\docs"
+
+copy /y "index.html" "%STAGE_DIR%\" >nul
+copy /y "launcher.vbs" "%STAGE_DIR%\" >nul
+copy /y "tools\AhBiCamViewer.bat" "%STAGE_DIR%\" >nul
+copy /y "version.json" "%STAGE_DIR%\" >nul
+copy /y "assets\*.*" "%STAGE_DIR%\assets\" >nul
+copy /y "bin\*.dll" "%STAGE_DIR%\bin\" >nul
+
+REM Copy only user documentation (exclude internal development docs)
+for %%D in (README.md INSTALL.md LICENSE.ko.md LICENSE.en.md PATCHNOTES.md CHANGELOG.md) do (
+    if exist "docs\%%D" copy /y "docs\%%D" "%STAGE_DIR%\docs\" >nul
+)
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command "Compress-Archive -Path '%STAGE_DIR%\*' -DestinationPath '%PORTABLE_ZIP%' -Force"
+if exist "%STAGE_DIR%" rd /s /q "%STAGE_DIR%"
 
 if exist "%PORTABLE_ZIP%" (
     echo [*] Verified portable package: %PORTABLE_ZIP%

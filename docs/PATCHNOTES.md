@@ -12,6 +12,25 @@
 
 ---
 
+### 🧹 배포 산출물 및 인스톨러 불필요 파일/폴더 전면 정격화 (2026-11-09)
+- **점검 배경 및 최적화 목표**:
+  - 인스톨러 및 포터블 패키지에 포함된 파일 전수 점검 요구 반영.
+  - 교실 및 공용 PC 환경에서 사용자에게 불필요한 개발자 전용 문서/스크립트/중복 파일이 배포 패키지에 포함되는 것을 원천 차단하고 순수 런타임 파일만 정갈하게 제공.
+- **점검 결과 및 조치 내역**:
+  1. **인스톨러 중복 파일 제거 ({app}\tools)**:
+     - `tools\launcher.vbs` 및 `tools\AhBiCamViewer.bat`가 `{app}` 루트와 `{app}\tools`에 이중 복사되던 중복을 제거하여 `{app}` 단일 배치로 일원화.
+  2. **사용자 비필요 개발자 전용 문서 인스톨러 제외**:
+     - `{app}\docs`에 복사되던 개발 작업 일지(`WORK_LOG.md`, 1280줄), 블로그 원고(`BLOG_POST.md`), 소스 빌드 가이드(`BUILD.md`), CI/CD 명세(`GITHUB.md`), 내부 아키텍처/모듈 사양서(`ARCHITECTURE.md`, `NATIVE_DLL_ARCHITECTURE.md`, `MODULES.md`, `ROADMAP.md`, `SECURITY.md`)를 인스톨러 `Excludes`에 등록.
+     - 사용자에게 필요한 `README.md`(수업자료 매뉴얼), `INSTALL.md`(설치 가이드), `LICENSE.ko.md` / `LICENSE.en.md`(라이선스), `PATCHNOTES.md` / `CHANGELOG.md`만 정확히 배포.
+  3. **포터블 패키지 (Portable ZIP) 클린 스테이징 파이프라인 구축**:
+     - 기존 전체 폴더 일괄 압축 방식으로 인해 포함되던 단위 테스트 바이너리(`bin\TestRunner.exe`), 개발용 스크립트(`build_dll.bat`, `check_syntax.cjs`, `format_crlf.ps1`, `make_icon.ps1`, `push_to_github.cjs`)를 완전 배제.
+     - 임시 스테이징 디렉토리를 통해 순수 실행에 필요한 런타임 파일만 엄선 압축하도록 `build.bat` 자동화 파이프라인 고도화.
+  4. **루트 `launcher.vbs` 최신화 동기화**:
+     - 다중 모니터 권한 및 Chromium 플래그가 누락되어 있던 루트 `launcher.vbs`를 최신 `tools/launcher.vbs`와 100% 동기화.
+- **영향 파일**: `installer.iss`, `build.bat`, `launcher.vbs`, `README.md`, `docs/PATCHNOTES.md`, `docs/CHANGELOG.md`, `docs/WORK_LOG.md`
+
+---
+
 ### 🚀 v1.4.8 — 교실 수업 편의성 6대 핵심 기능 및 결함 개선 (2026-11-07)
 - **도입 배경 및 사용자 피드백 해결 (Background & User Feedback)**:
   1. `모니터 1,2 전환시에 허용창뜸`: 모니터 점프 버튼 클릭 시 크로미움 브라우저의 전체 화면 배치 권한 팝업이 노출되던 불편함 해소.

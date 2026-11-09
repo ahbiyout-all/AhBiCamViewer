@@ -1,17 +1,32 @@
 # 📷 아비캠뷰어 (AhBiCamViewer)
 
-[![Release](https://img.shields.io/badge/release-v1.4.7-blue.svg)](https://github.com/AhBiYout-all/AhBiCamViewer/releases)
+[![Release](https://img.shields.io/badge/release-v1.4.8-blue.svg)](https://github.com/AhBiYout-all/AhBiCamViewer/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](docs/LICENSE.en.md)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Web%20%7C%20Desktop-orange.svg)](docs/ARCHITECTURE.md)
 [![Build](https://img.shields.io/badge/build-Inno%20Setup%206%20%7C%20Node%2022%20LTS-brightgreen.svg)](docs/BUILD.md)
 [![Native Core](https://img.shields.io/badge/native%20APIs-15%20Exports%20(100%25%20Pass)-purple.svg)](docs/NATIVE_DLL_ARCHITECTURE.md)
 
 > **공용 및 교실 환경을 위한 강력한 무설치 웹 & 데스크톱 실물화상기 소프트웨어**  
-> 현재 버전: **v1.4.7** | 개발자: **AhBiYout** | 깃허브: **AhBiYout-all**
+> 현재 버전: **v1.4.8** | 개발자: **AhBiYout** | 깃허브: **AhBiYout-all**
 
 ---
 
-## 📌 핵심 기능 (Core Features)
+## 📌 핵심 기능 (v1.4.8)
+
+1. **🎙️ 수업 녹화 마이크 음성 실시간 합성 (New in v1.4.8)**
+   - 교실 수업 녹화 시 카메라 영상과 실시간 판서에 더해 **선생님의 설명 목소리(마이크 오디오 트랙)**를 자동 합성하여 MP4/WebM 고음질 강의 비디오로 저장.
+   - 마이크 미연결 시 영상 전용 녹화로 안전 자동 전환되며 녹화 종료 시 마이크 하드웨어 리소스 즉각 반환.
+2. **🎨 도형 내부 독립 채우기 색상(Fill Color) 엔진 (New in v1.4.8)**
+   - 테두리 선 색상과 완전히 분리된 도형 내부 전용 색상 팔레트(7색 + 커스텀 컬러 피커) 제공.
+   - 채우기 모드(OFF, 25%, 50%, 100%)와 결합하여 반투명 형광 채우기 및 완전 채우기를 자유롭게 지정.
+3. **🖥️ 듀얼 모니터 무팝업 점프 & 권한 허용창 원천 차단 (New in v1.4.8)**
+   - 모니터 1 ↔ 모니터 2 이동 시 브라우저 권한 허용 팝업을 사전 차단하고 윈도우 좌표 계산(`window.moveTo`)으로 부드럽게 점프.
+4. **👁️ 전체화면 카메라 정보 자동 숨김 및 ON/OFF 토글 (New in v1.4.8)**
+   - 전체화면 진입 시 좌측 상단 카메라 해상도 배지가 자동으로 은폐되어 시야 간섭 원천 배제.
+   - 하단 툴바 및 상단 헤더의 `ℹ️ 정보 ON/OFF` 토글 버튼을 통해 평상시에도 원클릭으로 켜고 끄기 지원 (`localStorage` 보존).
+5. **🔄 좌측 판서 도구 클릭 시 활성/비활성(일반 커서) 토글 (New in v1.4.8)**
+   - 이미 활성화된 판서 도구(펜, 마커, 지우개, 레이저, 도형, 텍스트)를 다시 클릭하면 즉시 비활성화되어 일반 마우스 커서 모드로 전환.
+   - 텍스트 주석과 도형 도구 간의 상호 배타적 선택을 보장하여 동시 선택 결함 완전 해결.
 
 1. **📐 7대 기하 도형 & 텍스트 주석 자유 이동 및 4중 무손실 벡터 합성 (New in v1.4.7)**
    - **자유 이동식 기하 도형 (Movable Shapes)**: 직선, 사각형, 원, 삼각형, 화살표, 양방향 화살표, 별표 등 7대 기하 도형을 그리기 완료 즉시 인터랙티브 카드로 생성하여 마우스/터치 드래그로 원하는 위치 어디든 자유롭게 이동 (Pointer Capture Drag Engine)

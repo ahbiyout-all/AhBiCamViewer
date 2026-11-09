@@ -8,6 +8,22 @@
 
 ## 2026-11-07 (v1.4.8)
 
+### 작업 51: 앱 인스톨러 및 배포 패키지 내 불필요 파일/폴더 전수 점검 및 최적화
+- **요청 사항**: "앱 인스톨 파일 중에 불필요한 폴더나 파일이 포함되어 있는지 점검."
+- **점검 내역 및 문제점 발견**:
+  1. `installer.iss`에서 `launcher.vbs`와 `AhBiCamViewer.bat`가 `{app}`과 `{app}\tools`에 중복 설치되던 문제 확인.
+  2. `{app}\docs`에 교사용 앱과 무관한 개발자 전용 파일(`WORK_LOG.md`, `BLOG_POST.md`, `BUILD.md`, `GITHUB.md` 등)이 통째로 포함되던 문제 확인.
+  3. `build.bat` 포터블 ZIP에 개발자 단위 테스트 실행 파일(`bin\TestRunner.exe`) 및 빌드/배포 스크립트(`build_dll.bat`, `check_syntax.cjs` 등)가 압축되던 문제 확인.
+  4. 루트 `launcher.vbs`가 `tools/launcher.vbs`와 달리 이전 코드로 남아 있던 불일치 확인.
+- **조치 사항**:
+  1. `installer.iss`: `{app}\tools` 중복 복사 제거 및 개발자 전용 문서 9종 `Excludes` 필터링 적용.
+  2. `build.bat`: `dist\_stage_portable` 클린 스테이징 도입으로 사용자 런타임 필수 파일만 엄선 압축.
+  3. 루트 `launcher.vbs`: `tools/launcher.vbs` 최신 버전으로 100% 동기화.
+  4. 루트 `README.md`: v1.4.8 신규 기능 및 뱃지 최신화.
+- **검증**: `build.bat` 재실행, Inno Setup 컴파일 로그 및 `tar -tf` 압축 목록 대조 검증 (불필요 파일 0개 확인).
+
+---
+
 ### 작업 50: 교실 수업 편의성 6대 핵심 기능 및 결함 개선 (v1.4.8 릴리스)
 - **요청 사항**:
   1. 모니터 1,2 전환 시 허용창 뜸 해결
