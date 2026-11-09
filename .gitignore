@@ -7,7 +7,7 @@
 # ============================================================
 
 # ------------------------------------------------------------
-# 1. Build Artifacts, Compiled Binaries & Release Outputs
+# 1. Build Artifacts, Compiled Binaries & Staging Directories
 # ------------------------------------------------------------
 dist/
 build/
@@ -29,18 +29,33 @@ release_body.md
 *.7z
 *.rar
 *.exe.log
+*.iscc.log
 
 # ------------------------------------------------------------
 # 2. Local Git Release & Push Automation Scripts (Strictly Local)
+#    (Must NEVER be pushed or uploaded to GitHub)
 # ------------------------------------------------------------
-push_to_github.bat
-push_github.bat
-push.bat
-git_push.bat
-git-push.bat
-git-release.bat
-tools/push*
+*push*.bat
+*push*.ps1
+*push*.cjs
+*push*.js
+*push*.sh
+*release*.bat
+*release*.ps1
+*release*.cjs
+*release*.js
+*release*.sh
+git_push*
+git-push*
+git_release*
+git-release*
 tools/*push*
+tools/*release*
+
+# Explicit whitelist: NEVER ignore GitHub Actions CI/CD workflows
+!/.github/
+!/.github/workflows/
+!/.github/workflows/**
 
 # ------------------------------------------------------------
 # 3. Private Keys, Secrets, Credentials & Personal Environment
@@ -59,7 +74,7 @@ id_rsa*
 *.token
 
 # ------------------------------------------------------------
-# 4. Logs, Caches, Scratches & Temporary Files
+# 4. Logs, Caches, Scratches & Temporary Development Scripts
 # ------------------------------------------------------------
 *.log
 *.tmp
@@ -67,9 +82,14 @@ id_rsa*
 *.swp
 *.swo
 *~
+*.patch
 npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 .cache/
 tmp/
 temp/
@@ -78,6 +98,8 @@ tools/inspect_*
 tools/test_*
 tools/apply_*
 tools/list_*
+tools/temp_*
+tools/update_*
 update_*.cjs
 
 # ------------------------------------------------------------

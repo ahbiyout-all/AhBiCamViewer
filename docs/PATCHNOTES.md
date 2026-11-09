@@ -12,6 +12,27 @@
 
 ---
 
+### 🛡️ GitHub 저장소 보안·경량화 및 .gitignore 필터 전면 개편 / 로컬 푸시 파이프라인 정비 (2026-11-09)
+- **점검 배경 및 개선 목표**:
+  - GitHub 원격 저장소에 꼭 필요한 핵심 소스코드, 공식 문서, 설정 파일 및 CI 빌드 스크립트만 선별하여 푸시되도록 .gitignore 제외 규칙을 전면 개편.
+  - 로컬 저장소 커밋 및 푸시 자동화 스크립트(push_to_github.bat, push_github.bat, git-release.bat, tools/push_to_github.cjs)를 원격 저장소 업로드 대상에서 100% 영구 제외 처리.
+  - 로컬 푸시 스크립트를 정비하여 버전 동기화, 구문 무결성 검증, GitHub noreply 개인정보 보호 커밋, Actions 릴리즈 태그 트리거를 통합 지원하는 단일 인터랙티브 파이프라인으로 일원화.
+- **주요 조치 내역**:
+  1. **.gitignore 전면 개편 및 엄격한 제외 필터 구축**:
+     - 빌드 산출물 및 바이너리(dist/, build/, bin/, out/, *.exe, *.dll, *.zip 등) 완벽 차단.
+     - 로컬 커밋·푸시 스크립트(*push*.bat, *push*.ps1, *push*.cjs, *push*.js, *push*.sh, *release*.bat, git_push*, git-release*, tools/*push*, tools/*release*)의 원격 업로드 영구 배제.
+     - .github/workflows/** CI/CD 파일은 화이트리스트(!/.github/workflows/**)로 명시 보호.
+     - 임시 캐시, 개발용 진단 스크립트(tools/temp_*, tools/test_*, tools/inspect_*), OS/에디터 산출물 철저 격리.
+  2. **로컬 커밋 및 푸시 파이프라인 정비**:
+     - tools/push_to_github.cjs: v1.4.8 최신 시맨틱 버전 파싱, 소스 무결성 검사, 원격 저장소 URL 자동 검증, --author="AhBiYout <AhBiYout-all@users.noreply.github.com>" 보안 서명 적용.
+     - push_to_github.bat: 루트 원클릭 실행기로서 Node.js 감지 시 CJS 파이프라인 호출, Node.js 미설치 환경에서도 순수 Git/PowerShell로 동작하는 2중 폴백 엔진 탑재.
+     - push_github.bat, git-release.bat: 구버전 중복 스크립트를 단일 진입점(push_to_github.bat) 포워딩으로 정합.
+  3. **tools/AhBiCamViewer.bat 멀티모니터 권한 동기화**:
+     - Chromium 격리 프로필 설정에 window_management, window_placement 사전 등록 및 실행 플래그(--enable-features=WindowPlacement,WindowManagement) 추가로 브라우저 실행 시 다중 모니터 권한 팝업 차단.
+- **영향 파일**: .gitignore, tools/AhBiCamViewer.bat, push_to_github.bat, push_github.bat, git-release.bat, tools/push_to_github.cjs, docs/PATCHNOTES.md, docs/WORK_LOG.md
+
+---
+
 ### 🧹 배포 산출물 및 인스톨러 불필요 파일/폴더 전면 정격화 (2026-11-09)
 - **점검 배경 및 최적화 목표**:
   - 인스톨러 및 포터블 패키지에 포함된 파일 전수 점검 요구 반영.

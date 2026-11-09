@@ -8,6 +8,29 @@
 
 ## 2026-11-07 (v1.4.8)
 
+### 작업 52: GitHub 저장소 업로드 대상 점검, .gitignore 전면 개편 및 로컬 푸시 스크립트 정비
+- **요청 사항**:
+  "현재 깃허브에 올라간 파일들의 상태와 '필요한 파일만 올라간 것이 맞는지' 확인 하고 제외 폴더 및 파일을 추가하세요.
+  GitHub 저장소에 꼭 필요한 핵심 소스코드, 공식 문서, 설정 파일 및 빌드 스크립트만 선별하여 푸시되도록 .gitignore 제외 규칙을 전면 개편하고, 로컬 저장소 커밋 및 푸시 스크립트 정비(깃허브 푸시 스크립트는 업로드에서 제외)"
+- **점검 결과**:
+  1. 원격 GitHub 저장소에 올라간 파일 상태 점검: 핵심 웹 소스(index.html, version.json), 순수 네이티브 C#/IL 소스(src/dll/*), 에셋(assets/*), 공식 문서(docs/*), 빌드 자동화 스크립트(build.bat, tools/*)만 정상 추적되고 있으며, 바이너리나 테스트 실행 파일은 원격에 누락되거나 유입되지 않음.
+  2. 그러나 로컬 푸시 스크립트(push_to_github.bat, push_github.bat, git-release.bat, tools/push_to_github.cjs)의 잠재적 유출 위험과 다양한 빌드/임시 파일 패턴에 대한 방어가 미흡했던 점을 확인.
+- **조치 사항**:
+  1. .gitignore 전면 개편:
+     - 바이너리/산출물(*.exe, *.dll, dist/, bin/, dist/_stage_portable/ 등) 차단.
+     - 로컬 커밋 및 푸시 스크립트(*push*.bat, *push*.ps1, *push*.cjs, *push*.js, *push*.sh, *release*.bat, git_push*, git-release*, tools/*push*, tools/*release*) 완전 배제.
+     - .github/workflows/** CI/CD 파일 예외(화이트리스트) 명시.
+     - 임시 스크립트, scratch, logs, OS 및 IDE 설정 파일 완벽 격리.
+  2. 로컬 푸시 스크립트 정합:
+     - push_to_github.bat: Node.js 유무를 감지하여 tools/push_to_github.cjs를 우선 실행하되, Node.js 부재 시에도 동작 가능한 2중 순수 Git/PowerShell 폴백 로직 내장.
+     - push_github.bat 및 git-release.bat: 중복 로직을 제거하고 push_to_github.bat로 안전하게 전달하는 단일 진입점 구성.
+     - tools/push_to_github.cjs: v1.4.8 버전 파싱, 소스 무결성 검증, GitHub noreply 작성자 자동 서명, GitHub Releases 트리거 지원.
+  3. tools/AhBiCamViewer.bat 멀티모니터 권한 동기화:
+     - Chromium 실행 플래그(--enable-features=WindowPlacement,WindowManagement) 및 프로필 예외 설정 동기화.
+- **검증**: git check-ignore 테스트 완료, build.bat 15/15 테스트 통과, Inno Setup 빌드 성공, git status 깨끗함 확인.
+
+---
+
 ### 작업 51: 앱 인스톨러 및 배포 패키지 내 불필요 파일/폴더 전수 점검 및 최적화
 - **요청 사항**: "앱 인스톨 파일 중에 불필요한 폴더나 파일이 포함되어 있는지 점검."
 - **점검 내역 및 문제점 발견**:
