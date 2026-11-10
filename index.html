@@ -247,7 +247,7 @@ select option.pro-option{color:inherit}
 :fullscreen header, :-webkit-full-screen header, body.is-fullscreen header{display:none !important}
 :fullscreen .thumbs, :-webkit-full-screen .thumbs, body.is-fullscreen .thumbs{display:none !important}
 :fullscreen .main-container, :-webkit-full-screen .main-container, body.is-fullscreen .main-container{height:100vh}
-:fullscreen .res-badge, :-webkit-full-screen .res-badge, body.is-fullscreen .res-badge{display:none !important}
+:fullscreen body:not(.cam-info-show-fs) .res-badge, :-webkit-full-screen body:not(.cam-info-show-fs) .res-badge, body.is-fullscreen:not(.cam-info-show-fs) .res-badge{display:none !important}
 body.cam-info-hidden .res-badge, body.cam-info-hidden #resBadge{display:none !important}
 
 /* 캡처 및 녹화 시 메뉴 UI 화면 배제 스타일 (외부 캡처/녹화 시에도 메뉴 노출 방지) */
@@ -1317,7 +1317,12 @@ function createMovableTextCard(x, y, text, cardStyle, fontSize, color){
     card.style.textShadow = '0 1px 4px rgba(0,0,0,0.85)';
   }
 
-  card.textContent = text;
+  const textSpan = document.createElement('span');
+  textSpan.className = 'text-ann-body';
+  textSpan.textContent = text;
+  textSpan.style.cssText = 'white-space:pre-wrap;word-break:break-word;display:inline-block;';
+  card.appendChild(textSpan);
+  ann.textSpan = textSpan;
 
   // Delete button (visible on hover)
   const delBtn = document.createElement('span');
@@ -1415,12 +1420,14 @@ function createMovableTextCard(x, y, text, cardStyle, fontSize, color){
     ev.preventDefault();
     ev.stopPropagation();
   });
-  card.addEventListener('pointerup', (ev) => {
+  const stopCardDrag = (ev) => {
     isDragging = false;
     card.style.zIndex = '32';
     card.style.boxShadow = 'none';
-    ev.stopPropagation();
-  });
+    if(ev) ev.stopPropagation();
+  };
+  card.addEventListener('pointerup', stopCardDrag);
+  card.addEventListener('pointercancel', stopCardDrag);
 
   // Double-click to edit
   card.addEventListener('dblclick', (ev) => {
@@ -1435,7 +1442,8 @@ function createMovableTextCard(x, y, text, cardStyle, fontSize, color){
     const finishEdit = () => {
       if(ta.value.trim()){
         ann.text = ta.value;
-        card.childNodes[0].textContent = ta.value;
+        if(ann.textSpan) ann.textSpan.textContent = ta.value;
+        else if(card.childNodes[0]) card.childNodes[0].textContent = ta.value;
       }
       card.style.display = '';
       ta.remove();
@@ -1627,7 +1635,7 @@ function createMovableShapeCard(type, x1, y1, x2, y2, col, lw, filled, shiftKey,
     ev.stopPropagation();
   });
 
-  wrap.addEventListener('pointerup', (ev) => {
+  const stopShapeDrag = (ev) => {
     if(!isDragging) return;
     isDragging = false;
     wrap.style.zIndex = '31';
@@ -1635,8 +1643,10 @@ function createMovableShapeCard(type, x1, y1, x2, y2, col, lw, filled, shiftKey,
     wrap.style.boxShadow = 'none';
     delBtn.style.opacity = '0';
     bakeBtn.style.opacity = '0';
-    ev.stopPropagation();
-  });
+    if(ev) ev.stopPropagation();
+  };
+  wrap.addEventListener('pointerup', stopShapeDrag);
+  wrap.addEventListener('pointercancel', stopShapeDrag);
 
   ann.el = wrap;
   stage.appendChild(wrap);
@@ -2327,7 +2337,7 @@ async function startCamera(id='', isExplicitUserAction=false){
         const camClass = classifyCamera(camLabel, facing, 0);
         const categoryTag = `<span style="background:rgba(255,255,255,0.15);padding:1px 6px;border-radius:4px;font-size:11px;margin-right:4px">${camClass.icon} ${camClass.badge.replace(/[\[\]]/g,'')}</span>`;
         resBadge.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${qInfo.color};margin-right:6px"></span>${categoryTag}<b>${w}×${h}</b> <span style="opacity:0.85">(${qInfo.text})</span> ${facing === 'user' ? '전면' : '후면/웹캠'}`;
-        resBadge.style.display = 'inline-flex';
+        resBadge.style.display = (typeof window.isCamInfoVisible === 'function' && !window.isCamInfoVisible()) ? 'none' : 'inline-flex';
         resBadge.style.alignItems = 'center';
       }
       if(resSelect?.value) saveLastResolution(resSelect.value);
@@ -2597,6 +2607,11 @@ function setShapeFill(mode){
   document.querySelectorAll('#shapeFillSelector .size-preset-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.shapeFill === mode);
   });
+  const sfb = document.getElementById('shapeFillBtn');
+  if(sfb){
+    sfb.classList.toggle('active-toggle', isShapeFilled);
+    sfb.textContent = isShapeFilled ? '⬛ 채우기 ON' : '⬛ 채우기 OFF';
+  }
   renderShapeTipPreview();
 }
 
@@ -2686,6 +2701,7 @@ function drawShapeOn(context, t, x1, y1, x2, y2, col, lw, filled=false, shiftKey
   } else if(t === 'shapeArrow'){
     context.beginPath(); context.moveTo(x1, y1); context.lineTo(x2, y2); context.stroke();
     const a = Math.atan2(y2 - y1, x2 - x1), hl = Math.max(12, lw * 4);
+    context.setLineDash([]); // 화살표 촉은 항상 실선으로 선명하게 렌더링
     context.beginPath();
     context.moveTo(x2, y2); context.lineTo(x2 - hl * Math.cos(a - Math.PI / 6), y2 - hl * Math.sin(a - Math.PI / 6));
     context.moveTo(x2, y2); context.lineTo(x2 - hl * Math.cos(a + Math.PI / 6), y2 - hl * Math.sin(a + Math.PI / 6));
@@ -2693,6 +2709,7 @@ function drawShapeOn(context, t, x1, y1, x2, y2, col, lw, filled=false, shiftKey
   } else if(t === 'shapeDoubleArrow'){
     context.beginPath(); context.moveTo(x1, y1); context.lineTo(x2, y2); context.stroke();
     const a = Math.atan2(y2 - y1, x2 - x1), hl = Math.max(12, lw * 4);
+    context.setLineDash([]); // 화살표 촉은 항상 실선으로 선명하게 렌더링
     context.beginPath();
     context.moveTo(x2, y2); context.lineTo(x2 - hl * Math.cos(a - Math.PI / 6), y2 - hl * Math.sin(a - Math.PI / 6));
     context.moveTo(x2, y2); context.lineTo(x2 - hl * Math.cos(a + Math.PI / 6), y2 - hl * Math.sin(a + Math.PI / 6));
@@ -3733,10 +3750,6 @@ draw.addEventListener('pointerleave', () => {
   if(penCursor) penCursor.style.display = 'none';
 });
 
-draw.addEventListener('pointerleave', () => {
-  eraserCursor.style.display = 'none';
-});
-
 draw.addEventListener('click', e => { if(tool === 'textTool') placeText(e); });
 
 // Tools Binding & Dropdown Interactivity
@@ -3878,6 +3891,9 @@ document.addEventListener('click', e => {
 window.addEventListener('keydown', e => {
   if(e.key === 'Escape'){
     closeAllMenus();
+    if(typeof tool !== 'undefined' && tool !== 'none' && !e.target.closest('input, textarea')){
+      selectTool('none');
+    }
   }
 });
 
@@ -4892,6 +4908,12 @@ const jumpMonitorBtn = document.getElementById('jumpMonitor');
 let currentMonitorIndex = 0;
 
 async function jumpToNextMonitor(){
+  // 전체화면 상태일 경우 window.moveTo가 브라우저에 의해 무시되므로 일시 창모드로 복귀 후 이동
+  if(document.fullscreenElement){
+    try { await document.exitFullscreen(); } catch(fsErr){}
+    await new Promise(r => setTimeout(r, 120));
+  }
+
   // 1. Multi-Screen Window Management API (권한이 사전에 허용된 상태에서만 호출하여 브라우저 허용 팝업창 원천 차단)
   let hasManagementPermission = false;
   if('getScreenDetails' in window && navigator.permissions && navigator.permissions.query){
@@ -5008,7 +5030,7 @@ resSelect.onchange = async () => {
         const camClass = classifyCamera(camLabel, facing, 0);
         const categoryTag = `<span style="background:rgba(255,255,255,0.15);padding:1px 6px;border-radius:4px;font-size:11px;margin-right:4px">${camClass.icon} ${camClass.badge.replace(/[\[\]]/g,'')}</span>`;
         resBadge.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${qInfo.color};margin-right:6px"></span>${categoryTag}<b>${w}×${h}</b> <span style="opacity:0.85">(${qInfo.text})</span> ${facing === 'user' ? '전면' : '후면/웹캠'}`;
-        resBadge.style.display = 'inline-flex';
+        resBadge.style.display = (typeof window.isCamInfoVisible === 'function' && !window.isCamInfoVisible()) ? 'none' : 'inline-flex';
         resBadge.style.alignItems = 'center';
       }
       if(resSelect?.value) saveLastResolution(resSelect.value);
@@ -5819,8 +5841,8 @@ updateResolutionDots(getLastCamera());
       return;
     }
     
-    // 녹화 중지 처리
-    if(recorder && recorder.state === 'recording'){
+    // 녹화 중지 처리 (녹화 중 또는 일시정지 상태 모두 포괄)
+    if(recorder && recorder.state !== 'inactive'){
       try {
         if(typeof recorder.requestData === 'function'){
           recorder.requestData(); // 최종 버퍼 즉각 플러시
@@ -6493,6 +6515,7 @@ updateResolutionDots(getLastCamera());
 
   function updateCamInfoVisibility(){
     document.body.classList.toggle('cam-info-hidden', !camInfoVisible);
+    document.body.classList.toggle('cam-info-show-fs', camInfoVisible);
     document.querySelectorAll('#toggleCamInfoBtn, #headerCamInfoBtn, .toggle-cam-info-btn').forEach(btn => {
       btn.textContent = camInfoVisible ? 'ℹ️ 정보 ON' : 'ℹ️ 정보 OFF';
       btn.classList.toggle('active', camInfoVisible);
@@ -6506,6 +6529,7 @@ updateResolutionDots(getLastCamera());
       }
     }
   }
+  window.isCamInfoVisible = () => camInfoVisible;
 
   document.querySelectorAll('#toggleCamInfoBtn, #headerCamInfoBtn, .toggle-cam-info-btn').forEach(btn => {
     btn.onclick = () => {
