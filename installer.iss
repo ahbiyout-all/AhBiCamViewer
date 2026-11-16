@@ -1,6 +1,6 @@
 ; ============================================================
 ; Inno Setup Script: 아비캠뷰어 (AhBiCamViewer)
-; Version: 1.4.8
+; Version: 1.4.9
 ; Architecture: Unpacked Multi-File Installation
 ; Developer: AhBiYout (AhBiYout-all)
 ; Repository: https://github.com/AhBiYout-all/AhBiCamViewer
@@ -15,7 +15,7 @@
 
 #define MyAppName "아비캠뷰어 (AhBiCamViewer)"
 #define MyAppEnglishName "AhBiCamViewer"
-#define MyAppVersion "1.4.8"
+#define MyAppVersion "1.4.9"
 #define MyAppPublisher "AhBiYout"
 #define MyAppURL "https://github.com/AhBiYout-all/AhBiCamViewer"
 #define MyAppExeName "AhBiCamViewer.bat"

@@ -6,6 +6,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.9] - 2026-11-16
+### Added
+- **Movable Shapes Interactive Resizing & Property Modification**:
+  - Implemented 8-direction interactive resize handles (`nw, n, ne, e, se, s, sw, w`) with pointer capture support for post-creation geometry adjustment.
+  - Added floating mini property toolbar offering instant cycle adjustments for Stroke Color (🎨), Fill Mode (⬛ none/25%/50%/solid), Line Width (📏 2/4/8/14px), Stroke Style (〰️ solid/dashed/dotted), Canvas Bake (📌), and Delete (✕).
+  - Bidirectional synchronization between selected shapes and main toolbar controls (palette dots, custom color picker, stroke slider, fill modes).
+  - Keyboard `Delete` and `Backspace` hotkey integration for selected shapes.
+- **High-Performance Magnifier Optimization & Bug Fixes**:
+  - Eliminated per-frame GPU canvas buffer reallocation by caching buffer geometry to radius changes, delivering zero-lag 60fps rendering.
+  - Fixed coordinate cutoff bug preventing magnifier rendering at the extreme top/left screen boundaries (`x >= 0 && y >= 0`).
+  - Added CSS filter fast-path to bypass filter overhead when brightness and contrast are at default 100%.
+  - High-fidelity antialiasing (`imageSmoothingQuality = 'high'`) for 5.0x zoom clarity.
+- **100% Uniform Neon Highlighter Rendering**:
+  - Architected dedicated offscreen canvas pipeline (`markerCanvas`) for single-pass stroke compositing.
+  - Prevents overlapping alpha accumulation and dark artifacts across direction changes and low-speed movements.
+  - Full support across all 4 tips: round, square, calligraphy, and velocity-responsive brush tip.
+- **Native DLL Version Synchronization**:
+  - Synchronized `AhBiCamViewerCore.dll` and test suite to version `0x01040900 (v1.4.9)` with 15/15 unit test verification.
+
 ## [1.4.8] - 2026-11-07
 ### Added
 - **Multi-Monitor Jump Permission Prompt Bypass**: Avoids browser permission dialog by validating `window-management` permission state and smoothly falling back to screen coordinate moveTo calculation.

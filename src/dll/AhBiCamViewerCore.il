@@ -31,7 +31,7 @@
     .vtentry 1 : 1
     .export [1] as CV_GetVersion
     .maxstack 1
-    ldc.i4 0x01040800
+    ldc.i4 0x01040900
     ret
   }
 
