@@ -77,7 +77,7 @@
 ```
 교실용_실물화상기/
 ├── index.html                    # 웹 진입점 및 독립 단일 파일 애플리케이션
-├── version.json                 # 시맨틱 버전 및 공식 릴리즈 메타데이터 (v1.4.7)
+├── version.json                 # 시맨틱 버전 및 공식 릴리즈 메타데이터 (v1.4.8)
 ├── build.bat                    # 윈도우 원클릭 자동 빌드 파이프라인 (DLL+테스트+인스톨러)
 ├── installer.iss                # Inno Setup 6 멀티파일 인스톨러 스크립트
 ├── .github/workflows/           # CI/CD 자동화 파이프라인
@@ -102,17 +102,16 @@
 │   ├── INSTALL.md               # 설치 및 무인 설치 옵션 가이드
 │   ├── WORK_LOG.md              # 작업 수행 및 검증 기록
 │   ├── CHANGELOG.md             # 시맨틱 변경 내역
-│   ├── PATCHNOTES.md            # 배포 패치노트 (v1.0.0 ~ v1.4.7)
+│   ├── PATCHNOTES.md            # 배포 패치노트 (v1.0.0 ~ v1.4.8)
 │   ├── BLOG_POST.md             # 공식 구글 블로거 포스팅 원고 (서식 텍스트 / HTML 모드)
 │   ├── LICENSE.ko.md            # 한국어 라이선스
 │   └── LICENSE.en.md            # 영문 라이선스
 └── tools/                       # 유틸리티 및 빌드 도구
     ├── build_dll.bat            # 순수 창작 DLL 컴파일 및 15/15 검증 테스트 실행기
-    ├── AhBiCamViewer.bat       # 스탠드얼론 실행 배치
     ├── AhBiCamViewer.bat        # 아비캠뷰어 전용 실행 배치
     ├── launcher.vbs             # 무음 창모드 런처
     ├── check_syntax.cjs         # HTML 스크립트 블록 문법 자동 검증기
-    └── sync_html.cjs            # 4대 배포용 HTML 100% 바이너리 동기화 도구
+    └── format_crlf.ps1          # 배치 파일 CRLF 줄바꿈 정합 유틸리티
 ```
 
 ---
@@ -127,7 +126,7 @@
 1. `AhBiCamViewerManaged.dll` 컴파일 (C# 5.0)
 2. `AhBiCamViewerCore.dll` 순수 네이티브 DLL 어셈블 (ilasm)
 3. `TestRunner.exe` 실행을 통한 15/15 네이티브 API 단위 테스트 전수 검증
-4. Inno Setup 6을 통한 멀티파일 인스톨러(`아비캠뷰어 (AhBiCamViewer)_Setup_v1.4.7.exe`) 및 포터블 패키지(`dist/`) 자동 생성
+4. Inno Setup 6을 통한 멀티파일 인스톨러(`아비캠뷰어 (AhBiCamViewer)_Setup_v1.4.8.exe`) 및 포터블 패키지(`dist/`) 자동 생성
 
 ---
 

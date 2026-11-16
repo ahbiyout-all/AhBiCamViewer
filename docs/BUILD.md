@@ -73,7 +73,7 @@ bin/
 명령 프롬프트(CMD) 또는 PowerShell에서 직접 컴파일할 경우:
 
 ```powershell
-& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion="1.4.4" "installer.iss"
+& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion="1.4.8" "installer.iss"
 ```
 
 ### 4.2 DLL 수동 빌드 및 단위 테스트
@@ -85,7 +85,7 @@ tools\build_dll.bat
 
 ## 5. GitHub Actions CI/CD (`.github/workflows/build-and-release.yml`)
 
-GitHub에 `v1.4.4` 태그를 푸시하면 다음 자동화 워크플로가 클라우드에서 실행됩니다:
+GitHub에 `v1.4.8` 태그를 푸시하면 다음 자동화 워크플로가 클라우드에서 실행됩니다:
 - **실행 환경**: `windows-latest`
 - **Node.js 런타임**: **Node.js 22 LTS** (GitHub 공식 Node 20 EOL 권고 완벽 준수)
 - **자동 빌드**: .NET 컴파일러 및 Inno Setup 6을 통해 DLL과 설치 파일 빌드

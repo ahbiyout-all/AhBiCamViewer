@@ -65,15 +65,12 @@ v1.4.8부터 `launcher.vbs` 스크립트를 통해 크로미움 기반 독립 �
 
 1. `dist/AhBiCamViewer_Portable_v1.4.8.zip`의 압축을 임의의 폴더에 해제합니다.
 2. **권장**: `launcher.vbs`를 더블 클릭하여 독립 앱 창으로 실행합니다 (카메라 자동 허용 포함).
-3. **대안**: `index.html` 또는 `아비캠뷰어_(AhBiCamViewer).html`을 웹 브라우저(Chrome, Edge 등)로 직접 열 수도 있습니다.
+3. **대안**: `index.html`을 웹 브라우저(Chrome, Edge 등)로 직접 열 수도 있습니다.
 
 ### 포터블 패키지 포함 파일:
 ```
 AhBiCamViewer_Portable_v1.4.8/
-├── index.html                                    # 메인 엔진 (개발용)
-├── 아비캠뷰어_(AhBiCamViewer).html               # 메인 앱 (사용자용)
-├── (AhBiYout)_공용_실물화상기_보기.html            # 메인 앱 (호환명)
-├── 교실용_실물화상기.html                          # 메인 앱 (호환명)
+├── index.html                                    # 메인 앱 (단일 소스)
 ├── launcher.vbs                                   # 독립 런처 (권장 실행)
 ├── version.json                                   # 버전 정보 (v1.4.8)
 ├── assets/                                        # 아이콘 등 리소스

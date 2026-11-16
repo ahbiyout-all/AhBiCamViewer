@@ -23,6 +23,12 @@
 | **TASK-012** | 인식된 카메라 지능형 3대 분류 및 상세정보 진단 모달창 (`#camInfoModal`) | **P1** | TASK-001 | `VERIFIED` |
 | **TASK-013** | 카메라 계속된 권한 허용 팝업 완전 제거 (런처 플래그, applyConstraints, Smooth Handoff) | **P0** | TASK-001 | `VERIFIED` |
 | **TASK-014** | 전체화면 선택 시 메뉴 고정 풀림(아코디언 모드) 및 클린 캡처/고화질 복합 녹화 엔진 | **P1** | TASK-010, TASK-002 | `VERIFIED` |
+| **TASK-022** | 듀얼 모니터 점프 시 권한 팝업 차단 및 전체화면 안전 해제 파이프라인 | **P1** | TASK-009 | `VERIFIED` |
+| **TASK-023** | 전체화면 카메라 해상도 정보 ON/OFF 토글 | **P1** | TASK-014 | `VERIFIED` |
+| **TASK-024** | 수업 녹화 마이크 음성 합성 녹음 (Web Audio API 믹싱) | **P1** | TASK-015 | `VERIFIED` |
+| **TASK-025** | 도형 내부 채우기(Fill) 색상 독립 팔레트 및 불투명도 엔진 | **P1** | TASK-002 | `VERIFIED` |
+| **TASK-026** | 좌측 판서 도구 활성/비활성 토글 스위치 | **P2** | TASK-010 | `VERIFIED` |
+| **TASK-027** | 텍스트 주석과 이동식 도형 상호 배타성 분리 | **P1** | TASK-002 | `VERIFIED` |
 
 ---
 
@@ -261,6 +267,60 @@
 ### TASK-021: 형광펜/펜 붓펜 촉 속도·필압 반응형 가변 너비 및 프리뷰 고도화
 - **Identifier**: TASK-021
 - **Description**: 형광펜 모드에서 붓펜 촉 선택 시 선 두께가 둥근 촉과 같게 고정되던 결함을 해결하고, 이동 속도와 필압에 실시간 반응하는 4단계 베지어 연속 보간 렌더링, 전용 붓펜 프리뷰 캔버스 및 타원 회전 커서 탑재.
+- **Priority**: P1
+- **Dependencies**: TASK-002
+- **Status**: VERIFIED
+
+---
+
+### TASK-022: 듀얼 모니터 점프 시 권한 팝업 차단 및 전체화면 안전 해제 파이프라인
+- **Identifier**: TASK-022
+- **Description**: 수업 중 모니터 1/2 전환 시 브라우저 `window-management` 권한 상태를 사전 검증하여 팝업 없이 즉시 이동. 전체화면 상태에서 `window.moveTo()`가 무시되는 현상을 해결하기 위해 전체화면 일시 해제 후 안전 점프 파이프라인 탑재.
+- **Priority**: P1
+- **Dependencies**: TASK-009
+- **Status**: VERIFIED
+
+---
+
+### TASK-023: 전체화면 카메라 해상도 정보 ON/OFF 토글
+- **Identifier**: TASK-023
+- **Description**: 전체화면 시 좌측 상단 카메라 해상도 정보 배지를 자동 은폐하되, 헤더 및 하단 툴바에서 원클릭으로 표시/숨김 전환 가능. CSS `:not(.cam-info-show-fs)` 조건부 선택자로 전체화면 상태에서도 사용자 의도대로 제어.
+- **Priority**: P1
+- **Dependencies**: TASK-014
+- **Status**: VERIFIED
+
+---
+
+### TASK-024: 수업 녹화 마이크 음성 합성 녹음 (Web Audio API 믹싱)
+- **Identifier**: TASK-024
+- **Description**: 교사 마이크 음성을 Web Audio API의 `createMediaStreamSource`와 `MediaStreamAudioDestinationNode`로 실시간 믹싱하여 MediaRecorder 녹화 스트림에 합성. 마이크 미연결 시 자동 폴백하여 카메라 영상만 녹화.
+- **Priority**: P1
+- **Dependencies**: TASK-015
+- **Status**: VERIFIED
+
+---
+
+### TASK-025: 도형 내부 채우기(Fill) 색상 독립 팔레트 및 불투명도 엔진
+- **Identifier**: TASK-025
+- **Description**: 도형의 선(스트로크)과 내부(필) 색상을 독립적으로 변경할 수 있는 전용 색상 피커, 불투명도(투명/25%/50%/솔리드) 조절 드롭다운, 그리고 하단 툴바 채우기 토글 버튼 양방향 동기화 구현.
+- **Priority**: P1
+- **Dependencies**: TASK-002
+- **Status**: VERIFIED
+
+---
+
+### TASK-026: 좌측 판서 도구 활성/비활성 토글 스위치
+- **Identifier**: TASK-026
+- **Description**: 이미 선택된 판서 도구 버튼을 다시 클릭하면 일반 마우스 커서 모드(`selectTool('none')`)로 즉시 복귀하는 토글 동작 구현. Escape 키에도 동일한 도구 해제 연동.
+- **Priority**: P2
+- **Dependencies**: TASK-010
+- **Status**: VERIFIED
+
+---
+
+### TASK-027: 텍스트 주석과 이동식 도형 상호 배타성 분리
+- **Identifier**: TASK-027
+- **Description**: 텍스트 주석 카드와 이동식 도형(Movable Shapes)이 동시에 선택/조작되던 문제를 해결하여 상호 배타적으로 작동하도록 이벤트 파이프라인 분리.
 - **Priority**: P1
 - **Dependencies**: TASK-002
 - **Status**: VERIFIED

@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.4.7] - 2026-11-07
+## [1.4.8] - 2026-11-07
 ### Added
 - **Multi-Monitor Jump Permission Prompt Bypass**: Avoids browser permission dialog by validating `window-management` permission state and smoothly falling back to screen coordinate moveTo calculation.
 - **Fullscreen Camera Info Auto-Hide & Toggle**: Added CSS to ensure top-left camera info is hidden in fullscreen mode, and added ON/OFF toggle buttons to header and bottom toolbar.
@@ -73,7 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Multi-page bundled PDF export vector preservation.
     - Real-time magnified vector rendering under the interactive Magnifier tool.
   - Unified shape cleanup in `clearDraw` confirmation flow.
-  - Updated Pure Creative Native DLL (`ClassroomVisualizerCore.dll`) version constant to `0x01040700 (v1.4.7)` with 15/15 unit test verification.
+  - Updated Pure Creative Native DLL (`AhBiCamViewerCore.dll`) version constant to `0x01040700 (v1.4.7)` with 15/15 unit test verification.
 
 ---
 
@@ -89,7 +89,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - High-quality compositing in bundled multi-page PDF export (`pdfAll`).
     - Exact real-time magnified rendering in the interactive Magnifier tool (`renderMagnifier`).
   - Integrated text card cleanup into the clear all drawings (`clearDraw`) confirmation flow.
-  - Updated Pure Creative Native DLL (`ClassroomVisualizerCore.dll`) version constant to `0x01040600 (v1.4.6)` with 15/15 unit test verification.
+  - Updated Pure Creative Native DLL (`AhBiCamViewerCore.dll`) version constant to `0x01040600 (v1.4.6)` with 15/15 unit test verification.
 
 ---
 
