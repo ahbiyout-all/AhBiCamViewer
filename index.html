@@ -2002,9 +2002,26 @@ function createMovableShapeCard(type, x1, y1, x2, y2, col, lw, filled, shiftKey,
 }
 
 // Undo/Redo
-const UNDO_LIMIT = 50;
+// 동적 해상도 적응형 실행취소 스택 (4K/Retina 환경 OOM 크래시 방어: 최대 150MB 한도 내 관리)
+function getDynamicUndoLimit(){
+  const area = (draw.width || 1920) * (draw.height || 1080);
+  const bytesPerFrame = area * 4;
+  const maxMemBytes = 160 * 1024 * 1024; // 160MB 상한
+  const calculated = Math.floor(maxMemBytes / bytesPerFrame);
+  return Math.min(35, Math.max(12, calculated));
+}
 let undoStack=[],redoStack=[];
-function saveState(){undoStack.push(ctx.getImageData(0,0,draw.width,draw.height));if(undoStack.length>UNDO_LIMIT)undoStack.shift();redoStack=[]}
+function saveState(){
+  try {
+    const limit = getDynamicUndoLimit();
+    undoStack.push(ctx.getImageData(0, 0, draw.width, draw.height));
+    while(undoStack.length > limit) undoStack.shift();
+    redoStack = [];
+  } catch(oomErr){
+    console.warn('saveState 메모리 한도 도달, 이전 스택 축소:', oomErr);
+    if(undoStack.length > 5) undoStack.splice(0, Math.floor(undoStack.length / 2));
+  }
+}
 function undo(){if(!undoStack.length)return;redoStack.push(ctx.getImageData(0,0,draw.width,draw.height));const s=undoStack.pop();ctx.putImageData(s,0,0)}
 function redo(){if(!redoStack.length)return;undoStack.push(ctx.getImageData(0,0,draw.width,draw.height));const s=redoStack.pop();ctx.putImageData(s,0,0)}
 document.getElementById('undoBtn').onclick=undo;
@@ -4412,6 +4429,16 @@ document.addEventListener('click', e => {
   }
 });
 
+
+// ===== 녹화 중 창 닫기 / 새로고침 방어 (데이터 유실 방지) =====
+window.addEventListener('beforeunload', (e) => {
+  if(typeof recorder !== 'undefined' && recorder && recorder.state !== 'inactive'){
+    e.preventDefault();
+    e.returnValue = '수업 녹화가 진행 중입니다. 페이지를 벗어나면 녹화된 동영상이 저장되지 않습니다.';
+    return e.returnValue;
+  }
+});
+
 window.addEventListener('keydown', e => {
   if(e.key === 'Escape'){
     closeAllMenus();
@@ -5488,12 +5515,19 @@ async function jumpToNextMonitor(){
     const curY = window.screenY !== undefined ? window.screenY : window.screenTop;
     const screenWidth = window.screen.availWidth || window.screen.width || 1920;
     
-    // 현재 창이 주 모니터(0 이상 ~ screenWidth 미만)에 있는 경우 보조 모니터로 점프
+    // 보조 모니터가 좌측(음수 좌표) 또는 우측에 배치된 경우 모두 포괄
+    const availLeft = (window.screen && typeof window.screen.availLeft === 'number') ? window.screen.availLeft : 0;
     let targetX, targetY = curY;
     if(curX >= 0 && curX < screenWidth){
-      targetX = screenWidth + 50;
+      // 주 모니터에 있는 경우: 좌측 보조 모니터가 있으면 좌측으로, 없으면 우측으로 점프
+      if(availLeft < -100){
+        targetX = availLeft + 50;
+      } else {
+        targetX = screenWidth + 50;
+      }
       currentMonitorIndex = 1;
     } else {
+      // 보조 모니터에 있는 경우 주 모니터로 복귀
       targetX = 50;
       currentMonitorIndex = 0;
     }
@@ -5526,7 +5560,13 @@ async function toggleCameraFacing(){
   if(targetId) camera.value = targetId;
   await startCamera(targetId);
 }
-camSwitchBtn.onclick=toggleCameraFacing;
+camSwitchBtn.onclick = () => {
+  if(typeof recorder !== 'undefined' && recorder && recorder.state !== 'inactive'){
+    alert('현재 수업 녹화가 진행 중입니다.\n카메라 방향을 전환하시려면 먼저 녹화를 정지해 주세요.');
+    return;
+  }
+  toggleCameraFacing();
+};
 facingSelect.onchange = () => {
   const newFacing = facingSelect.value;
   const opts = Array.from(camera.options).filter(o => o.value);
@@ -5540,6 +5580,10 @@ facingSelect.onchange = () => {
 };
 
 resSelect.onchange = async () => {
+  if(typeof recorder !== 'undefined' && recorder && recorder.state !== 'inactive'){
+    alert('현재 수업 녹화가 진행 중입니다.\n해상도를 변경하시려면 먼저 녹화를 정지해 주세요.');
+    return;
+  }
   updateResolutionDots(camera?.value);
   // 1순위: 활성 트랙에 applyConstraints 직접 적용 (권한 팝업 0회, 스트림 끊김 없음)
   const track = stream?.getVideoTracks?.()?.[0];
@@ -5578,6 +5622,13 @@ resSelect.onchange = async () => {
 
 camera.onchange = () => {
   if(!camera.value) return;
+  if(typeof recorder !== 'undefined' && recorder && recorder.state !== 'inactive'){
+    alert('현재 수업 녹화가 진행 중입니다.\n카메라를 변경하시려면 먼저 녹화를 정지해 주세요.');
+    const activeTrack = stream?.getVideoTracks?.()?.[0];
+    const curDevId = activeTrack?.getSettings?.()?.deviceId;
+    if(curDevId) camera.value = curDevId;
+    return;
+  }
   updateResolutionDots(camera.value);
   const activeTrack = stream?.getVideoTracks?.()?.[0];
   const currentDeviceId = activeTrack?.getSettings?.()?.deviceId;
@@ -5764,6 +5815,7 @@ function capture(){
     const captureQuality = capFmt.quality;
     const img = captureQuality !== null ? out.toDataURL(capFmt.mime, captureQuality) : out.toDataURL(capFmt.mime);
     shots.unshift(img);
+    if(shots.length > 30) shots.pop(); // 최대 30장 상한 (DOM & RAM 메모리 누수 방어)
     renderShots();
     
     const a = document.createElement('a');
@@ -6155,7 +6207,10 @@ updateResolutionDots(getLastCamera());
       if(i)pdf.addPage();
       pdf.addImage(pages[i],'JPEG',10,10,277,190,undefined,'FAST');
     }
-    pdf.save('실물화상기_수업자료.pdf');
+    const padZ = n => String(n).padStart(2, '0');
+    const pdfDate = new Date();
+    const pdfTimeStr = `${pdfDate.getFullYear()}${padZ(pdfDate.getMonth()+1)}${padZ(pdfDate.getDate())}_${padZ(pdfDate.getHours())}${padZ(pdfDate.getMinutes())}${padZ(pdfDate.getSeconds())}`;
+    pdf.save(`아비캠_수업자료_${pdfTimeStr}.pdf`);
   };
 
   // 🎥 고화질 복합 녹화 엔진 (카메라 영상 + 판서 동시 녹화, 메뉴 UI 일체 제외)
