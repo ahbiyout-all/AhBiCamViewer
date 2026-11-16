@@ -298,6 +298,16 @@ body.recording-clean .shape-annotation-wrap{
   z-index: 37;
   display: none;
   box-sizing: border-box;
+  touch-action: none;
+}
+.shape-resize-handle::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -6px;
+  /* 터치 및 마우스 포인터 히트 패딩 22px 확장 */
 }
 .shape-annotation-wrap:hover .shape-resize-handle,
 .shape-annotation-wrap.active-shape-selected .shape-resize-handle {
@@ -1539,13 +1549,21 @@ let selectedShapeAnn = null;
 
 function selectShapeAnnotation(ann){
   if(selectedShapeAnn && selectedShapeAnn !== ann){
-    if(selectedShapeAnn.el) selectedShapeAnn.el.classList.remove('active-shape-selected');
+    if(selectedShapeAnn.el){
+      selectedShapeAnn.el.classList.remove('active-shape-selected');
+      selectedShapeAnn.el.style.borderColor = 'transparent';
+      selectedShapeAnn.el.style.boxShadow = 'none';
+    }
     selectedShapeAnn.isSelected = false;
   }
   selectedShapeAnn = ann;
   if(ann){
     ann.isSelected = true;
-    if(ann.el) ann.el.classList.add('active-shape-selected');
+    if(ann.el){
+      ann.el.classList.add('active-shape-selected');
+      ann.el.style.borderColor = '#0284c7';
+      ann.el.style.boxShadow = '0 0 0 1px #0284c7, 0 8px 24px rgba(2,132,199,0.35)';
+    }
   }
 }
 
@@ -1624,6 +1642,18 @@ function updateShapeCard(ann){
   ann.el.style.top = minY + 'px';
   ann.el.style.width = w + 'px';
   ann.el.style.height = h + 'px';
+
+  // 상단 경계 42px 미만인 경우 미니 툴바를 카드 하단으로 자동 플립 배치
+  const miniTb = ann.el.querySelector('.shape-mini-toolbar');
+  if(miniTb){
+    if(minY < 42){
+      miniTb.style.top = 'auto';
+      miniTb.style.bottom = '-38px';
+    } else {
+      miniTb.style.top = '-38px';
+      miniTb.style.bottom = 'auto';
+    }
+  }
 
   ann.cv.width = w * devicePixelRatio;
   ann.cv.height = h * devicePixelRatio;
@@ -3794,7 +3824,7 @@ draw.addEventListener('pointerdown', e => {
     return;
   }
   if(tool === 'none' || tool === 'textTool') return;
-  if(isShapeTool(tool)){ shapeStart = pos(e); return; }
+  if(isShapeTool(tool)){ shapeStart = pos(e); draw.setPointerCapture(e.pointerId); return; }
 
   const p = pos(e);
   if(tool === 'laserTrail'){
@@ -4089,6 +4119,7 @@ draw.addEventListener('pointermove', e => {
         ctx.stroke();
       }
     }
+    ctx.restore(); // Balance save called at start of len >= 3 block
   }
 });
 
@@ -4220,6 +4251,24 @@ draw.addEventListener('pointerup', e => {
 });
 
 draw.addEventListener('pointerleave', () => {
+  eraserCursor.style.display = 'none';
+  const penCursor = document.getElementById('penCursor');
+  if(penCursor) penCursor.style.display = 'none';
+});
+
+draw.addEventListener('pointercancel', e => {
+  if(drawing){
+    if(tool === 'marker' && markerBaseSnapshot){
+      ctx.putImageData(markerBaseSnapshot, 0, 0);
+      markerBaseSnapshot = null;
+    }
+    drawing = false;
+    strokePoints = [];
+  }
+  if(isShapeTool(tool)){
+    shapeStart = null;
+    spCtx.clearRect(0, 0, shapePreview.clientWidth, shapePreview.clientHeight);
+  }
   eraserCursor.style.display = 'none';
   const penCursor = document.getElementById('penCursor');
   if(penCursor) penCursor.style.display = 'none';
@@ -4366,6 +4415,9 @@ document.addEventListener('click', e => {
 window.addEventListener('keydown', e => {
   if(e.key === 'Escape'){
     closeAllMenus();
+    if(typeof selectedShapeAnn !== 'undefined' && selectedShapeAnn){
+      selectShapeAnnotation(null);
+    }
     if(typeof tool !== 'undefined' && tool !== 'none' && !e.target.closest('input, textarea')){
       selectTool('none');
     }
