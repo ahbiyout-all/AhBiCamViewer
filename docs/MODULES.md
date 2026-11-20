@@ -1,13 +1,13 @@
 # 🧩 모듈 명세서 (Module Specifications)
 
-본 문서는 **아비캠뷰어 (AhBiCamViewer / Classroom Visualizer v1.4.8)**를 구성하는 주요 서브시스템과 기능 모듈의 책임, 경계, 공개 인터페이스 및 의존성을 정의합니다.
+본 문서는 **아비캠뷰어 (AhBiCamViewer / Classroom Visualizer v1.4.9)**를 구성하는 주요 서브시스템과 기능 모듈의 책임, 경계, 공개 인터페이스 및 의존성을 정의합니다.
 
 ---
 
 ## 1. 모듈 개요 (Module Overview)
 
 ```
-[ 아비캠뷰어 (AhBiCamViewer) Core v1.4.8 ]
+[ 아비캠뷰어 (AhBiCamViewer) Core v1.4.9 ]
   │
   ├── 1. DeviceCaptureModule            (카메라 감지, 3대 분류, 스트림 획득 & Smooth Handoff, 정보 토글)
   ├── 2. HardwareControlModule          (applyConstraints 인플레이스 해상도, 플래시/초점/노출)
@@ -97,7 +97,7 @@
 ### 2.9 NativeSystemAndLicenseModule (`AhBiCamViewerCore.dll` / `Managed.dll`)
 - **책임**: C#/IL 하이브리드 Win32 stdcall 네이티브 DLL을 통해 수업 중 디스플레이 절전 방지, 다중 모니터 위상 분석, 무지연 하드웨어 오디오 차임, 저장소 여유 공간 안전 진단, 전자칠판 DPI 스케일링 판별, Always-on-Top 및 오프라인 라이선스 검증 제공.
 - **주요 인터페이스 (15대 Win32 stdcall 네이티브 익스포트)**:
-  - `CV_GetVersion()`: DLL 바이너리 버전 반환 (`0x01040800` = v1.4.8).
+  - `CV_GetVersion()`: DLL 바이너리 버전 반환 (`0x01040800` = v1.4.9).
   - `CV_ValidateKeyA(pKey)`: 오프라인 영구 라이선스 키 포맷 및 Mod 97 체크섬 검증.
   - `CV_IsTrialKeyA(pKey)`: `TR30-` 접두사 30일 체험키 판정.
   - `CV_VerifyTrialStatus(startDay, currentDay, trialDays, *pDaysRemaining)`: 30일 무료 체험 유효성 및 잔여 일수 계산.

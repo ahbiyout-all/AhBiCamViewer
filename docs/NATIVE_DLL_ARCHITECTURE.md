@@ -1,6 +1,6 @@
 # 🏛️ 아비캠뷰어 (AhBiCamViewer) 순수 창작 네이티브 DLL 기술 아키텍처 및 상세 명세서
 
-> **문서 버전:** v1.5.0 (엔진 v1.4.8 대응)  
+> **문서 버전:** v1.5.0 (엔진 v1.4.9 대응)  
 > **최종 갱신일:** 2026-11-11  
 > **개발자:** AhBiYout (AhBiYout-all)  
 > **공식 저장소:** https://github.com/AhBiYout-all/AhBiCamViewer  
@@ -98,7 +98,7 @@
 
 | 번호 | 함수명 | 반환 타입 | 파라미터 | 핵심 기능 |
 | :---: | :--- | :---: | :--- | :--- |
-| **[1]** | `CV_GetVersion` | `int32` | 없음 | 엔진 시맨틱 버전 16진수 반환 (v1.4.8 = `0x01040800`) |
+| **[1]** | `CV_GetVersion` | `int32` | 없음 | 엔진 시맨틱 버전 16진수 반환 (v1.4.9 = `0x01040800`) |
 | **[2]** | `CV_ValidateKeyA` | `int32` | `const char* pKey` | 16자리 라이선스 키 구조 및 Modulo-97 체크섬 검증 |
 | **[3]** | `CV_IsTrialKeyA` | `int32` | `const char* pKey` | 30일 무료 체험 키(`TR30-`) 여부 판별 |
 | **[4]** | `CV_VerifyTrialStatus` | `int32` | `int startDay, int curDay, int trialDays, int* pRem` | 트라이얼 유효성 판별 및 남은 일수 포인터 역참조 기록 |
@@ -122,7 +122,7 @@
 - **C 서명**: `int __stdcall CV_GetVersion(void);`
 - **Pascal 서명**: `function CV_GetVersion(): Integer;`
 - **동작 원리**: 엔진의 시맨틱 버전(MAJOR, MINOR, PATCH, BUILD)을 32비트 정수로 패킹하여 반환합니다.
-- **반환값**: `0x01040800` (v1.4.8.0)
+- **반환값**: `0x01040800` (v1.4.9.0)
 
 #### [2] `CV_ValidateKeyA`
 - **C 서명**: `int __stdcall CV_ValidateKeyA(const char* pKeyAnsi);`
@@ -242,7 +242,7 @@ bin\TestRunner.exe
 [TEST SUITE] AhBiCamViewer Pure Native DLL Verification (15 Tests)
 ============================================================
 [TEST 1] CV_GetVersion: 0x01040800
-         PASS: Version matches v1.4.8.0 (0x01040800)
+         PASS: Version matches v1.4.9.0 (0x01040800)
 [TEST 2] CV_ValidateKeyA: valid=1, invalid=0, null=0
          PASS: Checksum validation and NULL safety correct
 [TEST 3] CV_IsTrialKeyA: trial=1, nonTrial=0

@@ -1,6 +1,6 @@
 # 🏛️ 시스템 아키텍처 (System Architecture)
 
-본 문서는 **아비캠뷰어 (AhBiCamViewer / Classroom Visualizer v1.4.8)**의 소프트웨어 구조, 기술 스택, 데이터 파이프라인, 네이티브 계층 및 보안 모델을 상세히 기술합니다.
+본 문서는 **아비캠뷰어 (AhBiCamViewer / Classroom Visualizer v1.4.9)**의 소프트웨어 구조, 기술 스택, 데이터 파이프라인, 네이티브 계층 및 보안 모델을 상세히 기술합니다.
 
 ---
 
@@ -33,7 +33,7 @@
 | **영상 녹화 엔진** | Offscreen Canvas `captureStream(30)` + 🎙️ 마이크 음성 실시간 합성 | 메뉴 제외 영상+판서+선생님 설명 목소리 30 FPS MP4/WebM 실시간 합성 녹화 |
 | **문서 컴파일러** | 내장 경량 jsPDF 엔진 | 캡처 이미지 A4 랜드스케이프 규격 다중 페이지 PDF 변환 |
 | **오디오 엔진** | Web Audio API + Win32 `kernel32!Beep` (`CV_PlayCustomTone`) | 신시사이저 차임음 및 하드웨어 스피커 직결 무지연 타이머 톤 송출 |
-| **순수 창작 네이티브 코어** | Pure C#/IL Hybrid Win32 DLL (`AhBiCamViewerCore.dll`) | VTable Fixup 기반 15대 unmanaged stdcall 함수 수출 및 예외 쉴드 (v1.4.8) |
+| **순수 창작 네이티브 코어** | Pure C#/IL Hybrid Win32 DLL (`AhBiCamViewerCore.dll`) | VTable Fixup 기반 15대 unmanaged stdcall 함수 수출 및 예외 쉴드 (v1.4.9) |
 | **단독 실행 런처** | VBScript + Windows Script Host (`launcher.vbs`) | `--app="file:///..."` 및 격리 프로필을 통한 무팝업 단독 창 모드 구동 |
 | **패키징 & 배포** | Inno Setup 6 | 언팩형 다중 파일 인스톨러, 6단계 설치 시퀀스(실행 중 앱 종료, 삭제/덮어쓰기 분기, 라이선스 선언) |
 

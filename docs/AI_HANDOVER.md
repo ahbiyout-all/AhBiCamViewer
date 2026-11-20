@@ -7,7 +7,7 @@
 ## 1. 📌 프로젝트 개요 및 환경 (Executive Overview)
 
 - **프로젝트 명**: 아비캠뷰어 (AhBiCamViewer) — 차세대 스마트 교실용 실물화상기 & 뷰어
-- **현재 시맨틱 버전**: `v1.4.8` (버전 단일 진실 공급원: `version.json`)
+- **현재 시맨틱 버전**: `v1.4.9` (버전 단일 진실 공급원: `version.json`)
 - **저장소 위치 (로컬)**: `C:\Users\user\.gemini\antigravity\scratch\교실용_실물화상기`
 - **원격 GitHub 저장소**: `https://github.com/AhBiYout-all/AhBiCamViewer.git`
 - **공식 블로그**: `https://ahbiyoutvibe.blogspot.com/`
@@ -77,9 +77,9 @@
 │   ├── AhBiCamViewerCore.dll       # Win32 네이티브 익스포트 DLL
 │   └── AhBiCamViewerManaged.dll    # .NET 매니지드 코어 라이브러리
 ├── dist/ (Git 제외)
-│   ├── 1.4.8/                      # 버전별 배포 산출물 아카이브
-│   ├── AhBiCamViewer_Portable_v1.4.8.zip # 포터블 패키지
-│   └── 아비캠뷰어 (AhBiCamViewer)_Setup_v1.4.8.exe # Windows 정식 설치 파일
+│   ├── 1.4.9/                      # 버전별 배포 산출물 아카이브
+│   ├── AhBiCamViewer_Portable_v1.4.9.zip # 포터블 패키지
+│   └── 아비캠뷰어 (AhBiCamViewer)_Setup_v1.4.9.exe # Windows 정식 설치 파일
 ├── docs/                           # 공식 기술 및 사용자 문서
 │   ├── ARCHITECTURE.md             # 시스템 및 컴포넌트 아키텍처
 │   ├── BLOG_POST.md                # 공식 구글 블로거 포스팅 원고
@@ -94,7 +94,7 @@
 │   ├── README.md                   # 사용자 매뉴얼
 │   ├── ROADMAP.md                  # 향후 개발 로드맵
 │   ├── SECURITY.md                 # 보안 정책
-│   ├── WORK_LOG.md                 # 작업 수행 일지 (작업 1 ~ 작업 54)
+│   ├── WORK_LOG.md                 # 작업 수행 일지 (작업 1 ~ 작업 58)
 │   └── AI_HANDOVER.md              # [본 문서] 차기 AI 어시스턴트 인계 명세서
 ├── src/
 │   └── dll/
@@ -115,8 +115,8 @@
 ├── index.html                      # 핵심 웹 애플리케이션 (Single-Source Core)
 ├── installer.iss                   # Inno Setup 6 인스톨러 컴파일 스크립트
 ├── launcher.vbs                    # 루트 런처 (스마트 크롬리스 VBS)
-├── README.md                       # 최상위 리드미 (v1.4.8 최신화 완료)
-├── version.json                    # 시맨틱 버전 단일 공급원 {"version": "1.4.8"}
+├── README.md                       # 최상위 리드미 (v1.4.9 최신화 완료)
+├── version.json                    # 시맨틱 버전 단일 공급원 {"version": "1.4.9"}
 ├── 소스압축.bat                    # 원본 소스코드 백업 보관 자동화 도구
 ├── push_to_github.bat              # (로컬 전용, Git제외) 원클릭 푸시 런처
 ├── push_github.bat                 # (로컬 전용, Git제외) push_to_github.bat 포워딩
@@ -139,6 +139,29 @@
 ---
 
 ## 6. 📝 최근 완료 작업 요약 (Recent Milestones)
+
+- **작업 55 (시맨틱 버저닝 v1.4.9 승격 및 배포 동기화)**:
+  - `version.json`, `installer.iss`, `index.html` title, `AhBiCamViewerCore.il`, `TestRunner.cs`를 `v1.4.9 (0x01040900)`로 동기화.
+  - Native DLL 15/15 단위 테스트 검증 통과 및 빌드 파이프라인 검증.
+- **작업 56 (v1.4.9 3대 핵심 사용자 경험 혁신)**:
+  - **도형 생성 후 사후 수정 & 8방향 리사이즈 핸들**: 8방향 리사이즈 엔진(`nw, n, ne, e, se, s, sw, w`), 플로팅 미니 속성 툴바(색상, 채우기, 선 굵기, 선 스타일, 캔버스 고정, 삭제), 키보드 `Delete`/`Backspace`/`Escape` 단축키 연동.
+  - **돋보기 확대경 GPU 캔버스 캐싱 60fps 무지연 구동**: 매 프레임 GPU 버퍼 재할당 구조를 반경 변경 시에만 동적 할당하도록 캐싱하여 60fps 무지연 구현, x=0 테두리 멈춤 현상 수정, 기본 CSS 필터 우회 패스트패스 적용.
+  - **형광펜 100% 균일 색상 오프스크린 단일패스 합성**: 세그먼트 중복 알파 누적 얼룩을 오프스크린 캔버스 단일패스 비트맵 합성 아키텍처로 원천 해결.
+- **작업 57 (v1.4.9 1차 자아성찰 및 7대 잠재 결함 수정)**:
+  - Canvas 2D 상태 스택 누수(`ctx.save()` / `ctx.restore` 불일치) 완전 해결 (balance 0 검증).
+  - 판서 캔버스(`draw`) `pointercancel` 이벤트 안전 핸들러 탑재.
+  - 도형 미니 툴바 상단 경계 자동 플립(Auto-Flip) 알고리즘 탑재.
+  - 도형 선택 해제 시 테두리/그림자 잔류 인라인 스타일 명시적 리셋.
+  - 전역 `Escape` 키 입력 시 선택 도형 자동 해제 연동.
+  - 모바일/전자칠판 터치 환경 리사이즈 핸들 `::after` 22px 가상 터치 영역 확장.
+  - 도형 그리기 시작 시 포인터 캡처(`setPointerCapture`) 보강.
+- **작업 58 (v1.4.9 2차 자아성찰 및 교실 런타임 안정성 6대 결함 수정)**:
+  - 수업 녹화 중 창 닫기/새로고침(`beforeunload`) 데이터 보호막 탑재.
+  - 수업 녹화 중 카메라/해상도/방향 전환 충돌 원천 방어 팝업 및 잠금.
+  - 4K / 고해상도 환경 Undo 스택 지능형 메모리 쉴드(`getDynamicUndoLimit`, 최대 160MB 상한) 구현 (OOM 크래시 방어).
+  - 캡처 갤러리(`shots`) 최대 30장 상한선 적용 (RAM 누수 방어).
+  - PDF 일괄 묶기(`pdfAll`) 고유 타임스탬프(`아비캠_수업자료_YYYYMMDD_HHMMSS.pdf`) 자동 명명.
+  - 좌측 배치 보조 모니터(`availLeft < -100`) 듀얼 모니터 점프 좌표 정합.
 
 - **작업 50 (v1.4.8 배포)**:
   - 모니터 1, 2 점프 시 권한 팝업 차단 (`window.moveTo` 기반 + Chromium 격리 프로필 권한 사전 등록)

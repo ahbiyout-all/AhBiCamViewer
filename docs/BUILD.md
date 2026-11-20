@@ -1,6 +1,6 @@
 # 🛠️ 빌드 및 패키징 가이드 (Build Guide)
 
-본 문서는 **아비캠뷰어 (AhBiCamViewer) v1.4.8**을 윈도우 데스크톱 및 웹 배포용 패키지로 빌드하는 절차를 설명합니다.
+본 문서는 **아비캠뷰어 (AhBiCamViewer) v1.4.9**을 윈도우 데스크톱 및 웹 배포용 패키지로 빌드하는 절차를 설명합니다.
 
 ---
 
@@ -31,18 +31,18 @@ C:\Users\user\.gemini\antigravity\scratch\교실용_실물화상기> build.bat
 > ```
 
 ### 파이프라인 수행 단계:
-1. **버전 파싱**: `version.json`에서 현재 타겟 시맨틱 버전(`v1.4.8`)을 읽어옵니다.
-2. **출력 폴더 준비**: `dist/` 및 버전별 격리 폴더 `dist/1.4.8/`를 생성합니다.
+1. **버전 파싱**: `version.json`에서 현재 타겟 시맨틱 버전(`v1.4.9`)을 읽어옵니다.
+2. **출력 폴더 준비**: `dist/` 및 버전별 격리 폴더 `dist/1.4.9/`를 생성합니다.
 3. **순수 창작 네이티브 DLL 15대 API 컴파일 (`tools\build_dll.bat`)**:
    - `csc.exe`로 `src/dll/LicenseCore.cs`와 `src/dll/NativeSystemCore.cs`를 `src/dll/AhBiCamViewerManaged.dll`로 빌드합니다.
    - `ilasm.exe`로 `src/dll/AhBiCamViewerCore.il`을 어셈블하여 VTable Fixup 기반 순수 stdcall PE Export DLL(`AhBiCamViewerCore.dll`)을 생성합니다.
    - `TestRunner.cs`를 컴파일하고 15개 네이티브 함수에 대한 단위 테스트를 실행하여 15/15 PASS(100%)를 검증합니다.
 4. **Inno Setup 6 멀티파일 인스톨러 컴파일**:
-   - `ISCC.exe`를 탐색하고 매개변수 `/DMyAppVersion="1.4.8"`를 전달하여 `installer.iss`를 컴파일합니다.
-   - 폴더 풀림(Unpacked Multi-File) 구조로 단일 `index.html`을 포함한 `아비캠뷰어 (AhBiCamViewer)_Setup_v1.4.8.exe`를 빌드합니다.
-   - 컴파일 성공 시 해당 설치 파일을 `dist/1.4.8/` 폴더에도 복제합니다.
+   - `ISCC.exe`를 탐색하고 매개변수 `/DMyAppVersion="1.4.9"`를 전달하여 `installer.iss`를 컴파일합니다.
+   - 폴더 풀림(Unpacked Multi-File) 구조로 단일 `index.html`을 포함한 `아비캠뷰어 (AhBiCamViewer)_Setup_v1.4.9.exe`를 빌드합니다.
+   - 컴파일 성공 시 해당 설치 파일을 `dist/1.4.9/` 폴더에도 복제합니다.
 5. **포터블 ZIP 패키징**:
-   - `index.html`, `launcher.vbs`, `version.json`, `assets/`, `docs/`, `tools/`, `bin/`을 묶어 `AhBiCamViewer_Portable_v1.4.8.zip`을 생성합니다.
+   - `index.html`, `launcher.vbs`, `version.json`, `assets/`, `docs/`, `tools/`, `bin/`을 묶어 `AhBiCamViewer_Portable_v1.4.9.zip`을 생성합니다.
 6. **검증 및 산출물 확인**: 빌드 결과물의 해시 및 존재 여부를 검증합니다.
 
 ---
@@ -51,11 +51,11 @@ C:\Users\user\.gemini\antigravity\scratch\교실용_실물화상기> build.bat
 
 ```
 dist/
-├── 아비캠뷰어 (AhBiCamViewer)_Setup_v1.4.8.exe   # 루트 최신 멀티파일 인스톨러
-├── AhBiCamViewer_Portable_v1.4.8.zip             # 루트 최신 포터블 압축 패키지
-└── 1.4.8/                                         # 버전별 아카이브 폴더
-    ├── 아비캠뷰어 (AhBiCamViewer)_Setup_v1.4.8.exe
-    └── AhBiCamViewer_Portable_v1.4.8.zip
+├── 아비캠뷰어 (AhBiCamViewer)_Setup_v1.4.9.exe   # 루트 최신 멀티파일 인스톨러
+├── AhBiCamViewer_Portable_v1.4.9.zip             # 루트 최신 포터블 압축 패키지
+└── 1.4.9/                                         # 버전별 아카이브 폴더
+    ├── 아비캠뷰어 (AhBiCamViewer)_Setup_v1.4.9.exe
+    └── AhBiCamViewer_Portable_v1.4.9.zip
 ```
 
 ### DLL 산출물 (`bin/` 폴더):
@@ -73,7 +73,7 @@ bin/
 명령 프롬프트(CMD) 또는 PowerShell에서 직접 컴파일할 경우:
 
 ```powershell
-& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion="1.4.8" "installer.iss"
+& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion="1.4.9" "installer.iss"
 ```
 
 ### 4.2 DLL 수동 빌드 및 단위 테스트
@@ -85,7 +85,7 @@ tools\build_dll.bat
 
 ## 5. GitHub Actions CI/CD (`.github/workflows/build-and-release.yml`)
 
-GitHub에 `v1.4.8` 태그를 푸시하면 다음 자동화 워크플로가 클라우드에서 실행됩니다:
+GitHub에 `v1.4.9` 태그를 푸시하면 다음 자동화 워크플로가 클라우드에서 실행됩니다:
 - **실행 환경**: `windows-latest`
 - **Node.js 런타임**: **Node.js 22 LTS** (GitHub 공식 Node 20 EOL 권고 완벽 준수)
 - **자동 빌드**: .NET 컴파일러 및 Inno Setup 6을 통해 DLL과 설치 파일 빌드

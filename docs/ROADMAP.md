@@ -29,6 +29,10 @@
 | **TASK-025** | 도형 내부 채우기(Fill) 색상 독립 팔레트 및 불투명도 엔진 | **P1** | TASK-002 | `VERIFIED` |
 | **TASK-026** | 좌측 판서 도구 활성/비활성 토글 스위치 | **P2** | TASK-010 | `VERIFIED` |
 | **TASK-027** | 텍스트 주석과 이동식 도형 상호 배타성 분리 | **P1** | TASK-002 | `VERIFIED` |
+| **TASK-028** | 도형 생성 후 사후 수정 & 8방향 리사이즈 핸들 및 플로팅 미니 툴바 | **P1** | TASK-027 | `VERIFIED` |
+| **TASK-029** | 돋보기(확대경) GPU 캔버스 캐싱 기반 60fps 무지연 렌더링 & 테두리 경계선 픽스 | **P1** | TASK-011 | `VERIFIED` |
+| **TASK-030** | 형광펜 100% 균일 색상 오프스크린 단일패스 합성 아키텍처 | **P1** | TASK-011 | `VERIFIED` |
+| **TASK-031** | 수업 녹화 데이터 유실 방어 쉴드 & 4K 동적 Undo 메모리 가드 | **P0** | TASK-024 | `VERIFIED` |
 
 ---
 
@@ -324,3 +328,61 @@
 - **Priority**: P1
 - **Dependencies**: TASK-002
 - **Status**: VERIFIED
+
+---
+
+### TASK-028: 도형 생성 후 사후 수정 & 8방향 리사이즈 핸들 및 플로팅 미니 툴바
+- **Identifier**: `TASK-028`
+- **Description**: 기하 도형을 그린 직후뿐만 아니라 사후에도 자유롭게 클릭하여 선택하고, 8방향 핸들로 크기를 조절하며 미니 툴바를 통해 색상/채우기/굵기/선스타일을 변경하거나 캔버스에 영구 고정/삭제하는 엔진.
+- **Priority**: `P1`
+- **Dependencies**: TASK-027
+- **Target Files**: `index.html`
+- **Acceptance Criteria**:
+  - 도형 선택 시 8개 리사이즈 핸들(`nw, n, ne, e, se, s, sw, w`) 노출 및 포인터 캡처 기반 리사이즈 정상 동작.
+  - 플로팅 미니 툴바 버튼(색상 🎨, 채우기 ⬛, 굵기 📏, 스타일 〰️, 고정 📌, 삭제 ✕) 및 메인 툴바 양방향 동기화.
+  - `Delete`, `Backspace`, `Escape` 키보드 인터랙션 완벽 대응.
+- **Validation Procedure**: 7대 도형 생성 후 리사이즈 핸들 드래그, 미니 툴바 속성 변경, 핀 고정 및 캡처 합성 검증.
+- **Status**: `VERIFIED`
+
+---
+
+### TASK-029: 돋보기(확대경) GPU 캔버스 캐싱 기반 60fps 무지연 렌더링 & 테두리 경계선 픽스
+- **Identifier**: `TASK-029`
+- **Description**: 돋보기 구동 시 매 프레임 GPU 캔버스 버퍼를 재할당하던 구조를 반경 변경 시에만 동적 할당하도록 캐싱하여 60fps 무지연 렌더링을 달성하고, 좌측 끝(x=0) 렌더링 멈춤 버그 수정.
+- **Priority**: `P1`
+- **Dependencies**: TASK-011
+- **Target Files**: `index.html`
+- **Acceptance Criteria**:
+  - 마우스 이동 중 프레임 드랍 없이 60fps 매끄러운 돋보기 뷰 렌더링.
+  - 화면 좌측 끝(x=0) 테두리 멈춤 현상 제거 및 기본 CSS 필터 우회 패스트패스 작동.
+- **Validation Procedure**: 고속 마우스 이동 및 화면 최좌측 가장자리 확대 렌더링 관측.
+- **Status**: `VERIFIED`
+
+---
+
+### TASK-030: 형광펜 100% 균일 색상 오프스크린 단일패스 합성 아키텍처
+- **Identifier**: `TASK-030`
+- **Description**: 획 꺾임이나 세그먼트 중복 렌더링 시 발생하는 알파 누적 얼룩을 오프스크린 캔버스 단일패스 비트맵 합성 기법으로 원천 차단하여 100% 균일한 색상 품질 유지.
+- **Priority**: `P1`
+- **Dependencies**: TASK-011
+- **Target Files**: `index.html`
+- **Acceptance Criteria**:
+  - 형광펜으로 여러 번 꺾거나 천천히 그려도 획 겹침 구간에 알파 누적 얼룩이 발생하지 않음.
+  - 4종 펜 촉(둥근 촉, 사각 촉, 캘리 촉, 붓펜 촉) 전체에 오프스크린 단일패스 합성 적용.
+- **Validation Procedure**: 복잡한 지그재그 형광펜 판서 후 균일한 알파 채널(0.38) 유지 확인.
+- **Status**: `VERIFIED`
+
+---
+
+### TASK-031: 수업 녹화 데이터 유실 방어 쉴드 & 4K 동적 Undo 메모리 가드
+- **Identifier**: `TASK-031`
+- **Description**: 수업 녹화 중 실수로 창 닫기/새로고침 시 데이터 손실을 방지하고, 녹화 중 비디오 스트림 변경을 차단하며, 4K 환경에서 RAM 누수 및 크래시를 방지하는 스마트 메모리 가드.
+- **Priority**: `P0`
+- **Dependencies**: TASK-024
+- **Target Files**: `index.html`
+- **Acceptance Criteria**:
+  - 녹화 중 `beforeunload` 경고 팝업 작동.
+  - 녹화 진행 중 카메라/해상도/미러링 전환 잠금 및 안내 모달 표출.
+  - 4K 환경 동적 Undo 한도 산정(`getDynamicUndoLimit`, 최대 160MB 상한) 및 캡처 갤러리 30장 상한 관리.
+- **Validation Procedure**: 녹화 중 창 닫기 시도, 녹화 중 해상도 변경 차단 확인, 4K 캔버스 Undo 스택 크기 측정.
+- **Status**: `VERIFIED`

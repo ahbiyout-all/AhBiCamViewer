@@ -468,7 +468,7 @@ body.recording-clean .shape-mini-toolbar {
 
 </style></head><body><div class="app">
 <header>
-  <h1>📷 아비캠뷰어 (AhBiCamViewer) <span class="version-badge" id="appVerBadge">v1.4.8</span><span class="pro-tier-badge pro-tier-pro" id="tierBadge" title="모든 Pro 기능이 제약 없이 무료로 개방되어 있습니다">PRO (전체 기능 개방)</span></h1>
+  <h1>📷 아비캠뷰어 (AhBiCamViewer) <span class="version-badge" id="appVerBadge">v1.4.9</span><span class="pro-tier-badge pro-tier-pro" id="tierBadge" title="모든 Pro 기능이 제약 없이 무료로 개방되어 있습니다">PRO (전체 기능 개방)</span></h1>
   <div class="header-right">
     <button id="headerCamInfoBtn" class="toggle-cam-info-btn" style="padding:4px 9px;font-size:12px" title="화면 좌측 상단 카메라 해상도 정보 표시 켜기/끄기">ℹ️ 카메라정보 ON</button>
     <button id="aboutBtn" style="padding:4px 9px;font-size:12px">ℹ️ 정보</button>
@@ -1133,6 +1133,24 @@ function setStatus(msg){
 }
 window.setStatus = setStatus;
 
+// ===== SAFE STORAGE & LOCAL TIMESTAMP UTILITIES =====
+function safeGetStorage(key, fallback){
+  try {
+    const val = localStorage.getItem(key);
+    return val !== null ? val : fallback;
+  } catch(e){ return fallback; }
+}
+function safeSetStorage(key, value){
+  try { localStorage.setItem(key, value); } catch(e){}
+}
+function getLocalTimestampString(d = new Date()){
+  const padZ = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}${padZ(d.getMonth()+1)}${padZ(d.getDate())}_${padZ(d.getHours())}${padZ(d.getMinutes())}${padZ(d.getSeconds())}`;
+}
+window.getLocalTimestampString = getLocalTimestampString;
+window.safeGetStorage = safeGetStorage;
+window.safeSetStorage = safeSetStorage;
+
 // ===== CAPTURE FORMAT ENGINE (캡처 이미지 포맷 선택: JPG / PNG / WebP) =====
 const CAP_FORMATS = [
   { key:'jpg',  mime:'image/jpeg', ext:'jpg',  label:'JPG',  quality:0.96, desc:'범용 압축 (소용량, 권장)' },
@@ -1534,6 +1552,7 @@ function createMovableTextCard(x, y, text, cardStyle, fontSize, color){
     ta.addEventListener('blur', finishEdit, { once: true });
     ta.addEventListener('keydown', (ke) => {
       if(ke.key === 'Escape'){ ta.blur(); }
+      else if(ke.key === 'Enter' && (ke.ctrlKey || ke.metaKey)){ ke.preventDefault(); ta.blur(); }
     });
   });
 
@@ -1899,9 +1918,15 @@ function createMovableShapeCard(type, x1, y1, x2, y2, col, lw, filled, shiftKey,
       if(resizeDir.includes('s')) maxY += dy;
       if(resizeDir.includes('n')) minY += dy;
 
-      // 최소 10px 크기 제한
-      if(maxX - minX < 10) maxX = minX + 10;
-      if(maxY - minY < 10) maxY = minY + 10;
+      // 최소 10px 크기 제한 및 고정 경계 기준 클램핑
+      if(maxX - minX < 10){
+        if(resizeDir.includes('w')) minX = maxX - 10;
+        else maxX = minX + 10;
+      }
+      if(maxY - minY < 10){
+        if(resizeDir.includes('n')) minY = maxY - 10;
+        else maxY = minY + 10;
+      }
 
       ann.x1 = isX1Left ? minX : maxX;
       ann.x2 = isX1Left ? maxX : minX;
@@ -1915,6 +1940,9 @@ function createMovableShapeCard(type, x1, y1, x2, y2, col, lw, filled, shiftKey,
       if(!isResizing) return;
       isResizing = false;
       resizeDir = '';
+      if(ev && ev.pointerId && handleEl.hasPointerCapture && handleEl.hasPointerCapture(ev.pointerId)){
+        try { handleEl.releasePointerCapture(ev.pointerId); } catch(e){}
+      }
       if(ev) ev.stopPropagation();
     };
     handleEl.addEventListener('pointerup', stopResize);
@@ -2026,7 +2054,17 @@ function undo(){if(!undoStack.length)return;redoStack.push(ctx.getImageData(0,0,
 function redo(){if(!redoStack.length)return;undoStack.push(ctx.getImageData(0,0,draw.width,draw.height));const s=redoStack.pop();ctx.putImageData(s,0,0)}
 document.getElementById('undoBtn').onclick=undo;
 document.getElementById('redoBtn').onclick=redo;
-document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();if(e.shiftKey)redo();else undo()}if((e.ctrlKey||e.metaKey)&&e.key==='y'){e.preventDefault();redo()}});
+document.addEventListener('keydown', e => {
+  const tag = (e.target.tagName || '').toLowerCase();
+  if(tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
+  if((e.ctrlKey || e.metaKey) && e.key === 'z'){
+    e.preventDefault();
+    if(e.shiftKey) redo(); else undo();
+  } else if((e.ctrlKey || e.metaKey) && e.key === 'y'){
+    e.preventDefault();
+    redo();
+  }
+});
 
 function resizeCanvas(){
   const oldW = draw.width, oldH = draw.height;
@@ -3426,6 +3464,7 @@ function placeText(e){
   input.addEventListener('blur', finishText, { once: true });
   input.addEventListener('keydown', ev => {
     if(ev.key === 'Escape'){ input.value = ''; input.blur(); }
+    else if(ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)){ ev.preventDefault(); input.blur(); }
   });
 }
 
@@ -4442,10 +4481,12 @@ window.addEventListener('beforeunload', (e) => {
 window.addEventListener('keydown', e => {
   if(e.key === 'Escape'){
     closeAllMenus();
+    const cv = document.querySelector('.compare-view');
+    if(cv) cv.remove();
     if(typeof selectedShapeAnn !== 'undefined' && selectedShapeAnn){
       selectShapeAnnotation(null);
     }
-    if(typeof tool !== 'undefined' && tool !== 'none' && !e.target.closest('input, textarea')){
+    if(typeof tool !== 'undefined' && tool !== 'none' && !e.target.closest('input, textarea') && !e.target.isContentEditable){
       selectTool('none');
     }
   }
@@ -4652,15 +4693,20 @@ function updateBottomAccordionIndicators(){
 
   // Zone 2 (Device): check if camera selected / supported
   if(secDevToggle){
-    const hasCam = typeof currentDeviceId !== 'undefined' && !!currentDeviceId;
-    secDevToggle.classList.toggle('has-active', hasCam);
+    const hasCam = (typeof camera !== 'undefined' && camera && !!camera.value) ||
+                   (typeof stream !== 'undefined' && stream && stream.active);
+    secDevToggle.classList.toggle('has-active', !!hasCam);
   }
 
   // Zone 3 (Tools): check if any special tool/adjust is active
   if(secToolsToggle){
-    const hasActiveTool = (typeof currentMode !== 'undefined' && currentMode !== 'normal') ||
-                          (typeof isShapeFilled !== 'undefined' && isShapeFilled) ||
-                          (typeof isDocContrastOn !== 'undefined' && isDocContrastOn);
+    const isPenActive = (typeof tool !== 'undefined' && tool !== 'none');
+    const isModeActive = (typeof mode !== 'undefined' && mode !== null);
+    const isFilled = (typeof isShapeFilled !== 'undefined' && isShapeFilled);
+    const isAdjustActive = (typeof brightnessInput !== 'undefined' && brightnessInput && Number(brightnessInput.value) !== 100) ||
+                           (typeof contrastInput !== 'undefined' && contrastInput && Number(contrastInput.value) !== 100) ||
+                           (typeof exposureInput !== 'undefined' && exposureInput && Number(exposureInput.value) !== 0);
+    const hasActiveTool = isPenActive || isModeActive || isFilled || isAdjustActive;
     secToolsToggle.classList.toggle('has-active', !!hasActiveTool);
   }
 }
@@ -4840,7 +4886,9 @@ if(navigator.mediaDevices?.addEventListener){
         const activeId = activeTrack.getSettings?.()?.deviceId || '';
         // 현재 사용 중인 장치가 분리됨
         if(activeId && !allIds.includes(activeId)){
-          activeTrack.stop();
+          if(stream && stream.getTracks){
+            stream.getTracks().forEach(t => { try { t.stop(); } catch(e){} });
+          }
           stream = null;
           video.srcObject = null;
           video.style.display = 'none';
@@ -5377,7 +5425,7 @@ setTextColor(textColor);
 // Classroom Keyboard Hotkeys
 document.addEventListener('keydown', e => {
   const tag = (e.target.tagName || '').toLowerCase();
-  if(tag === 'input' || tag === 'textarea' || tag === 'select') return;
+  if(tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable) return;
   if(e.ctrlKey || e.metaKey || e.altKey) return;
 
   const k = e.key.toLowerCase();
@@ -5820,7 +5868,8 @@ function capture(){
     
     const a = document.createElement('a');
     a.href = img;
-    a.download = `실물화상기_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.${capFmt.ext}`;
+    const timeStampStr = (typeof getLocalTimestampString === 'function') ? getLocalTimestampString() : (new Date().toISOString().slice(0,19).replace(/[:T]/g,'-'));
+    a.download = `실물화상기_${timeStampStr}.${capFmt.ext}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -5934,7 +5983,7 @@ updateResolutionDots(getLastCamera());
   
   const mctx = magCanvas.getContext('2d');
 
-  let lastMagRadius = -1;
+  let lastMagRadius = -1, lastMagDpr = -1;
   function renderMagnifier(x, y){
     if(mode !== 'magnify') return;
     const size = magnifyRadius * 2;
@@ -5944,11 +5993,12 @@ updateResolutionDots(getLastCamera());
     magnify.style.top = (y - magnifyRadius) + 'px';
     magBadge.textContent = `🔍 ${magnifyZoom.toFixed(1)}x (반경 ${magnifyRadius}px)`;
 
-    // 성능 최적화: 반경 변경 시에만 GPU 캔버스 버퍼 리사이징 (프레임 드랍 0% 달성)
-    if(magnifyRadius !== lastMagRadius){
+    // 성능 최적화: 반경 또는 디스플레이 배율(DPI) 변경 시에만 GPU 캔버스 버퍼 리사이징 (프레임 드랍 0% 달성)
+    if(magnifyRadius !== lastMagRadius || devicePixelRatio !== lastMagDpr){
       magCanvas.width = size * devicePixelRatio;
       magCanvas.height = size * devicePixelRatio;
       lastMagRadius = magnifyRadius;
+      lastMagDpr = devicePixelRatio;
     }
     mctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
     mctx.imageSmoothingEnabled = true;
@@ -6155,8 +6205,17 @@ updateResolutionDots(getLastCamera());
       clearOverlay();
       laserDot.style.display = 'none';
       magnify.style.display = 'none';
+      if(magAnimLoop){
+        cancelAnimationFrame(magAnimLoop);
+        magAnimLoop = null;
+      }
     } else if(mode === 'magnify'){
       startMagnifyLoop();
+    } else {
+      if(magAnimLoop){
+        cancelAnimationFrame(magAnimLoop);
+        magAnimLoop = null;
+      }
     }
   }
   document.getElementById('laser').onclick=()=>{if(!proGate('🔴 레이저 포인터')) return; setMode('laser')};
@@ -6207,9 +6266,7 @@ updateResolutionDots(getLastCamera());
       if(i)pdf.addPage();
       pdf.addImage(pages[i],'JPEG',10,10,277,190,undefined,'FAST');
     }
-    const padZ = n => String(n).padStart(2, '0');
-    const pdfDate = new Date();
-    const pdfTimeStr = `${pdfDate.getFullYear()}${padZ(pdfDate.getMonth()+1)}${padZ(pdfDate.getDate())}_${padZ(pdfDate.getHours())}${padZ(pdfDate.getMinutes())}${padZ(pdfDate.getSeconds())}`;
+    const pdfTimeStr = (typeof getLocalTimestampString === 'function') ? getLocalTimestampString() : `${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}`;
     pdf.save(`아비캠_수업자료_${pdfTimeStr}.pdf`);
   };
 
@@ -6578,7 +6635,8 @@ updateResolutionDots(getLastCamera());
       const a = document.createElement('a');
       const url = URL.createObjectURL(blob);
       a.href = url;
-      a.download = `실물화상기_수업녹화_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.${activeRecExt}`;
+      const recTimeStr = (typeof getLocalTimestampString === 'function') ? getLocalTimestampString() : (new Date().toISOString().slice(0,19).replace(/[:T]/g,'-'));
+      a.download = `실물화상기_수업녹화_${recTimeStr}.${activeRecExt}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -6590,8 +6648,22 @@ updateResolutionDots(getLastCamera());
       setStatus(`수업 녹화 저장 완료 [${activeRecExt.toUpperCase()}] (${displaySize})`);
     };
 
-    recorder.start(1000); // 1초 간격 청크 수집
-    startRecLoop(); // 녹화 루프 가동 시작
+    try {
+      recorder.start(1000); // 1초 간격 청크 수집
+      startRecLoop(); // 녹화 루프 가동 시작
+    } catch(startErr) {
+      console.error('recorder.start 실패:', startErr);
+      if(micStream){
+        try { micStream.getTracks().forEach(t => t.stop()); } catch(e){}
+        micStream = null;
+      }
+      stopRecLoop();
+      if(window.setLeftPinned) window.setLeftPinned(preRecordPinLeft, false);
+      if(window.setBottomPinned) window.setBottomPinned(preRecordPinBottom, false);
+      updateRecordUi(false);
+      alert('녹화를 시작할 수 없습니다: ' + startErr.message);
+      return;
+    }
     
     // 녹화 시작 효과 (애니메이션 & 사운드)
     if(typeof window.playRecStartFx === 'function') window.playRecStartFx();
@@ -6625,10 +6697,24 @@ updateResolutionDots(getLastCamera());
   const timerLabel = document.getElementById('timerLabel');
   let timerInterval = null, timerSeconds = 0, timerMode = null, timerTarget = 0;
 
-  // AudioContext beep
+  // Shared AudioContext singleton (브라우저 AudioContext 상한 초과 방지)
+  let sharedTimerAC = null;
+  function getTimerAudioCtx(){
+    if(!sharedTimerAC || sharedTimerAC.state === 'closed'){
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(AC) sharedTimerAC = new AC();
+    }
+    if(sharedTimerAC && sharedTimerAC.state === 'suspended'){
+      sharedTimerAC.resume().catch(()=>{});
+    }
+    return sharedTimerAC;
+  }
+
+  // AudioContext beep (singleton 재사용)
   function beep(freq=880, duration=.3, count=3){
     try{
-      const ac=new (window.AudioContext||window.webkitAudioContext)();
+      const ac = getTimerAudioCtx();
+      if(!ac) return;
       for(let i=0;i<count;i++){
         const o=ac.createOscillator(),g=ac.createGain();
         o.connect(g);g.connect(ac.destination);o.frequency.value=freq;o.type='square';
@@ -6657,12 +6743,27 @@ updateResolutionDots(getLastCamera());
       timerInterval=setInterval(()=>{
         timerSeconds--;timerText.textContent=fmtTime(timerSeconds);
         if(timerSeconds<=10&&timerSeconds>0)timerDisplay.classList.add('countdown-warn');
-        if(timerSeconds<=0){stopTimer();timerDisplay.classList.add('countdown-warn');timerText.textContent='00:00';beep(880,.2,5);
-          timerLabel.textContent='⏰ 시간 종료!';setTimeout(()=>{timerDisplay.classList.remove('countdown-warn')},5000)}
+        if(timerSeconds<=0){
+          stopTimer();
+          timerDisplay.classList.add('countdown-warn');
+          timerText.textContent='00:00';
+          beep(880,.2,5);
+          timerLabel.textContent='⏰ 시간 종료!';
+          const tb = document.getElementById('timerBtn');
+          if(tb) tb.classList.remove('active');
+          setTimeout(()=>{timerDisplay.classList.remove('countdown-warn')},5000);
+        }
       },1000);
     }
   }
   function stopTimer(){if(timerInterval){clearInterval(timerInterval);timerInterval=null}}
+
+  timerDisplay.onclick = () => {
+    stopTimer();
+    timerDisplay.style.display = 'none';
+    const tb = document.getElementById('timerBtn');
+    if(tb) tb.classList.remove('active');
+  };
 
   document.getElementById('timerBtn').onclick=()=>{
     if(typeof closeAllMenus === 'function') closeAllMenus();
@@ -6735,8 +6836,21 @@ updateResolutionDots(getLastCamera());
   document.getElementById('boardBtn').onclick=()=>{
     boardState=(boardState+1)%boards.length;
     const b=boards[boardState];
-    if(b.bg==='none'){boardBg.style.display='none';video.style.display='block'}
-    else{boardBg.style.display='block';boardBg.style.background=b.bg;video.style.display='none'}
+    if(b.bg==='none'){
+      boardBg.style.display='none';
+      if(stream && video.srcObject){
+        video.style.display='block';
+        placeholder.style.display='none';
+      } else {
+        video.style.display='none';
+        placeholder.style.display='';
+      }
+    } else {
+      boardBg.style.display='block';
+      boardBg.style.background=b.bg;
+      video.style.display='none';
+      placeholder.style.display='none';
+    }
     document.getElementById('boardBtn').classList.toggle('active',boardState!==0);
     document.getElementById('boardBtn').textContent=`🎨 ${b.label}`;
   };
@@ -6764,15 +6878,33 @@ updateResolutionDots(getLastCamera());
   };
 
   // ===== 5. PIP (Picture-in-Picture) =====
-  document.getElementById('pipBtn').onclick=async()=>{
-    if(!proGate('🖥 PIP (화면 속 화면)')) return;
-    try{
-      if(document.pictureInPictureElement){await document.exitPictureInPicture();document.getElementById('pipBtn').classList.remove('active')}
-      else if(video.requestPictureInPicture){await video.requestPictureInPicture();document.getElementById('pipBtn').classList.add('active')}
-      else alert('이 브라우저에서는 PIP를 지원하지 않습니다.');
-    }catch(e){alert('PIP 전환 실패: '+e.message)}
-  };
-  video.addEventListener('leavepictureinpicture',()=>document.getElementById('pipBtn').classList.remove('active'));
+  const pipBtn = document.getElementById('pipBtn');
+  if(pipBtn){
+    pipBtn.onclick = async () => {
+      if(!proGate('🖥 PIP (화면 속 화면)')) return;
+      try{
+        if(document.pictureInPictureElement){
+          await document.exitPictureInPicture();
+          pipBtn.classList.remove('active');
+        } else if(video.requestPictureInPicture){
+          await video.requestPictureInPicture();
+          pipBtn.classList.add('active');
+        } else {
+          alert('이 브라우저에서는 PIP를 지원하지 않습니다.');
+        }
+      } catch(e){
+        alert('PIP 전환 실패: ' + e.message);
+      }
+    };
+  }
+  video.addEventListener('leavepictureinpicture', () => {
+    const pb = document.getElementById('pipBtn');
+    if(pb) pb.classList.remove('active');
+  });
+  video.addEventListener('enterpictureinpicture', () => {
+    const pb = document.getElementById('pipBtn');
+    if(pb) pb.classList.add('active');
+  });
 
   // ===== 6. ATTENTION BELL =====
   const bellSounds = [
@@ -6784,14 +6916,16 @@ updateResolutionDots(getLastCamera());
   document.getElementById('bellBtn').onclick=()=>{
     const s=bellSounds[bellIdx];
     bellIdx=(bellIdx+1)%bellSounds.length;
-    // Sound
+    // Sound (singleton AudioContext 재사용)
     try{
-      const ac=new (window.AudioContext||window.webkitAudioContext)();
-      for(let i=0;i<s.count;i++){
-        const o=ac.createOscillator(),g=ac.createGain();
-        o.connect(g);g.connect(ac.destination);
-        o.frequency.value=s.freq*(i%2===0?1:1.25);o.type='sine';
-        g.gain.value=0.4;o.start(ac.currentTime+i*.35);o.stop(ac.currentTime+i*.35+s.dur);
+      const ac = getTimerAudioCtx();
+      if(ac){
+        for(let i=0;i<s.count;i++){
+          const o=ac.createOscillator(),g=ac.createGain();
+          o.connect(g);g.connect(ac.destination);
+          o.frequency.value=s.freq*(i%2===0?1:1.25);o.type='sine';
+          g.gain.value=0.4;o.start(ac.currentTime+i*.35);o.stop(ac.currentTime+i*.35+s.dur);
+        }
       }
     }catch(e){}
     // Visual flash
@@ -6804,7 +6938,7 @@ updateResolutionDots(getLastCamera());
   };
 
   // ===== 7. GITHUB RELEASES AUTO UPDATE SYSTEM & ABOUT MODAL =====
-  const APP_VERSION = "1.4.8";
+  const APP_VERSION = "1.4.9";
   const GITHUB_REPO = "AhBiYout-all/AhBiCamViewer";
   const GITHUB_USER = "AhBiYout";
   const GITHUB_URL = "https://github.com/AhBiYout-all";

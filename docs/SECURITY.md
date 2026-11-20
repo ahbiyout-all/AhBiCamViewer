@@ -1,6 +1,6 @@
 # 🛡️ 보안 감사 및 취약점 검토 보고서 (Security Audit)
 
-본 문서는 **Autonomous Coding Agent System v2.0** 표준(§8)에 따라 아비캠뷰어 (AhBiCamViewer) v1.4.8 프로젝트에 대해 수행된 보안 감사 결과와 보호 조치를 기술합니다.
+본 문서는 **Autonomous Coding Agent System v2.0** 표준(§8)에 따라 아비캠뷰어 (AhBiCamViewer) v1.4.9 프로젝트에 대해 수행된 보안 감사 결과와 보호 조치를 기술합니다.
 
 ---
 
@@ -34,7 +34,7 @@
 - **분석 항목**: 방화벽 등록의 투명성, 사용자 방해 없는 사전 등록 및 삭제 무결성
 - **영향 파일**: `installer.iss`
 - **조치 사항**:
-  - `[Run]` 섹션에서 `netsh advfirewall firewall add rule`을 사용하여 앱 기본 이름(`아비캠뷰어 (AhBiCamViewer)`)과 버전 표기 이름(`아비캠뷰어 (AhBiCamViewer) v1.4.8`)에 대해 아웃바운드/인바운드 규칙을 사전 조용히 등록.
+  - `[Run]` 섹션에서 `netsh advfirewall firewall add rule`을 사용하여 앱 기본 이름(`아비캠뷰어 (AhBiCamViewer)`)과 버전 표기 이름(`아비캠뷰어 (AhBiCamViewer) v1.4.9`)에 대해 아웃바운드/인바운드 규칙을 사전 조용히 등록.
   - `[UninstallRun]` 섹션에서 제거 시 등록된 방화벽 규칙을 완벽하게 자동 삭제하도록 구성.
 - **수정 상태**: `PASS (VERIFIED)`
 
@@ -66,7 +66,7 @@
 - **영향 파일**: `launcher.vbs`, `AhBiCamViewer.bat`
 - **조치 사항**:
   - `%LocalAppData%\AhBiCamViewer_AppProfile` 격리 프로필의 `Preferences` 파일에 `file://` URL 프로토콜 한정으로 카메라 및 마이크 권한을 사전 부여하여 기존 브라우저 세션과 완벽 분리.
-  - v1.4.8에서 마이크 녹음 기능 추가 시에도 동일한 격리 프로필 기반 보안 모델을 유지하며, 마이크 스트림은 MediaRecorder 로컬 녹화에만 사용되고 외부로 전송되지 않음.
+  - v1.4.9에서 마이크 녹음 기능 추가 시에도 동일한 격리 프로필 기반 보안 모델을 유지하며, 마이크 스트림은 MediaRecorder 로컬 녹화에만 사용되고 외부로 전송되지 않음.
 - **수정 상태**: `PASS (VERIFIED)`
 
 ### 2.8 순수 창작 Native DLL 15대 API 무결성 및 크래시 방어 (Native Robustness)
