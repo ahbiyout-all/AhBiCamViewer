@@ -140,6 +140,17 @@
 
 ## 6. 📝 최근 완료 작업 요약 (Recent Milestones)
 
+- **작업 60 (지우개 연속 드로잉 복원, 돋보기 원본 위치 안내 점선 십자선 탑재 및 4차 심층 감사)**:
+  - 지우개 4종 팁 전구간 100% 무지연 연속 드로잉 엔진 탑재 (`len >= 2`부터 즉시 보간 stroke).
+  - 돋보기 확대경 원본 위치 안내 전폭/전고 점선 십자선(Dashed Crosshair) 및 렌즈 내부 가이드 링 탑재.
+  - 아코디언 인디케이터 유령 변수 수정, USB 분리 시 전체 트랙 안전 해제, `recorder.start` 예외 안전 가드, 타이머 완료 시 버튼 active 해제 및 디스플레이 원클릭 닫기, 칠판 배경판 순환 시 placeholder 보호, 2분할 비교 창 Escape 연동, PIP 양방향 동기화.
+- **작업 59 (3차 자아성찰 Deep Audit 및 11대 결함 전면 수정)**:
+  - 헤더 배지 및 About 모달 `APP_VERSION = "1.4.8"`을 `v1.4.9`로 동기화.
+  - 타이머/벨 `AudioContext` 싱글턴 재사용으로 브라우저 오디오 컨텍스트 고갈 차단.
+  - 돋보기 모드 해제 시 `cancelAnimationFrame` 명시적 취소 및 다중 모니터 DPI(배율) 변경 감지.
+  - 도형 리사이즈 핸들 역전 방지 및 고정 경계 클램핑, 포인터 캡처 해제 누락 보강.
+  - 텍스트 입력창 내부 Undo/Redo 단축키(`Ctrl+Z`, `Ctrl+Y`) 키 가로챔 결함 해결.
+  - 텍스트 주석 `Ctrl+Enter` 확정 단축키 탑재 및 파일명 로컬 타임스탬프(`getLocalTimestampString()`) 통일.
 - **작업 55 (시맨틱 버저닝 v1.4.9 승격 및 배포 동기화)**:
   - `version.json`, `installer.iss`, `index.html` title, `AhBiCamViewerCore.il`, `TestRunner.cs`를 `v1.4.9 (0x01040900)`로 동기화.
   - Native DLL 15/15 단위 테스트 검증 통과 및 빌드 파이프라인 검증.
